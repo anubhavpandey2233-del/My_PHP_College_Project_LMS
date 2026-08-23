@@ -13,14 +13,56 @@ const Sidebar = () => {
         <nav className="nav flex-column gap-1">
           {user?.role === 'admin' && (
             <>
-              <Link className={`sidebar-link ${isActive('/admin/dashboard')}`} to="/admin/dashboard">Dashboard</Link>
+              <Link
+                className={`sidebar-link ${isActive('/admin/dashboard')}`}
+                to="/admin/dashboard"
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                className={`sidebar-link ${isActive('/admin/users')}`}
+                to="/admin/users"
+              >
+                Users
+              </Link>
+              <Link
+                to="/admin/change-password"
+                className={`sidebar-link ${isActive('/admin/change-password')}`}
+              >
+                Change Password
+              </Link>
             </>
           )}
           {user?.role === 'teacher' && (
             <>
-              <Link className={`sidebar-link ${isActive('/teacher/dashboard')}`} to="/teacher/dashboard">Dashboard</Link>
-              <Link className={`sidebar-link ${isActive('/teacher/courses')}`} to="/teacher/courses">My Courses</Link>
-              <Link className={`sidebar-link ${isActive('/teacher/courses/create')}`} to="/teacher/courses/create">Create Course</Link>
+              <Link
+                className={`sidebar-link ${isActive('/teacher/dashboard')}`}
+                to="/teacher/dashboard"
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                className={`sidebar-link ${isActive('/teacher/courses')}`}
+                to="/teacher/courses"
+              >
+                My Courses
+              </Link>
+
+              <Link
+                className={`sidebar-link ${isActive('/teacher/courses/create')}`}
+                to="/teacher/courses/create"
+              >
+                Create Course
+              </Link>
+
+              <Link
+                className={`sidebar-link ${isActive('/teacher/change-password')}`}
+                to="/teacher/change-password"
+              >
+                Change Password
+              </Link>
             </>
           )}
           {user?.role === 'student' && (
@@ -28,6 +70,12 @@ const Sidebar = () => {
               <Link className={`sidebar-link ${isActive('/student/dashboard')}`} to="/student/dashboard">Dashboard</Link>
               <Link className={`sidebar-link ${isActive('/student/my-courses')}`} to="/student/my-courses">My Courses</Link>
               <Link className={`sidebar-link ${isActive('/courses')}`} to="/courses">Browse Courses</Link>
+              <Link
+                className={`sidebar-link ${isActive('/student/change-password')}`}
+                to="/student/change-password"
+              >
+                Change Password
+              </Link>
             </>
           )}
         </nav>

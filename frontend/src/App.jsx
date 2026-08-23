@@ -6,16 +6,21 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 import AdminDashboard from './pages/admin/Dashboard';
+import AdminChangePassword from './pages/admin/ChangePassword';
 import TeacherDashboard from './pages/teacher/Dashboard';
+import ChangePassword from './pages/teacher/ChangePassword';
 import TeacherCourses from './pages/teacher/Courses';
 import CourseForm from './pages/teacher/CourseForm';
 import ManageContent from './pages/teacher/ManageContent';
 import StudentDashboard from './pages/student/Dashboard';
+import StudentChangePassword from './pages/student/ChangePassword';
 import MyCourses from './pages/student/MyCourses';
 import LearningPage from './pages/student/LearningPage';
 
 import CourseList from './pages/courses/CourseList';
 import CourseDetails from './pages/courses/CourseDetails';
+
+import AdminUsers from './pages/admin/AdminUsers';
 
 function App() {
   return (
@@ -32,12 +37,23 @@ function App() {
               <AdminDashboard />
             </RoleProtectedRoute>
           } />
-
+          <Route
+            path="/admin/change-password"
+            element={<AdminChangePassword />}
+          />
           <Route path="/teacher/dashboard" element={
             <RoleProtectedRoute allowedRoles={['teacher']}>
               <TeacherDashboard />
             </RoleProtectedRoute>
           } />
+          <Route
+            path="/teacher/change-password"
+            element={
+              <RoleProtectedRoute allowedRoles={['teacher']}>
+                <ChangePassword />
+              </RoleProtectedRoute>
+            }
+          />
           <Route path="/teacher/courses" element={
             <RoleProtectedRoute allowedRoles={['teacher']}>
               <TeacherCourses />
@@ -64,6 +80,14 @@ function App() {
               <StudentDashboard />
             </RoleProtectedRoute>
           } />
+          <Route
+            path="/student/change-password"
+            element={
+              <RoleProtectedRoute allowedRoles={['student']}>
+                <StudentChangePassword />
+              </RoleProtectedRoute>
+            }
+          />
           <Route path="/student/my-courses" element={
             <RoleProtectedRoute allowedRoles={['student']}>
               <MyCourses />
@@ -77,6 +101,13 @@ function App() {
 
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
+
+
+          <Route path="/admin/users" element={
+            <RoleProtectedRoute allowedRoles={['admin']}>
+              <AdminUsers />
+            </RoleProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

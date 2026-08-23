@@ -13,7 +13,7 @@ const TeacherCourses = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    api.get(`/courses/list.php?teacher_id=${user.id}`)
+   api.get('/teacher/my-courses.php')
       .then(res => {
         if (res.data.status) {
           setCourses(res.data.data.courses || []);

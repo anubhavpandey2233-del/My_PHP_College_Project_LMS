@@ -26,6 +26,16 @@ const Sidebar = () => {
               >
                 Users
               </Link>
+              <li>
+                <Link
+                  to="/admin/courses"
+                  className={`sidebar-link ${isActive('/admin/courses') ? 'active' : ''
+                    }`}
+                >
+                  <i className="bi bi-book me-2"></i>
+                  Courses
+                </Link>
+              </li>
               <Link
                 to="/admin/change-password"
                 className={`sidebar-link ${isActive('/admin/change-password')}`}

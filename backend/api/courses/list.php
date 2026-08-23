@@ -1,76 +1,163 @@
 <?php
+
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
 
-$search   = $_GET['search'] ?? '';
-$category = $_GET['category_id'] ?? '';
-$level    = $_GET['level'] ?? '';
-$status   = $_GET['status'] ?? '';
+$search    = trim($_GET['search'] ?? '');
+$category  = $_GET['category_id'] ?? '';
+$level     = $_GET['level'] ?? '';
 $teacherId = $_GET['teacher_id'] ?? '';
-$page     = max(1, (int)($_GET['page'] ?? 1));
-$limit    = 12;
-$offset   = ($page - 1) * $limit;
 
-$where  = ["1=1"];
+$page = max(1, (int)($_GET['page'] ?? 1));
+$limit = 12;
+$offset = ($page - 1) * $limit;
+
+
+// =====================================
+// WHERE CONDITIONS
+// =====================================
+
+$where = [
+    "c.status = 'published'"
+];
+
 $params = [];
 
-// Public requests only see published
-$isAuthenticated = false;
-$headers = function_exists('apache_request_headers') ? apache_request_headers() : [];
-if (isset($headers['Authorization']) || isset($_SERVER['HTTP_AUTHORIZATION'])) {
-    $isAuthenticated = true;
+
+// =====================================
+// Search
+// =====================================
+
+if ($search !== '') {
+
+    $where[] = "
+        (
+            c.title LIKE ?
+            OR c.short_description LIKE ?
+        )
+    ";
+
+    $params[] = "%{$search}%";
+    $params[] = "%{$search}%";
 }
 
-if (!$isAuthenticated && empty($status)) {
-    $where[] = "c.status = 'published'";
-} elseif ($status) {
-    $where[] = "c.status = ?";
-    $params[] = $status;
-}
 
-if ($search) {
-    $where[] = "(c.title LIKE ? OR c.short_description LIKE ?)";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-}
-if ($category) {
+// =====================================
+// Category
+// =====================================
+
+if ($category !== '') {
+
     $where[] = "c.category_id = ?";
-    $params[] = $category;
+
+    $params[] = (int)$category;
 }
-if ($level) {
+
+
+// =====================================
+// Level
+// =====================================
+
+if ($level !== '') {
+
     $where[] = "c.level = ?";
+
     $params[] = $level;
 }
-if ($teacherId) {
+
+
+// =====================================
+// Teacher
+// =====================================
+
+if ($teacherId !== '') {
+
     $where[] = "c.teacher_id = ?";
-    $params[] = $teacherId;
+
+    $params[] = (int)$teacherId;
 }
+
+
+// =====================================
+// WHERE SQL
+// =====================================
 
 $whereSql = implode(' AND ', $where);
 
-$countStmt = $pdo->prepare("SELECT COUNT(*) FROM courses c WHERE $whereSql");
-$countStmt->execute($params);
-$total = $countStmt->fetchColumn();
 
-$sql = "SELECT c.*, u.name as teacher_name, cat.name as category_name, sub.name as subcategory_name
-        FROM courses c
-        JOIN users u ON c.teacher_id = u.id
-        JOIN categories cat ON c.category_id = cat.id
-        LEFT JOIN subcategories sub ON c.subcategory_id = sub.id
-        WHERE $whereSql
-        ORDER BY c.created_at DESC
-        LIMIT $limit OFFSET $offset";
+// =====================================
+// Total Courses
+// =====================================
+
+$countSql = "
+    SELECT COUNT(*)
+    FROM courses c
+    WHERE $whereSql
+";
+
+$countStmt = $pdo->prepare($countSql);
+
+$countStmt->execute($params);
+
+$total = (int)$countStmt->fetchColumn();
+
+
+// =====================================
+// Fetch Courses
+// =====================================
+
+$sql = "
+    SELECT
+        c.*,
+
+        u.name AS teacher_name,
+
+        cat.name AS category_name,
+
+        sub.name AS subcategory_name
+
+    FROM courses c
+
+    JOIN users u
+        ON c.teacher_id = u.id
+
+    JOIN categories cat
+        ON c.category_id = cat.id
+
+    LEFT JOIN subcategories sub
+        ON c.subcategory_id = sub.id
+
+    WHERE $whereSql
+
+    ORDER BY c.created_at DESC
+
+    LIMIT $limit OFFSET $offset
+";
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$courses = $stmt->fetchAll();
 
-sendResponse(true, "Courses fetched", [
-    "courses" => $courses,
-    "pagination" => [
-        "page"  => $page,
-        "limit" => $limit,
-        "total" => (int)$total,
-        "pages" => ceil($total / $limit)
+$stmt->execute($params);
+
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// =====================================
+// Response
+// =====================================
+
+sendResponse(
+    true,
+    "Courses fetched",
+    [
+        "courses" => $courses,
+
+        "pagination" => [
+            "page" => $page,
+            "limit" => $limit,
+            "total" => $total,
+            "pages" => $total > 0
+                ? (int)ceil($total / $limit)
+                : 0
+        ]
     ]
-]);
+);

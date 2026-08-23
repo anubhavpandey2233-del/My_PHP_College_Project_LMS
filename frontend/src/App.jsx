@@ -7,6 +7,7 @@ import Register from './pages/auth/Register';
 
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminChangePassword from './pages/admin/ChangePassword';
+import AdminCourses from './pages/admin/AdminCourses';
 import TeacherDashboard from './pages/teacher/Dashboard';
 import ChangePassword from './pages/teacher/ChangePassword';
 import TeacherCourses from './pages/teacher/Courses';
@@ -37,6 +38,14 @@ function App() {
               <AdminDashboard />
             </RoleProtectedRoute>
           } />
+          <Route
+            path="/admin/courses"
+            element={
+              <RoleProtectedRoute allowedRoles={['admin']}>
+                <AdminCourses />
+              </RoleProtectedRoute>
+            }
+          />
           <Route
             path="/admin/change-password"
             element={<AdminChangePassword />}

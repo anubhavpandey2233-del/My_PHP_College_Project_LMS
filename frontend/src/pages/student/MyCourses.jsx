@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -5,195 +7,289 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import Loading from '../../components/common/Loading';
 
 const MyCourses = () => {
-const [courses, setCourses] = useState([]);
-const [filter, setFilter] = useState('all');
-const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-setLoading(true);
+  // ===============================
+  // Fetch My Courses
+  // ===============================
 
-api.get(`/student/my-courses.php?status=${filter}`)
-  .then(res => {
-    console.log('MY COURSES API:', res.data);
+  useEffect(() => {
+    setLoading(true);
 
-    if (res.data.status) {
-      setCourses(res.data.data || []);
-    } else {
-      setCourses([]);
+    api
+      .get(`/student/my-courses.php?status=${filter}`)
+      .then((res) => {
+        console.log('MY COURSES API:', res.data);
+
+        if (res.data.status) {
+          setCourses(res.data.data || []);
+        } else {
+          setCourses([]);
+        }
+      })
+      .catch((error) => {
+        console.error('My Courses Error:', error);
+        setCourses([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [filter]);
+
+  // ===============================
+  // Thumbnail URL
+  // ===============================
+
+  const getThumbnailUrl = (thumbnail) => {
+    if (!thumbnail) {
+      return null;
     }
-  })
-  .catch(error => {
-    console.error('My Courses Error:', error);
-    setCourses([]);
-  })
-  .finally(() => {
-    setLoading(false);
-  });
 
-}, [filter]);
+    const value = String(thumbnail).trim();
 
-const getThumbnailUrl = (thumbnail) => {
-if (!thumbnail) {
-return null;
-}
+    if (!value) {
+      return null;
+    }
 
-const value = String(thumbnail).trim();
+    if (
+      value.startsWith('http://') ||
+      value.startsWith('https://')
+    ) {
+      return value;
+    }
 
-if (!value) {
-  return null;
-}
+    if (value.startsWith('/uploads/courses/')) {
+      return `http://localhost/php-lms-project/backend${value}`;
+    }
 
-if (
-  value.startsWith('http://') ||
-  value.startsWith('https://')
-) {
-  return value;
-}
+    if (value.startsWith('uploads/courses/')) {
+      return `http://localhost/php-lms-project/backend/${value}`;
+    }
 
-if (value.startsWith('/uploads/courses/')) {
-  return `http://localhost/php-lms-project/backend${value}`;
-}
+    if (
+      value.startsWith(
+        '/php-lms-project/backend/uploads/courses/'
+      )
+    ) {
+      return `http://localhost${value}`;
+    }
 
-if (value.startsWith('uploads/courses/')) {
-  return `http://localhost/php-lms-project/backend/${value}`;
-}
+    return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
+  };
 
-if (value.startsWith('/php-lms-project/backend/uploads/courses/')) {
-  return `http://localhost${value}`;
-}
+  // ===============================
+  // Image Error
+  // ===============================
 
-return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
+  const handleImageError = (e, course) => {
+    console.error(
+      'My Course Thumbnail Load Failed:',
+      course.thumbnail
+    );
 
-};
+    e.currentTarget.style.display = 'none';
 
-const handleImageError = (e, course) => {
-console.error(
-'My Course Thumbnail Load Failed:',
-course.thumbnail
-);
+    const fallback =
+      e.currentTarget.parentElement.querySelector(
+        '.thumbnail-fallback'
+      );
 
-e.currentTarget.style.display = 'none';
+    if (fallback) {
+      fallback.style.display = 'flex';
+    }
+  };
 
-const fallback =
-  e.currentTarget.parentElement.querySelector(
-    '.thumbnail-fallback'
-  );
+  // ===============================
+  // Render
+  // ===============================
 
-if (fallback) {
-  fallback.style.display = 'flex';
-}
+  return (
+    <DashboardLayout>
 
-};
+      <h2 className="mb-4">
+        My Courses
+      </h2>
 
-return (
-<DashboardLayout>
+      {/* ===============================
+          Course Filter
+      =============================== */}
 
-  <h2 className="mb-4">
-    My Courses
-  </h2>
+      <div className="btn-group mb-4">
 
-  <div className="btn-group mb-4">
+        <button
+          type="button"
+          className={`btn ${
+            filter === 'all'
+              ? 'btn-primary'
+              : 'btn-outline-primary'
+          }`}
+          onClick={() => setFilter('all')}
+        >
+          All
+        </button>
 
-    <button
-      className={`btn ${
-        filter === 'all'
-          ? 'btn-primary'
-          : 'btn-outline-primary'
-      }`}
-      onClick={() => setFilter('all')}
-    >
-      All
-    </button>
+        <button
+          type="button"
+          className={`btn ${
+            filter === 'active'
+              ? 'btn-primary'
+              : 'btn-outline-primary'
+          }`}
+          onClick={() => setFilter('active')}
+        >
+          In Progress
+        </button>
 
-    <button
-      className={`btn ${
-        filter === 'active'
-          ? 'btn-primary'
-          : 'btn-outline-primary'
-      }`}
-      onClick={() => setFilter('active')}
-    >
-      In Progress
-    </button>
+        <button
+          type="button"
+          className={`btn ${
+            filter === 'completed'
+              ? 'btn-primary'
+              : 'btn-outline-primary'
+          }`}
+          onClick={() => setFilter('completed')}
+        >
+          Completed
+        </button>
 
-    <button
-      className={`btn ${
-        filter === 'completed'
-          ? 'btn-primary'
-          : 'btn-outline-primary'
-      }`}
-      onClick={() => setFilter('completed')}
-    >
-      Completed
-    </button>
+      </div>
 
-  </div>
+      {/* ===============================
+          Loading
+      =============================== */}
 
-  {loading ? (
+      {loading ? (
 
-    <Loading />
+        <Loading />
 
-  ) : (
+      ) : (
 
-    <div className="row g-4">
+        <div className="row g-4">
 
-      {courses.map(c => {
+          {courses.map((course) => {
 
-        const thumbnailUrl =
-          getThumbnailUrl(c.thumbnail);
+            const thumbnailUrl =
+              getThumbnailUrl(course.thumbnail);
 
-        return (
-
-          <div
-            className="col-md-4"
-            key={c.id}
-          >
-
-            <div className="card h-100 shadow-sm overflow-hidden">
+            return (
 
               <div
-                className="position-relative bg-light"
-                style={{
-                  height: '200px',
-                  overflow: 'hidden'
-                }}
+                className="col-md-4"
+                key={course.enrollment_id || course.id}
               >
 
-                {thumbnailUrl && (
+                <div className="card h-100 shadow-sm overflow-hidden">
 
-                  <img
-                    src={thumbnailUrl}
-                    alt={c.title || 'Course'}
-                    className="w-100 h-100"
+                  {/* ===============================
+                      Thumbnail
+                  =============================== */}
+
+                  <div
+                    className="position-relative bg-light"
                     style={{
-                      objectFit: 'cover',
-                      display: 'block'
+                      height: '200px',
+                      overflow: 'hidden'
                     }}
-                    onError={(e) =>
-                      handleImageError(e, c)
-                    }
-                  />
+                  >
 
-                )}
+                    {thumbnailUrl && (
 
-                <div
-                  className="thumbnail-fallback w-100 h-100 bg-secondary align-items-center justify-content-center"
-                  style={{
-                    display: thumbnailUrl
-                      ? 'none'
-                      : 'flex'
-                  }}
-                >
+                      <img
+                        src={thumbnailUrl}
+                        alt={course.title || 'Course'}
+                        className="w-100 h-100"
+                        style={{
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                        onError={(e) =>
+                          handleImageError(e, course)
+                        }
+                      />
 
-                  <div className="text-center px-3">
+                    )}
 
-                    <div className="text-white fw-bold">
-                      {c.title || 'Course'}
+                    <div
+                      className="thumbnail-fallback w-100 h-100 bg-secondary align-items-center justify-content-center"
+                      style={{
+                        display: thumbnailUrl
+                          ? 'none'
+                          : 'flex'
+                      }}
+                    >
+
+                      <div className="text-center px-3">
+
+                        <div className="text-white fw-bold">
+                          {course.title || 'Course'}
+                        </div>
+
+                        <small className="text-white-50">
+                          Course Thumbnail
+                        </small>
+
+                      </div>
+
                     </div>
 
-                    <small className="text-white-50">
-                      Course Thumbnail
+                  </div>
+
+                  {/* ===============================
+                      Course Details
+                  =============================== */}
+
+                  <div className="card-body">
+
+                    <h5 className="card-title">
+                      {course.title}
+                    </h5>
+
+                    <p className="text-muted small">
+                      By {course.teacher_name || '-'}
+                    </p>
+
+                    {/* Progress */}
+
+                    <div
+                      className="progress mb-2"
+                      style={{
+                        height: '10px'
+                      }}
+                    >
+
+                      <div
+                        className="progress-bar bg-success"
+                        style={{
+                          width: `${Number(course.progress) || 0}%`
+                        }}
+                      ></div>
+
+                    </div>
+
+                    <small>
+                      {course.completed_lessons || 0}
+                      {' / '}
+                      {course.total_lessons || 0}
+                      {' lessons • '}
+                      {Number(course.progress) || 0}%
                     </small>
+
+                    {/* Continue / Review */}
+
+                    <div className="mt-3">
+
+                      <Link
+                        to={`/student/learn/${course.course_id}`}
+                        className="btn btn-sm btn-primary"
+                      >
+                        {Number(course.progress) >= 100
+                          ? 'Review'
+                          : 'Continue'}
+                      </Link>
+
+                    </div>
 
                   </div>
 
@@ -201,79 +297,32 @@ return (
 
               </div>
 
-              <div className="card-body">
+            );
+          })}
 
-                <h5 className="card-title">
-                  {c.title}
-                </h5>
+          {/* ===============================
+              No Courses
+          =============================== */}
 
-                <p className="text-muted small">
-                  By {c.teacher_name}
-                </p>
+          {courses.length === 0 && (
 
-                <div
-                  className="progress mb-2"
-                  style={{ height: '10px' }}
-                >
+            <div className="col-12">
 
-                  <div
-                    className="progress-bar bg-success"
-                    style={{
-                      width: `${Number(c.progress) || 0}%`
-                    }}
-                  ></div>
-
-                </div>
-
-                <small>
-                  {c.completed_lessons || 0}
-                  {' / '}
-                  {c.total_lessons || 0}
-                  {' lessons • '}
-                  {Number(c.progress) || 0}%
-                </small>
-
-                <div className="mt-3">
-
-                  <Link
-                    to={`/student/learn/${c.course_id}`}
-                    className="btn btn-sm btn-primary"
-                  >
-                    {Number(c.progress) >= 100
-                      ? 'Review'
-                      : 'Continue'}
-                  </Link>
-
-                </div>
-
-              </div>
+              <p className="text-muted">
+                No published courses found.
+              </p>
 
             </div>
 
-          </div>
-
-        );
-      })}
-
-      {courses.length === 0 && (
-
-        <div className="col-12">
-
-          <p className="text-muted">
-            No courses found.
-          </p>
+          )}
 
         </div>
 
       )}
 
-    </div>
-
-  )}
-
-</DashboardLayout>
-
-);
+    </DashboardLayout>
+  );
 };
 
 export default MyCourses;
+

@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+.btn {
+  border-radius: 8px;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-link {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: block;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.progress {
+  border-radius: 10px;
+  background: #e9ecef;
+}
+
+.course-card img {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}

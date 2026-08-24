@@ -31,6 +31,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import Categories from './pages/admin/Categories';
 import Profile from './pages/admin/Profile';
 
+
 // =====================================
 // Teacher Pages
 // =====================================
@@ -40,6 +41,7 @@ import ChangePassword from './pages/teacher/ChangePassword';
 import TeacherCourses from './pages/teacher/Courses';
 import CourseForm from './pages/teacher/CourseForm';
 import ManageContent from './pages/teacher/ManageContent';
+import TeacherProfile from './pages/teacher/Profile';
 
 
 // =====================================
@@ -50,6 +52,7 @@ import StudentDashboard from './pages/student/Dashboard';
 import StudentChangePassword from './pages/student/ChangePassword';
 import MyCourses from './pages/student/MyCourses';
 import LearningPage from './pages/student/LearningPage';
+import StudentProfile from './pages/student/Profile';
 
 
 // =====================================
@@ -72,7 +75,7 @@ function App() {
 
 
           {/* =================================
-              Authentication
+              AUTHENTICATION
           ================================= */}
 
           <Route
@@ -87,7 +90,7 @@ function App() {
 
 
           {/* =================================
-              Public Courses
+              PUBLIC COURSES
           ================================= */}
 
           <Route
@@ -140,14 +143,18 @@ function App() {
             }
           />
 
+
           <Route
             path="/admin/subcategories"
             element={
-              <RoleProtectedRoute allowedRoles={['admin']}>
+              <RoleProtectedRoute
+                allowedRoles={['admin']}
+              >
                 <Subcategories />
               </RoleProtectedRoute>
             }
           />
+
 
           <Route
             path="/admin/courses"
@@ -160,16 +167,30 @@ function App() {
             }
           />
 
+
           <Route
             path="/admin/enrollments"
             element={
-              <RoleProtectedRoute allowedRoles={['admin']}>
+              <RoleProtectedRoute
+                allowedRoles={['admin']}
+              >
                 <Enrollments />
               </RoleProtectedRoute>
             }
           />
 
-          <Route path="/admin/profile" element={<Profile />} />
+
+          <Route
+            path="/admin/profile"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={['admin']}
+              >
+                <Profile />
+              </RoleProtectedRoute>
+            }
+          />
+
 
           <Route
             path="/admin/change-password"
@@ -206,6 +227,18 @@ function App() {
                 allowedRoles={['teacher']}
               >
                 <ChangePassword />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          <Route
+            path="/teacher/profile"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={['teacher']}
+              >
+                <TeacherProfile />
               </RoleProtectedRoute>
             }
           />
@@ -288,6 +321,18 @@ function App() {
 
 
           <Route
+            path="/student/profile"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={['student']}
+              >
+                <StudentProfile />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          <Route
             path="/student/my-courses"
             element={
               <RoleProtectedRoute
@@ -325,6 +370,7 @@ function App() {
             }
           />
 
+
           <Route
             path="*"
             element={
@@ -341,6 +387,7 @@ function App() {
       </BrowserRouter>
 
     </AuthProvider>
+
   );
 }
 

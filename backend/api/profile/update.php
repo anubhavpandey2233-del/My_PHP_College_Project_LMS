@@ -36,10 +36,14 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 
 // =====================================
-// Check Duplicate Email
+// Main Process
 // =====================================
 
 try {
+
+    // =====================================
+    // Check Duplicate Email
+    // =====================================
 
     $stmt = $pdo->prepare("
         SELECT id
@@ -55,6 +59,7 @@ try {
     ]);
 
     if ($stmt->fetch()) {
+
         sendError(
             "Email already exists",
             null,
@@ -64,7 +69,7 @@ try {
 
 
     // =====================================
-    // Existing Avatar
+    // Get Existing Avatar
     // =====================================
 
     $stmt = $pdo->prepare("
@@ -98,6 +103,7 @@ try {
 
 
         // Maximum size: 2MB
+
         if ($file['size'] > 2 * 1024 * 1024) {
 
             sendError(
@@ -109,6 +115,7 @@ try {
 
 
         // Allowed MIME types
+
         $allowedTypes = [
             'image/jpeg',
             'image/png',
@@ -241,13 +248,10 @@ try {
         $phone !== ''
             ? $phone
             : null,
-
         $avatar,
-
         $bio !== ''
             ? $bio
             : null,
-
         $user['id']
     ]);
 
@@ -256,19 +260,25 @@ try {
     // Fetch Updated User
     // =====================================
 
+    // IMPORTANT:
+    // role bhi response me bhejna hai.
+
     $stmt = $pdo->prepare("
         SELECT
-            id,
-            name,
-            email,
-            role_id,
-            phone,
-            avatar,
-            bio,
-            status,
-            created_at
-        FROM users
-        WHERE id = ?
+            u.id,
+            u.name,
+            u.email,
+            u.role_id,
+            r.name AS role,
+            u.phone,
+            u.avatar,
+            u.bio,
+            u.status,
+            u.created_at
+        FROM users u
+        JOIN roles r
+            ON u.role_id = r.id
+        WHERE u.id = ?
         LIMIT 1
     ");
 
@@ -304,5 +314,6 @@ try {
         $e->getMessage(),
         500
     );
+
 }
 

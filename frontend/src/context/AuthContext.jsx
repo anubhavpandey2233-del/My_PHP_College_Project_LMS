@@ -1,5 +1,11 @@
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState
+} from 'react';
+
 import api from '../services/api';
 
 const AuthContext = createContext();
@@ -30,6 +36,37 @@ export const AuthProvider = ({ children }) => {
 
 
     // =====================================
+    // Get Complete User From API
+    // =====================================
+
+    const fetchCurrentUser = async (storedToken) => {
+
+        const res = await api.get('/auth/me.php');
+
+        if (!res.data.status) {
+            throw new Error(
+                res.data.message || 'Authentication failed'
+            );
+        }
+
+        const loggedInUser =
+            res.data.data.user;
+
+        // Update React state
+        setUser(loggedInUser);
+        setToken(storedToken);
+
+        // Update localStorage
+        localStorage.setItem(
+            'user',
+            JSON.stringify(loggedInUser)
+        );
+
+        return loggedInUser;
+    };
+
+
+    // =====================================
     // Check Login On Refresh
     // =====================================
 
@@ -37,9 +74,11 @@ export const AuthProvider = ({ children }) => {
 
         const initAuth = async () => {
 
-            const storedToken = localStorage.getItem('token');
+            const storedToken =
+                localStorage.getItem('token');
 
-            // No token found
+
+            // No token
             if (!storedToken) {
 
                 setLoading(false);
@@ -49,33 +88,9 @@ export const AuthProvider = ({ children }) => {
 
             try {
 
-                const res = await api.get('/auth/me.php');
-
-
-                if (res.data.status) {
-
-                    const loggedInUser =
-                        res.data.data.user;
-
-
-                    setUser(loggedInUser);
-
-                    setToken(storedToken);
-
-
-                    // Keep user data updated
-                    localStorage.setItem(
-                        'user',
-                        JSON.stringify(loggedInUser)
-                    );
-
-
-                } else {
-
-                    clearAuth();
-
-                }
-
+                await fetchCurrentUser(
+                    storedToken
+                );
 
             } catch (error) {
 
@@ -103,7 +118,10 @@ export const AuthProvider = ({ children }) => {
     // Login
     // =====================================
 
-    const login = async (email, password) => {
+    const login = async (
+        email,
+        password
+    ) => {
 
         try {
 
@@ -116,42 +134,47 @@ export const AuthProvider = ({ children }) => {
             );
 
 
-            if (res.data.status) {
-
-                const { token, user } =
-                    res.data.data;
-
-
-                localStorage.setItem(
-                    'token',
-                    token
-                );
-
-
-                localStorage.setItem(
-                    'user',
-                    JSON.stringify(user)
-                );
-
-
-                setToken(token);
-
-                setUser(user);
-
+            if (!res.data.status) {
 
                 return {
-                    success: true,
-                    user: user
+                    success: false,
+                    message:
+                        res.data.message ||
+                        'Login failed'
                 };
-
             }
 
 
+            const loginData =
+                res.data.data;
+
+            const newToken =
+                loginData.token;
+
+
+            // Save token first
+            localStorage.setItem(
+                'token',
+                newToken
+            );
+
+            setToken(newToken);
+
+
+            // =====================================
+            // IMPORTANT
+            // Fetch complete user profile
+            // =====================================
+
+            const loggedInUser =
+                await fetchCurrentUser(
+                    newToken
+                );
+
+
             return {
-                success: false,
-                message:
-                    res.data.message ||
-                    'Login failed'
+                success: true,
+                user: loggedInUser
             };
 
 
@@ -162,14 +185,16 @@ export const AuthProvider = ({ children }) => {
                 error
             );
 
+            clearAuth();
+
 
             return {
                 success: false,
                 message:
                     error.response?.data?.message ||
+                    error.message ||
                     'Something went wrong'
             };
-
         }
     };
 
@@ -197,9 +222,7 @@ export const AuthProvider = ({ children }) => {
                 }
             );
 
-
             return res.data;
-
 
         } catch (error) {
 
@@ -208,14 +231,12 @@ export const AuthProvider = ({ children }) => {
                 error
             );
 
-
             return {
                 status: false,
                 message:
                     error.response?.data?.message ||
                     'Registration failed'
             };
-
         }
     };
 
@@ -234,14 +255,13 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
 
-            console.error(
+            console.warn(
                 'Logout API Error:',
                 error
             );
 
         } finally {
 
-            // Clear local authentication
             clearAuth();
 
         }
@@ -253,7 +273,6 @@ export const AuthProvider = ({ children }) => {
     // =====================================
 
     return (
-
         <AuthContext.Provider
             value={{
                 user,
@@ -266,11 +285,8 @@ export const AuthProvider = ({ children }) => {
                 isAuthenticated: !!user
             }}
         >
-
             {children}
-
         </AuthContext.Provider>
-
     );
 };
 

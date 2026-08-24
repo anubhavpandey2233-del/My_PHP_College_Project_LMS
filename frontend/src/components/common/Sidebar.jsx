@@ -3,13 +3,26 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
+
   const { user } = useAuth();
   const location = useLocation();
+
 
   const isActive = (path) =>
     location.pathname.startsWith(path) ? 'active' : '';
 
+
+  // =====================================
+  // Avatar URL
+  // =====================================
+
+  const avatarUrl = user?.avatar
+    ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
+    : null;
+
+
   return (
+
     <div
       className="bg-dark text-white"
       style={{
@@ -17,22 +30,27 @@ const Sidebar = () => {
         minHeight: 'calc(100vh - 56px)'
       }}
     >
+
       <div className="p-3">
+
+
+        {/* Panel Title */}
 
         <h6 className="text-uppercase text-white-50 mb-3">
           {user?.role} Panel
         </h6>
 
+
         <nav className="nav flex-column gap-1">
+
 
           {/* =====================================
               ADMIN SIDEBAR
           ===================================== */}
 
           {user?.role === 'admin' && (
-            <>
 
-              {/* Dashboard */}
+            <>
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -45,10 +63,10 @@ const Sidebar = () => {
               </Link>
 
 
-              {/* Categories */}
-
               <Link
-                className={`sidebar-link ${isActive('/admin/categories')}`}
+                className={`sidebar-link ${isActive(
+                  '/admin/categories'
+                )}`}
                 to="/admin/categories"
               >
                 <i className="bi bi-tags me-2"></i>
@@ -56,18 +74,16 @@ const Sidebar = () => {
               </Link>
 
 
-              {/* Subcategories */}
-
               <Link
-                className={`sidebar-link ${isActive('/admin/subcategories')}`}
+                className={`sidebar-link ${isActive(
+                  '/admin/subcategories'
+                )}`}
                 to="/admin/subcategories"
               >
                 <i className="bi bi-diagram-3 me-2"></i>
                 Subcategories
               </Link>
 
-
-              {/* Courses */}
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -80,8 +96,6 @@ const Sidebar = () => {
               </Link>
 
 
-              {/* Users */}
-
               <Link
                 className={`sidebar-link ${isActive(
                   '/admin/users'
@@ -92,8 +106,6 @@ const Sidebar = () => {
                 Users
               </Link>
 
-
-              {/* Enrollments */}
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -106,8 +118,6 @@ const Sidebar = () => {
               </Link>
 
 
-              {/* Reviews */}
-
               <Link
                 className={`sidebar-link ${isActive(
                   '/admin/reviews'
@@ -118,8 +128,6 @@ const Sidebar = () => {
                 Reviews
               </Link>
 
-
-              {/* Change Password */}
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -132,6 +140,7 @@ const Sidebar = () => {
               </Link>
 
             </>
+
           )}
 
 
@@ -140,6 +149,7 @@ const Sidebar = () => {
           ===================================== */}
 
           {user?.role === 'teacher' && (
+
             <>
 
               <Link
@@ -182,6 +192,7 @@ const Sidebar = () => {
               </Link>
 
             </>
+
           )}
 
 
@@ -190,6 +201,7 @@ const Sidebar = () => {
           ===================================== */}
 
           {user?.role === 'student' && (
+
             <>
 
               <Link
@@ -232,15 +244,15 @@ const Sidebar = () => {
               </Link>
 
             </>
+
           )}
 
         </nav>
 
 
-
         {/* =====================================
-    PROFILE
-===================================== */}
+            PROFILE
+        ===================================== */}
 
         <div className="mt-4 pt-3 border-top border-secondary">
 
@@ -249,21 +261,47 @@ const Sidebar = () => {
             className="text-decoration-none text-white d-flex align-items-center gap-3"
           >
 
-            {/* Avatar */}
 
-            <div
-              className="rounded-circle bg-primary d-flex align-items-center justify-content-center"
-              style={{
-                width: '42px',
-                height: '42px',
-                minWidth: '42px'
-              }}
-            >
-              <i className="bi bi-person-fill fs-5"></i>
-            </div>
+            {/* =====================================
+                Avatar
+            ===================================== */}
+
+            {avatarUrl ? (
+
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                className="rounded-circle"
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  minWidth: '42px',
+                  objectFit: 'cover',
+                  border: '2px solid #fff'
+                }}
+              />
+
+            ) : (
+
+              <div
+                className="rounded-circle bg-primary d-flex align-items-center justify-content-center"
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  minWidth: '42px'
+                }}
+              >
+
+                <i className="bi bi-person-fill fs-5"></i>
+
+              </div>
+
+            )}
 
 
-            {/* User Info */}
+            {/* =====================================
+                User Info
+            ===================================== */}
 
             <div className="overflow-hidden">
 
@@ -277,16 +315,20 @@ const Sidebar = () => {
 
             </div>
 
+
           </Link>
 
         </div>
 
 
-
       </div>
+
     </div>
+
   );
+
 };
+
 
 export default Sidebar;
 

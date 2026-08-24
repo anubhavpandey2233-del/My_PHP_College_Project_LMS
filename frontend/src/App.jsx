@@ -29,7 +29,7 @@ import Subcategories from './pages/admin/Subcategories';
 import Enrollments from './pages/admin/Enrollments';
 import AdminUsers from './pages/admin/AdminUsers';
 import Categories from './pages/admin/Categories';
-
+import Profile from './pages/admin/Profile';
 
 // =====================================
 // Teacher Pages
@@ -168,6 +168,8 @@ function App() {
               </RoleProtectedRoute>
             }
           />
+
+          <Route path="/admin/profile" element={<Profile />} />
 
           <Route
             path="/admin/change-password"

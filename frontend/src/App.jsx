@@ -7,11 +7,13 @@ import {
 } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+
 import RoleProtectedRoute from './components/common/RoleProtectedRoute';
 
 
 // =====================================
-// Auth Pages
+// AUTH
 // =====================================
 
 import Login from './pages/auth/Login';
@@ -19,21 +21,21 @@ import Register from './pages/auth/Register';
 
 
 // =====================================
-// Admin Pages
+// ADMIN
 // =====================================
 
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminChangePassword from './pages/admin/ChangePassword';
 import AdminCourses from './pages/admin/AdminCourses';
 import Subcategories from './pages/admin/Subcategories';
-import Enrollments from './pages/admin/Enrollments';
+import AdminEnrollments from './pages/admin/Enrollments';
 import AdminUsers from './pages/admin/AdminUsers';
 import Categories from './pages/admin/Categories';
 import Profile from './pages/admin/Profile';
 
 
 // =====================================
-// Teacher Pages
+// TEACHER
 // =====================================
 
 import TeacherDashboard from './pages/teacher/Dashboard';
@@ -42,10 +44,11 @@ import TeacherCourses from './pages/teacher/Courses';
 import CourseForm from './pages/teacher/CourseForm';
 import ManageContent from './pages/teacher/ManageContent';
 import TeacherProfile from './pages/teacher/Profile';
+import TeacherEnrollments from './pages/teacher/Enrollments';
 
 
 // =====================================
-// Student Pages
+// STUDENT
 // =====================================
 
 import StudentDashboard from './pages/student/Dashboard';
@@ -56,339 +59,403 @@ import StudentProfile from './pages/student/Profile';
 
 
 // =====================================
-// Public Course Pages
+// COURSES
 // =====================================
 
 import CourseList from './pages/courses/CourseList';
 import CourseDetails from './pages/courses/CourseDetails';
 
 
+// =====================================
+// SUPPORT
+// =====================================
+
+import HelpCenter from './pages/support/HelpCenter';
+import PrivacyPolicy from './pages/support/PrivacyPolicy';
+import TermsConditions from './pages/support/TermsConditions';
+import ContactUs from './pages/support/ContactUs';
+
+
 function App() {
 
   return (
 
-    <AuthProvider>
+    <ThemeProvider>
 
-      <BrowserRouter>
+      <AuthProvider>
 
-        <Routes>
+        <BrowserRouter>
 
-
-          {/* =================================
-              AUTHENTICATION
-          ================================= */}
-
-          <Route
-            path="/login"
-            element={<Login />}
-          />
-
-          <Route
-            path="/register"
-            element={<Register />}
-          />
+          <Routes>
 
 
-          {/* =================================
-              PUBLIC COURSES
-          ================================= */}
+            {/* =================================
+                AUTH ROUTES
+            ================================= */}
 
-          <Route
-            path="/courses"
-            element={<CourseList />}
-          />
+            <Route
+              path="/login"
+              element={<Login />}
+            />
 
-          <Route
-            path="/courses/:slug"
-            element={<CourseDetails />}
-          />
-
-
-          {/* =================================
-              ADMIN ROUTES
-          ================================= */}
-
-          <Route
-            path="/admin/dashboard"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <AdminDashboard />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/register"
+              element={<Register />}
+            />
 
 
-          <Route
-            path="/admin/users"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <AdminUsers />
-              </RoleProtectedRoute>
-            }
-          />
+
+            {/* =================================
+                PUBLIC COURSE ROUTES
+            ================================= */}
+
+            <Route
+              path="/courses"
+              element={<CourseList />}
+            />
+
+            <Route
+              path="/courses/:slug"
+              element={<CourseDetails />}
+            />
 
 
-          <Route
-            path="/admin/categories"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <Categories />
-              </RoleProtectedRoute>
-            }
-          />
+
+            {/* =================================
+                ADMIN ROUTES
+            ================================= */}
+
+            <Route
+              path="/admin/dashboard"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <AdminDashboard />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/admin/subcategories"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <Subcategories />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/users"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <AdminUsers />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/admin/courses"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <AdminCourses />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/categories"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <Categories />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/admin/enrollments"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <Enrollments />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/subcategories"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <Subcategories />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/admin/profile"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <Profile />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/courses"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <AdminCourses />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/admin/change-password"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['admin']}
-              >
-                <AdminChangePassword />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/enrollments"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <AdminEnrollments />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          {/* =================================
-              TEACHER ROUTES
-          ================================= */}
-
-          <Route
-            path="/teacher/dashboard"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <TeacherDashboard />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/profile"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <Profile />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/change-password"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <ChangePassword />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/change-password"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['admin']}
+                >
+                  <AdminChangePassword />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/profile"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <TeacherProfile />
-              </RoleProtectedRoute>
-            }
-          />
+
+            {/* =================================
+                TEACHER ROUTES
+            ================================= */}
+
+            <Route
+              path="/teacher/dashboard"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <TeacherDashboard />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/courses"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <TeacherCourses />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/courses"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <TeacherCourses />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/courses/create"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <CourseForm />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/courses/create"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <CourseForm />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/courses/edit/:id"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <CourseForm />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/courses/edit/:id"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <CourseForm />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/teacher/courses/:id/content"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['teacher']}
-              >
-                <ManageContent />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/courses/:id/content"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <ManageContent />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          {/* =================================
-              STUDENT ROUTES
-          ================================= */}
+            {/* ================================
+                TEACHER ENROLLMENTS
+            ================================= */}
 
-          <Route
-            path="/student/dashboard"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['student']}
-              >
-                <StudentDashboard />
-              </RoleProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/student/change-password"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['student']}
-              >
-                <StudentChangePassword />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/enrollments"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <TeacherEnrollments />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/student/profile"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['student']}
-              >
-                <StudentProfile />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/change-password"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <ChangePassword />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/student/my-courses"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['student']}
-              >
-                <MyCourses />
-              </RoleProtectedRoute>
-            }
-          />
+            <Route
+              path="/teacher/profile"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['teacher']}
+                >
+                  <TeacherProfile />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="/student/learn/:courseId"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={['student']}
-              >
-                <LearningPage />
-              </RoleProtectedRoute>
-            }
-          />
+
+            {/* =================================
+                STUDENT ROUTES
+            ================================= */}
+
+            <Route
+              path="/student/dashboard"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['student']}
+                >
+                  <StudentDashboard />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          {/* =================================
-              DEFAULT ROUTES
-          ================================= */}
-
-          <Route
-            path="/"
-            element={
-              <Navigate
-                to="/login"
-                replace
-              />
-            }
-          />
+            <Route
+              path="/student/my-courses"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['student']}
+                >
+                  <MyCourses />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to="/login"
-                replace
-              />
-            }
-          />
+            <Route
+              path="/student/learn/:courseId"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['student']}
+                >
+                  <LearningPage />
+                </RoleProtectedRoute>
+              }
+            />
 
 
-        </Routes>
+            <Route
+              path="/student/profile"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['student']}
+                >
+                  <StudentProfile />
+                </RoleProtectedRoute>
+              }
+            />
 
-      </BrowserRouter>
 
-    </AuthProvider>
+            <Route
+              path="/student/change-password"
+              element={
+                <RoleProtectedRoute
+                  allowedRoles={['student']}
+                >
+                  <StudentChangePassword />
+                </RoleProtectedRoute>
+              }
+            />
+
+
+
+            {/* =================================
+                SUPPORT ROUTES
+            ================================= */}
+
+            <Route
+              path="/help"
+              element={<HelpCenter />}
+            />
+
+
+            <Route
+              path="/privacy-policy"
+              element={<PrivacyPolicy />}
+            />
+
+
+            <Route
+              path="/terms-conditions"
+              element={<TermsConditions />}
+            />
+
+
+            <Route
+              path="/contact-us"
+              element={<ContactUs />}
+            />
+
+
+
+            {/* =================================
+                DEFAULT ROUTES
+            ================================= */}
+
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to="/login"
+                  replace
+                />
+              }
+            />
+
+
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to="/login"
+                  replace
+                />
+              }
+            />
+
+          </Routes>
+
+        </BrowserRouter>
+
+      </AuthProvider>
+
+    </ThemeProvider>
 
   );
+
 }
 
 

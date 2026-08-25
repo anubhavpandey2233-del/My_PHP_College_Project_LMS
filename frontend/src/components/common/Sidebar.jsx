@@ -7,7 +7,6 @@ const Sidebar = () => {
   const { user } = useAuth();
   const location = useLocation();
 
-
   const isActive = (path) =>
     location.pathname.startsWith(path) ? 'active' : '';
 
@@ -34,7 +33,9 @@ const Sidebar = () => {
       <div className="p-3">
 
 
-        {/* Panel Title */}
+        {/* =====================================
+            PANEL TITLE
+        ===================================== */}
 
         <h6 className="text-uppercase text-white-50 mb-3">
           {user?.role} Panel
@@ -158,6 +159,7 @@ const Sidebar = () => {
                 )}`}
                 to="/teacher/dashboard"
               >
+                <i className="bi bi-speedometer2 me-2"></i>
                 Dashboard
               </Link>
 
@@ -168,6 +170,7 @@ const Sidebar = () => {
                 )}`}
                 to="/teacher/courses"
               >
+                <i className="bi bi-book me-2"></i>
                 My Courses
               </Link>
 
@@ -178,7 +181,23 @@ const Sidebar = () => {
                 )}`}
                 to="/teacher/courses/create"
               >
+                <i className="bi bi-plus-circle me-2"></i>
                 Create Course
+              </Link>
+
+
+              {/* =====================================
+                  TEACHER ENROLLMENTS
+              ===================================== */}
+
+              <Link
+                className={`sidebar-link ${isActive(
+                  '/teacher/enrollments'
+                )}`}
+                to="/teacher/enrollments"
+              >
+                <i className="bi bi-person-check me-2"></i>
+                Enrollments
               </Link>
 
 
@@ -188,6 +207,7 @@ const Sidebar = () => {
                 )}`}
                 to="/teacher/change-password"
               >
+                <i className="bi bi-key me-2"></i>
                 Change Password
               </Link>
 
@@ -210,6 +230,7 @@ const Sidebar = () => {
                 )}`}
                 to="/student/dashboard"
               >
+                <i className="bi bi-speedometer2 me-2"></i>
                 Dashboard
               </Link>
 
@@ -220,6 +241,7 @@ const Sidebar = () => {
                 )}`}
                 to="/student/my-courses"
               >
+                <i className="bi bi-book me-2"></i>
                 My Courses
               </Link>
 
@@ -230,6 +252,7 @@ const Sidebar = () => {
                 )}`}
                 to="/courses"
               >
+                <i className="bi bi-search me-2"></i>
                 Browse Courses
               </Link>
 
@@ -240,6 +263,7 @@ const Sidebar = () => {
                 )}`}
                 to="/student/change-password"
               >
+                <i className="bi bi-key me-2"></i>
                 Change Password
               </Link>
 
@@ -261,10 +285,7 @@ const Sidebar = () => {
             className="text-decoration-none text-white d-flex align-items-center gap-3"
           >
 
-
-            {/* =====================================
-                Avatar
-            ===================================== */}
+            {/* Avatar */}
 
             {avatarUrl ? (
 
@@ -299,9 +320,7 @@ const Sidebar = () => {
             )}
 
 
-            {/* =====================================
-                User Info
-            ===================================== */}
+            {/* User Info */}
 
             <div className="overflow-hidden">
 
@@ -315,11 +334,9 @@ const Sidebar = () => {
 
             </div>
 
-
           </Link>
 
         </div>
-
 
       </div>
 

@@ -23,16 +23,20 @@ require_once __DIR__ . '/../../middleware/auth.php';
 
 $teacher = authenticate($pdo, ['teacher']);
 
-$teacherId = $teacher['id'];
+$teacherId = (int) $teacher['id'];
 
 
 // =====================================
-// Get Enrolled Students
+// Get Teacher Enrollments
 // =====================================
 
 $stmt = $pdo->prepare("
     SELECT
         e.id AS enrollment_id,
+        e.progress,
+        e.status AS enrollment_status,
+        e.enrolled_at,
+        e.completed_at,
 
         u.id AS student_id,
         u.name AS student_name,
@@ -44,10 +48,11 @@ $stmt = $pdo->prepare("
         c.title AS course_name,
         c.price,
 
-        e.progress,
-        e.status AS enrollment_status,
-        e.enrolled_at,
-        e.completed_at
+        cert.id AS certificate_id,
+        cert.certificate_code,
+        cert.certificate_file,
+        cert.issued_at AS certificate_issued_at,
+        cert.status AS certificate_status
 
     FROM enrollments e
 
@@ -56,6 +61,10 @@ $stmt = $pdo->prepare("
 
     INNER JOIN courses c
         ON e.course_id = c.id
+
+    LEFT JOIN certificates cert
+        ON cert.user_id = e.student_id
+        AND cert.course_id = e.course_id
 
     WHERE c.teacher_id = ?
 
@@ -66,7 +75,7 @@ $stmt->execute([
     $teacherId
 ]);
 
-$students = $stmt->fetchAll();
+$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 // =====================================
@@ -77,9 +86,12 @@ $data = [];
 
 foreach ($students as $student) {
 
+    // =================================
+    // Progress
+    // =================================
+
     $progress = (float) ($student['progress'] ?? 0);
 
-    // Keep progress between 0 and 100
     if ($progress < 0) {
         $progress = 0;
     }
@@ -89,45 +101,131 @@ foreach ($students as $student) {
     }
 
 
-    // Status for frontend
+    // =================================
+    // Status
+    // =================================
+
     if ($progress >= 100) {
+
         $displayStatus = 'Completed';
-    } elseif ($student['enrollment_status'] === 'dropped') {
+
+    } elseif (
+        strtolower(
+            (string) $student['enrollment_status']
+        ) === 'dropped'
+    ) {
+
         $displayStatus = 'Dropped';
+
     } else {
+
         $displayStatus = 'In Progress';
+
     }
 
 
+    // =================================
+    // Certificate
+    // =================================
+
+    $certificate = null;
+
+    if (
+        !empty($student['certificate_id']) &&
+        !empty($student['certificate_file'])
+    ) {
+
+        $certificateFile =
+            basename($student['certificate_file']);
+
+        $certificate = [
+
+            'id' =>
+                (int) $student['certificate_id'],
+
+            'certificate_code' =>
+                $student['certificate_code'],
+
+            'certificate_file' =>
+                $certificateFile,
+
+            'certificate_url' =>
+                'http://localhost/php-lms-project/backend/uploads/certificates/'
+                . rawurlencode($certificateFile),
+
+            'issued_at' =>
+                $student['certificate_issued_at'],
+
+            'status' =>
+                $student['certificate_status']
+
+        ];
+
+    }
+
+
+    // =================================
+    // Final Data
+    // =================================
+
     $data[] = [
 
-        'enrollment_id' => (int) $student['enrollment_id'],
+        'enrollment_id' =>
+            (int) $student['enrollment_id'],
 
         'student' => [
-            'id' => (int) $student['student_id'],
-            'name' => $student['student_name'],
-            'email' => $student['email'],
-            'phone' => $student['phone'],
-            'avatar' => !empty($student['avatar'])
-                ? 'http://localhost/php-lms-project/backend/uploads/avatars/' . $student['avatar']
-                : null
-                    ],
 
-        'course' => [
-            'id' => (int) $student['course_id'],
-            'name' => $student['course_name'],
-            'price' => (float) $student['price']
+            'id' =>
+                (int) $student['student_id'],
+
+            'name' =>
+                $student['student_name'],
+
+            'email' =>
+                $student['email'],
+
+            'phone' =>
+                $student['phone'],
+
+            'avatar' =>
+                !empty($student['avatar'])
+                    ? 'http://localhost/php-lms-project/backend/uploads/avatars/'
+                        . $student['avatar']
+                    : null
+
         ],
 
-        'progress' => $progress,
+        'course' => [
 
-        'status' => $displayStatus,
+            'id' =>
+                (int) $student['course_id'],
 
-        'enrollment_status' => $student['enrollment_status'],
+            'name' =>
+                $student['course_name'],
 
-        'enrolled_at' => $student['enrolled_at'],
+            'price' =>
+                (float) $student['price']
 
-        'completed_at' => $student['completed_at']
+        ],
+
+        'progress' =>
+            $progress,
+
+        'status' =>
+            $displayStatus,
+
+        'enrollment_status' =>
+            $student['enrollment_status'],
+
+        'enrolled_at' =>
+            $student['enrolled_at'],
+
+        'completed_at' =>
+            $student['completed_at'],
+
+        'certificate' =>
+            $certificate
+
     ];
 }
 

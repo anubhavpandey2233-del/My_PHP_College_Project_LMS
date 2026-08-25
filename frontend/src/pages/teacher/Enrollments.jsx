@@ -53,7 +53,6 @@ const Enrollments = () => {
                     }
                 );
 
-
                 if (!response.data.status) {
 
                     throw new Error(
@@ -63,13 +62,11 @@ const Enrollments = () => {
 
                 }
 
-
                 setStudents(
                     Array.isArray(response.data.data)
                         ? response.data.data
                         : []
                 );
-
 
             } catch (err) {
 
@@ -84,7 +81,6 @@ const Enrollments = () => {
                     'Unable to load students.'
                 );
 
-
             } finally {
 
                 setLoading(false);
@@ -92,7 +88,6 @@ const Enrollments = () => {
             }
 
         };
-
 
         fetchStudents();
 
@@ -153,8 +148,10 @@ const Enrollments = () => {
             status || ''
         ).toLowerCase();
 
-
-        if (currentStatus === 'completed') {
+        if (
+            currentStatus === 'completed' ||
+            currentStatus === 'complete'
+        ) {
 
             return (
                 <span className="badge bg-success">
@@ -163,7 +160,6 @@ const Enrollments = () => {
             );
 
         }
-
 
         if (currentStatus === 'dropped') {
 
@@ -175,11 +171,67 @@ const Enrollments = () => {
 
         }
 
-
         return (
             <span className="badge bg-warning text-dark">
                 In Progress
             </span>
+        );
+
+    };
+
+
+    // =====================================
+    // View Certificate
+    // =====================================
+
+    const viewCertificate = (certificate) => {
+
+        if (!certificate) {
+
+            alert(
+                'Certificate has not been generated yet.'
+            );
+
+            return;
+        }
+
+
+        // Get URL directly from API
+
+        let certificateUrl =
+            certificate.certificate_url;
+
+
+        // If API does not provide URL,
+        // create it from certificate filename
+
+        if (
+            !certificateUrl &&
+            certificate.certificate_file
+        ) {
+
+            certificateUrl =
+                `http://localhost/php-lms-project/backend/uploads/certificates/${certificate.certificate_file}`;
+
+        }
+
+
+        if (!certificateUrl) {
+
+            alert(
+                'Certificate PDF is not available.'
+            );
+
+            return;
+        }
+
+
+        // Open certificate PDF
+
+        window.open(
+            certificateUrl,
+            '_blank',
+            'noopener,noreferrer'
         );
 
     };
@@ -193,26 +245,13 @@ const Enrollments = () => {
 
         <>
 
-            {/* =================================
-                HEADER
-            ================================= */}
-
             <Header />
 
 
             <div className="d-flex">
 
-
-                {/* =================================
-                    SIDEBAR
-                ================================= */}
-
                 <Sidebar />
 
-
-                {/* =================================
-                    MAIN CONTENT
-                ================================= */}
 
                 <div className="flex-grow-1">
 
@@ -262,9 +301,7 @@ const Enrollments = () => {
                         {error && (
 
                             <div className="alert alert-danger">
-
                                 {error}
-
                             </div>
 
                         )}
@@ -404,6 +441,24 @@ const Enrollments = () => {
                                                         ).toLowerCase();
 
 
+                                                    // =================================
+                                                    // Completed
+                                                    // =================================
+
+                                                    const isCompleted =
+                                                        progress >= 100 ||
+                                                        status === 'completed' ||
+                                                        status === 'complete';
+
+
+                                                    // =================================
+                                                    // Certificate
+                                                    // =================================
+
+                                                    const certificate =
+                                                        item.certificate || null;
+
+
                                                     return (
 
                                                         <tr
@@ -420,9 +475,6 @@ const Enrollments = () => {
                                                             <td className="px-3">
 
                                                                 <div className="d-flex align-items-center gap-2">
-
-
-                                                                    {/* PROFILE IMAGE */}
 
                                                                     {item.student?.avatar ? (
 
@@ -452,7 +504,9 @@ const Enrollments = () => {
                                                                             }}
                                                                         >
 
-                                                                            <FaUserGraduate className="text-secondary" />
+                                                                            <FaUserGraduate
+                                                                                className="text-secondary"
+                                                                            />
 
                                                                         </div>
 
@@ -568,7 +622,6 @@ const Enrollments = () => {
 
                                                                 <div className="d-flex align-items-center gap-2">
 
-
                                                                     <div
                                                                         className="progress flex-grow-1"
                                                                         style={{
@@ -577,7 +630,7 @@ const Enrollments = () => {
                                                                     >
 
                                                                         <div
-                                                                            className="progress-bar"
+                                                                            className="progress-bar bg-primary"
                                                                             role="progressbar"
                                                                             style={{
                                                                                 width: `${progress}%`
@@ -617,21 +670,48 @@ const Enrollments = () => {
 
                                                             <td>
 
-                                                                {status === 'completed' ? (
+                                                                {isCompleted ? (
+
                                                                     <button
                                                                         type="button"
-                                                                        className="btn btn-sm btn-outline-primary"
+                                                                        className="btn btn-sm btn-primary"
+                                                                        onClick={() =>
+                                                                            viewCertificate(
+                                                                                certificate
+                                                                            )
+                                                                        }
                                                                     >
+
                                                                         <FaCertificate className="me-1" />
+
                                                                         View Certificate
+
                                                                     </button>
+
                                                                 ) : (
-                                                                    <span className="text-muted small">
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-secondary"
+                                                                        onClick={() => {
+
+                                                                            alert(
+                                                                                'Certificate is not available because the student has not completed the course yet.'
+                                                                            );
+
+                                                                        }}
+                                                                    >
+
+                                                                        <FaCertificate className="me-1" />
+
                                                                         Not Available
-                                                                    </span>
+
+                                                                    </button>
+
                                                                 )}
 
                                                             </td>
+
 
                                                         </tr>
 
@@ -657,10 +737,6 @@ const Enrollments = () => {
 
             </div>
 
-
-            {/* =================================
-                FOOTER
-            ================================= */}
 
             <Footer />
 

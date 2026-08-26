@@ -1,60 +1,93 @@
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+
 import api from '../../services/api';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Loading from '../../components/common/Loading';
 
 const LearningPage = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
 
   const [data, setData] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
+  // ==============================
+  // FETCH LEARNING DATA
+  // ==============================
+
   const fetchData = async () => {
     try {
+      setLoading(true);
+
       const res = await api.get(
         `/student/learning.php?course_id=${courseId}`
       );
 
-      if (res.data.status) {
-        console.log('FULL LEARNING DATA:', res.data.data);
-        console.log('CHAPTERS:', res.data.data.chapters);
-        console.log('ENROLLMENT:', res.data.data.enrollment);
+      console.log('LEARNING RESPONSE:', res.data);
 
-        setData(res.data.data);
-        setProgress(res.data.data.enrollment?.progress || 0);
+      if (res.data.status) {
+        const learningData = res.data.data;
+
+        console.log('COURSE:', learningData.course);
+        console.log('CHAPTERS:', learningData.chapters);
+        console.log('ENROLLMENT:', learningData.enrollment);
+
+        setData(learningData);
+
+        setProgress(
+          Number(learningData.enrollment?.progress || 0)
+        );
+
+        // ==============================
+        // FIND LAST LESSON
+        // ==============================
 
         const lastId =
-          res.data.data.enrollment?.last_lesson_id;
+          learningData.enrollment?.last_lesson_id;
 
-        let found = null;
+        let foundLesson = null;
 
-        for (const ch of res.data.data.chapters || []) {
-          for (const lesson of ch.lessons || []) {
-            if (lastId && lesson.id == lastId) {
-              found = lesson;
+        for (const chapter of learningData.chapters || []) {
+          for (const lesson of chapter.lessons || []) {
+            if (
+              lastId &&
+              Number(lesson.id) === Number(lastId)
+            ) {
+              foundLesson = lesson;
               break;
             }
 
-            if (!found) {
-              found = lesson;
+            if (!foundLesson) {
+              foundLesson = lesson;
             }
           }
 
-          if (found && lastId && found.id == lastId) {
+          if (
+            foundLesson &&
+            lastId &&
+            Number(foundLesson.id) === Number(lastId)
+          ) {
             break;
           }
         }
 
-        if (found) {
-          setCurrentLesson(found);
+        if (foundLesson) {
+          setCurrentLesson(foundLesson);
         }
+      } else {
+        setData(null);
       }
-    } catch (err) {
-      console.error('Learning data error:', err);
+    } catch (error) {
+      console.error(
+        'Learning data error:',
+        error
+      );
+
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -65,7 +98,15 @@ const LearningPage = () => {
   }, [courseId]);
 
   // ==============================
-  // YouTube URL
+  // START QUIZ
+  // ==============================
+
+  const startQuiz = (quizId) => {
+    navigate(`/student/quiz/${quizId}`);
+  };
+
+  // ==============================
+  // YOUTUBE URL
   // ==============================
 
   const getYouTubeEmbedUrl = (url) => {
@@ -81,7 +122,7 @@ const LearningPage = () => {
         return cleanUrl;
       }
 
-      // youtu.be/VIDEO_ID
+      // youtu.be
       if (cleanUrl.includes('youtu.be/')) {
         const videoId = cleanUrl
           .split('youtu.be/')[1]
@@ -93,17 +134,19 @@ const LearningPage = () => {
         }
       }
 
-      // youtube.com/watch?v=VIDEO_ID
+      // youtube.com/watch?v=
       if (cleanUrl.includes('youtube.com/watch')) {
         const urlObject = new URL(cleanUrl);
-        const videoId = urlObject.searchParams.get('v');
+
+        const videoId =
+          urlObject.searchParams.get('v');
 
         if (videoId) {
           return `https://www.youtube.com/embed/${videoId}`;
         }
       }
 
-      // youtube.com/shorts/VIDEO_ID
+      // youtube.com/shorts/
       if (cleanUrl.includes('youtube.com/shorts/')) {
         const videoId = cleanUrl
           .split('youtube.com/shorts/')[1]
@@ -117,24 +160,23 @@ const LearningPage = () => {
 
       return cleanUrl;
     } catch (error) {
-      console.error('Invalid video URL:', url);
+      console.error(
+        'Invalid video URL:',
+        url
+      );
+
       return null;
     }
   };
 
   // ==============================
-  // Mark Lesson Complete
+  // MARK LESSON COMPLETE
   // ==============================
 
   const markComplete = async () => {
     if (!currentLesson) return;
 
     try {
-      console.log(
-        'MARK COMPLETE LESSON ID:',
-        currentLesson.id
-      );
-
       const res = await api.post(
         '/student/mark-complete.php',
         {
@@ -148,39 +190,31 @@ const LearningPage = () => {
       );
 
       if (res.data.status) {
-        setProgress(res.data.data.progress);
+        setProgress(
+          Number(res.data.data.progress || 0)
+        );
 
         await fetchData();
       }
-    } catch (err) {
+    } catch (error) {
       console.error(
         'MARK COMPLETE ERROR:',
-        err
-      );
-
-      console.error(
-        'ERROR RESPONSE:',
-        err.response?.data
+        error
       );
 
       alert(
-        err.response?.data?.message ||
-        'Error'
+        error.response?.data?.message ||
+        'Error while completing lesson'
       );
     }
   };
 
   // ==============================
-  // Generate Certificate
+  // GENERATE CERTIFICATE
   // ==============================
 
   const generateCertificate = async () => {
     try {
-      console.log(
-        'Generating certificate for course:',
-        courseId
-      );
-
       const res = await api.post(
         '/certificates/generate.php',
         {
@@ -196,11 +230,6 @@ const LearningPage = () => {
       if (res.data.status) {
         const certificateUrl =
           res.data.data?.certificate_url;
-
-        console.log(
-          'CERTIFICATE URL:',
-          certificateUrl
-        );
 
         if (!certificateUrl) {
           alert(
@@ -219,26 +248,21 @@ const LearningPage = () => {
           'Certificate generate nahi ho saka.'
         );
       }
-    } catch (err) {
+    } catch (error) {
       console.error(
         'CERTIFICATE ERROR:',
-        err
-      );
-
-      console.error(
-        'CERTIFICATE ERROR RESPONSE:',
-        err.response?.data
+        error
       );
 
       alert(
-        err.response?.data?.message ||
+        error.response?.data?.message ||
         'Certificate generate nahi ho saka.'
       );
     }
   };
 
   // ==============================
-  // Loading
+  // LOADING
   // ==============================
 
   if (loading) {
@@ -250,7 +274,7 @@ const LearningPage = () => {
   }
 
   // ==============================
-  // No Data
+  // NO DATA
   // ==============================
 
   if (!data) {
@@ -272,11 +296,15 @@ const LearningPage = () => {
 
       <div className="row">
 
-        {/* ================= LEFT SIDE ================= */}
+        {/* =====================================
+            LEFT SIDE
+        ===================================== */}
 
         <div className="col-lg-4 mb-4">
 
           <div className="card shadow-sm">
+
+            {/* COURSE HEADER */}
 
             <div className="card-header bg-primary text-white">
 
@@ -302,6 +330,8 @@ const LearningPage = () => {
 
             </div>
 
+            {/* COURSE CONTENT */}
+
             <div
               className="card-body p-0"
               style={{
@@ -318,9 +348,13 @@ const LearningPage = () => {
                     className="border-bottom"
                   >
 
+                    {/* CHAPTER TITLE */}
+
                     <div className="p-3 fw-bold bg-light">
                       {chapter.title}
                     </div>
+
+                    {/* LESSONS */}
 
                     <ul className="list-group list-group-flush">
 
@@ -336,7 +370,8 @@ const LearningPage = () => {
                               justify-content-between
                               align-items-center
                               ${
-                                currentLesson?.id === lesson.id
+                                Number(currentLesson?.id) ===
+                                Number(lesson.id)
                                   ? 'active'
                                   : ''
                               }
@@ -358,7 +393,7 @@ const LearningPage = () => {
                               {lesson.title}
 
                               {lesson.is_preview && (
-                                <span className="badge bg-success ms-1">
+                                <span className="badge bg-success ms-2">
                                   Free
                                 </span>
                               )}
@@ -372,6 +407,77 @@ const LearningPage = () => {
 
                     </ul>
 
+                    {/* =====================================
+                        QUIZZES
+                    ===================================== */}
+
+                    {(chapter.quizzes || []).length > 0 && (
+
+                      <div className="p-3 border-top bg-light">
+
+                        <h6 className="fw-bold mb-3">
+                          📝 Chapter Quiz
+                        </h6>
+
+                        {(chapter.quizzes || []).map(
+                          (quiz) => (
+
+                            <div
+                              key={quiz.id}
+                              className="card mb-2 shadow-sm"
+                            >
+
+                              <div className="card-body">
+
+                                <h6 className="fw-bold">
+                                  {quiz.title}
+                                </h6>
+
+                                {quiz.description && (
+                                  <p className="small text-muted mb-2">
+                                    {quiz.description}
+                                  </p>
+                                )}
+
+                                <div className="d-flex gap-2 flex-wrap mb-3">
+
+                                  <span className="badge bg-success">
+                                    {quiz.total_marks || 0} Marks
+                                  </span>
+
+                                  <span className="badge bg-info">
+                                    Passing: {quiz.passing_percentage || 0}%
+                                  </span>
+
+                                  {quiz.time_limit && (
+                                    <span className="badge bg-warning text-dark">
+                                      ⏱ {quiz.time_limit} min
+                                    </span>
+                                  )}
+
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="btn btn-primary btn-sm w-100"
+                                  onClick={() =>
+                                    startQuiz(quiz.id)
+                                  }
+                                >
+                                  📝 Start Quiz
+                                </button>
+
+                              </div>
+
+                            </div>
+
+                          )
+                        )}
+
+                      </div>
+
+                    )}
+
                   </div>
 
                 )
@@ -383,7 +489,9 @@ const LearningPage = () => {
 
         </div>
 
-        {/* ================= RIGHT SIDE ================= */}
+        {/* =====================================
+            RIGHT SIDE
+        ===================================== */}
 
         <div className="col-lg-8">
 
@@ -393,11 +501,11 @@ const LearningPage = () => {
 
               <div className="card-body">
 
-                <h4>
+                <h4 className="mb-3">
                   {currentLesson.title}
                 </h4>
 
-                {/* ================= VIDEO ================= */}
+                {/* VIDEO */}
 
                 {currentLesson.video_url ? (
 
@@ -407,7 +515,9 @@ const LearningPage = () => {
                       src={getYouTubeEmbedUrl(
                         currentLesson.video_url
                       )}
-                      title={currentLesson.title}
+                      title={
+                        currentLesson.title
+                      }
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       style={{
@@ -425,7 +535,7 @@ const LearningPage = () => {
 
                 )}
 
-                {/* ================= CONTENT ================= */}
+                {/* CONTENT */}
 
                 <div className="mb-3">
 
@@ -433,15 +543,17 @@ const LearningPage = () => {
                     ?.split('\n')
                     .map(
                       (paragraph, index) => (
+
                         <p key={index}>
                           {paragraph}
                         </p>
+
                       )
                     )}
 
                 </div>
 
-                {/* ================= COMPLETE BUTTON ================= */}
+                {/* COMPLETE BUTTON */}
 
                 <div className="d-flex gap-2">
 
@@ -466,7 +578,7 @@ const LearningPage = () => {
 
                 </div>
 
-                {/* ================= COURSE COMPLETED ================= */}
+                {/* COURSE COMPLETED */}
 
                 {Number(progress) >= 100 && (
 
@@ -480,8 +592,6 @@ const LearningPage = () => {
                       Congratulations! You have
                       successfully completed this course.
                     </p>
-
-                    {/* CERTIFICATE BUTTON */}
 
                     <button
                       type="button"

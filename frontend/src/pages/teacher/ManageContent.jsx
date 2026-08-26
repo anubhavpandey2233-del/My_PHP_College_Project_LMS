@@ -3,8 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Loading from '../../components/common/Loading';
-import { FaRegTrashCan } from "react-icons/fa6";
-import { BsPencilFill } from "react-icons/bs";
+import { FaRegTrashCan } from 'react-icons/fa6';
+import { BsPencilFill } from 'react-icons/bs';
 
 const ManageContent = () => {
   const { id: courseId } = useParams();
@@ -25,6 +25,10 @@ const ManageContent = () => {
     video_url: '',
     is_preview: false
   });
+
+  // =========================================
+  // FETCH CHAPTERS
+  // =========================================
 
   const fetchChapters = async () => {
     try {
@@ -49,6 +53,10 @@ const ManageContent = () => {
     fetchChapters();
   }, [courseId]);
 
+  // =========================================
+  // ADD CHAPTER
+  // =========================================
+
   const handleAddChapter = async () => {
     if (!newChapterTitle.trim()) {
       alert('Chapter title is required');
@@ -56,25 +64,36 @@ const ManageContent = () => {
     }
 
     try {
-      const response = await api.post('/chapters/create.php', {
-        course_id: courseId,
-        title: newChapterTitle.trim()
-      });
+      const response = await api.post(
+        '/chapters/create.php',
+        {
+          course_id: courseId,
+          title: newChapterTitle.trim()
+        }
+      );
 
       if (response.data.status) {
         setNewChapterTitle('');
         await fetchChapters();
       } else {
-        alert(response.data.message || 'Failed to add chapter');
+        alert(
+          response.data.message ||
+          'Failed to add chapter'
+        );
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to add chapter'
       );
     }
   };
+
+  // =========================================
+  // EDIT CHAPTER
+  // =========================================
 
   const startEditChapter = (chapter) => {
     setEditingChapterId(chapter.id);
@@ -93,14 +112,18 @@ const ManageContent = () => {
     }
 
     try {
-      const response = await api.post('/chapters/update.php', {
-        id: chapterId,
-        title: editingChapterTitle.trim()
-      });
+      const response = await api.post(
+        '/chapters/update.php',
+        {
+          id: chapterId,
+          title: editingChapterTitle.trim()
+        }
+      );
 
       if (response.data.status) {
         setEditingChapterId(null);
         setEditingChapterTitle('');
+
         await fetchChapters();
       } else {
         alert(
@@ -110,6 +133,7 @@ const ManageContent = () => {
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to update chapter'
@@ -117,8 +141,16 @@ const ManageContent = () => {
     }
   };
 
+  // =========================================
+  // DELETE CHAPTER
+  // =========================================
+
   const handleDeleteChapter = async (chapterId) => {
-    if (!window.confirm('Delete this chapter and all its lessons?')) {
+    if (
+      !window.confirm(
+        'Delete this chapter and all its lessons?'
+      )
+    ) {
       return;
     }
 
@@ -140,12 +172,17 @@ const ManageContent = () => {
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to delete chapter'
       );
     }
   };
+
+  // =========================================
+  // OPEN ADD LESSON
+  // =========================================
 
   const openAddLesson = (chapterId) => {
     setShowLessonForm(chapterId);
@@ -157,6 +194,10 @@ const ManageContent = () => {
       is_preview: false
     });
   };
+
+  // =========================================
+  // ADD LESSON
+  // =========================================
 
   const handleAddLesson = async (chapterId) => {
     if (!lessonForm.title.trim()) {
@@ -193,12 +234,17 @@ const ManageContent = () => {
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to add lesson'
       );
     }
   };
+
+  // =========================================
+  // EDIT LESSON
+  // =========================================
 
   const startEditLesson = (lesson) => {
     setEditingLessonId(lesson.id);
@@ -207,7 +253,8 @@ const ManageContent = () => {
     setLessonForm({
       title: lesson.title || '',
       video_url: lesson.video_url || '',
-      is_preview: Number(lesson.is_preview) === 1
+      is_preview:
+        Number(lesson.is_preview) === 1
     });
   };
 
@@ -256,12 +303,17 @@ const ManageContent = () => {
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to update lesson'
       );
     }
   };
+
+  // =========================================
+  // DELETE LESSON
+  // =========================================
 
   const handleDeleteLesson = async (lessonId) => {
     if (!window.confirm('Delete this lesson?')) {
@@ -286,12 +338,17 @@ const ManageContent = () => {
       }
     } catch (error) {
       console.error(error);
+
       alert(
         error.response?.data?.message ||
         'Failed to delete lesson'
       );
     }
   };
+
+  // =========================================
+  // CANCEL LESSON FORM
+  // =========================================
 
   const cancelLessonForm = () => {
     setShowLessonForm(null);
@@ -304,6 +361,10 @@ const ManageContent = () => {
     });
   };
 
+  // =========================================
+  // LOADING
+  // =========================================
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -312,9 +373,16 @@ const ManageContent = () => {
     );
   }
 
+  // =========================================
+  // UI
+  // =========================================
+
   return (
     <DashboardLayout>
+
+      {/* PAGE HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
+
         <h2>Manage Course Content</h2>
 
         <Link
@@ -323,11 +391,17 @@ const ManageContent = () => {
         >
           ← Back to Courses
         </Link>
+
       </div>
 
+
+      {/* ADD CHAPTER */}
       <div className="card mb-4 shadow-sm">
+
         <div className="card-body">
+
           <div className="input-group">
+
             <input
               type="text"
               className="form-control"
@@ -345,24 +419,38 @@ const ManageContent = () => {
             >
               Add Chapter
             </button>
+
           </div>
+
         </div>
+
       </div>
 
+
+      {/* CHAPTERS */}
       {chapters.map((chapter, index) => (
+
         <div
           className="card mb-3 shadow-sm"
           key={chapter.id}
         >
+
+          {/* CHAPTER HEADER */}
           <div className="card-header d-flex justify-content-between align-items-center">
+
             {editingChapterId === chapter.id ? (
+
+              /* EDIT CHAPTER */
               <div className="d-flex gap-2 w-100">
+
                 <input
                   type="text"
                   className="form-control"
                   value={editingChapterTitle}
                   onChange={(e) =>
-                    setEditingChapterTitle(e.target.value)
+                    setEditingChapterTitle(
+                      e.target.value
+                    )
                   }
                 />
 
@@ -370,7 +458,9 @@ const ManageContent = () => {
                   type="button"
                   className="btn btn-success"
                   onClick={() =>
-                    handleUpdateChapter(chapter.id)
+                    handleUpdateChapter(
+                      chapter.id
+                    )
                   }
                 >
                   ✓
@@ -383,14 +473,21 @@ const ManageContent = () => {
                 >
                   ×
                 </button>
+
               </div>
+
             ) : (
+
+              /* NORMAL CHAPTER HEADER */
               <>
+
                 <strong>
                   #{index + 1} {chapter.title}
                 </strong>
 
                 <div>
+
+                  {/* ADD LESSON */}
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-primary me-2"
@@ -401,6 +498,18 @@ const ManageContent = () => {
                     + Lesson
                   </button>
 
+
+                  {/* ADD QUIZ */}
+                  <Link
+                    to={`/teacher/courses/${courseId}/chapters/${chapter.id}/quiz`}
+                    className="btn btn-sm btn-outline-success me-2"
+                  >
+                    <i className="bi bi-patch-question me-1"></i>
+                    + Quiz
+                  </Link>
+
+
+                  {/* EDIT CHAPTER */}
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-warning me-2"
@@ -408,141 +517,211 @@ const ManageContent = () => {
                       startEditChapter(chapter)
                     }
                   >
-                    <BsPencilFill/>
+                    <BsPencilFill />
                   </button>
 
+
+                  {/* DELETE CHAPTER */}
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-danger"
                     onClick={() =>
-                      handleDeleteChapter(chapter.id)
+                      handleDeleteChapter(
+                        chapter.id
+                      )
                     }
                   >
-                    <FaRegTrashCan/>
+                    <FaRegTrashCan />
                   </button>
+
                 </div>
+
               </>
+
             )}
+
           </div>
 
+
+          {/* CHAPTER BODY */}
           <div className="card-body">
+
+            {/* NO LESSON */}
             {chapter.lessons?.length === 0 && (
               <p className="text-muted small">
                 No lessons yet
               </p>
             )}
 
+
+            {/* LESSON LIST */}
             <ul className="list-group list-group-flush">
-              {chapter.lessons?.map((lesson, lessonIndex) => (
-                <li
-                  key={lesson.id}
-                  className="list-group-item"
-                >
-                  {editingLessonId === lesson.id ? (
-                    <div className="border rounded p-3 bg-light">
-                      <input
-                        type="text"
-                        className="form-control mb-2"
-                        placeholder="Lesson title"
-                        value={lessonForm.title}
-                        onChange={(e) =>
-                          setLessonForm({
-                            ...lessonForm,
-                            title: e.target.value
-                          })
-                        }
-                      />
 
-                      <input
-                        type="text"
-                        className="form-control mb-2"
-                        placeholder="YouTube Video URL"
-                        value={lessonForm.video_url}
-                        onChange={(e) =>
-                          setLessonForm({
-                            ...lessonForm,
-                            video_url: e.target.value
-                          })
-                        }
-                      />
+              {chapter.lessons?.map(
+                (lesson, lessonIndex) => (
 
-                      <div className="form-check mb-3">
+                  <li
+                    key={lesson.id}
+                    className="list-group-item"
+                  >
+
+                    {/* EDIT LESSON */}
+                    {editingLessonId === lesson.id ? (
+
+                      <div className="border rounded p-3 bg-light">
+
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={lessonForm.is_preview}
+                          type="text"
+                          className="form-control mb-2"
+                          placeholder="Lesson title"
+                          value={lessonForm.title}
                           onChange={(e) =>
                             setLessonForm({
                               ...lessonForm,
-                              is_preview: e.target.checked
+                              title: e.target.value
                             })
                           }
                         />
 
-                        <label className="form-check-label">
-                          Free Preview
-                        </label>
-                      </div>
 
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm me-2"
-                        onClick={() =>
-                          handleUpdateLesson(lesson.id)
-                        }
-                      >
-                        Update
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={cancelEditLesson}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span>
-                        {lessonIndex + 1}. {lesson.title}
-
-                        {Number(lesson.is_preview) === 1 && (
-                          <span className="badge bg-success ms-2">
-                            Preview
-                          </span>
-                        )}
-                      </span>
-
-                      <div>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-warning me-2"
-                          onClick={() =>
-                            startEditLesson(lesson)
+                        <input
+                          type="text"
+                          className="form-control mb-2"
+                          placeholder="YouTube Video URL"
+                          value={
+                            lessonForm.video_url
                           }
-                        >
-                          <BsPencilFill/>
-                        </button>
+                          onChange={(e) =>
+                            setLessonForm({
+                              ...lessonForm,
+                              video_url:
+                                e.target.value
+                            })
+                          }
+                        />
+
+
+                        <div className="form-check mb-3">
+
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            checked={
+                              lessonForm.is_preview
+                            }
+                            onChange={(e) =>
+                              setLessonForm({
+                                ...lessonForm,
+                                is_preview:
+                                  e.target.checked
+                              })
+                            }
+                          />
+
+                          <label className="form-check-label">
+                            Free Preview
+                          </label>
+
+                        </div>
+
 
                         <button
                           type="button"
-                          className="btn btn-sm btn-outline-danger"
+                          className="btn btn-success btn-sm me-2"
                           onClick={() =>
-                            handleDeleteLesson(lesson.id)
+                            handleUpdateLesson(
+                              lesson.id
+                            )
                           }
                         >
-                          <FaRegTrashCan/>
+                          Update
                         </button>
+
+
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={
+                            cancelEditLesson
+                          }
+                        >
+                          Cancel
+                        </button>
+
                       </div>
-                    </div>
-                  )}
-                </li>
-              ))}
+
+                    ) : (
+
+                      /* NORMAL LESSON */
+                      <div className="d-flex justify-content-between align-items-center">
+
+                        <span>
+
+                          {lessonIndex + 1}.{' '}
+                          {lesson.title}
+
+
+                          {Number(
+                            lesson.is_preview
+                          ) === 1 && (
+
+                            <span className="badge bg-success ms-2">
+                              Preview
+                            </span>
+
+                          )}
+
+                        </span>
+
+
+                        <div>
+
+                          {/* EDIT LESSON */}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-warning me-2"
+                            onClick={() =>
+                              startEditLesson(
+                                lesson
+                              )
+                            }
+                          >
+                            <BsPencilFill />
+                          </button>
+
+
+                          {/* DELETE LESSON */}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() =>
+                              handleDeleteLesson(
+                                lesson.id
+                              )
+                            }
+                          >
+                            <FaRegTrashCan />
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    )}
+
+                  </li>
+
+                )
+              )}
+
             </ul>
 
+
+            {/* ADD LESSON FORM */}
             {showLessonForm === chapter.id && (
+
               <div className="mt-3 border rounded p-3 bg-light">
+
                 <input
                   type="text"
                   className="form-control mb-2"
@@ -556,28 +735,37 @@ const ManageContent = () => {
                   }
                 />
 
+
                 <input
                   type="text"
                   className="form-control mb-2"
                   placeholder="YouTube Video URL"
-                  value={lessonForm.video_url}
+                  value={
+                    lessonForm.video_url
+                  }
                   onChange={(e) =>
                     setLessonForm({
                       ...lessonForm,
-                      video_url: e.target.value
+                      video_url:
+                        e.target.value
                     })
                   }
                 />
 
+
                 <div className="form-check mb-3">
+
                   <input
                     type="checkbox"
                     className="form-check-input"
-                    checked={lessonForm.is_preview}
+                    checked={
+                      lessonForm.is_preview
+                    }
                     onChange={(e) =>
                       setLessonForm({
                         ...lessonForm,
-                        is_preview: e.target.checked
+                        is_preview:
+                          e.target.checked
                       })
                     }
                   />
@@ -585,36 +773,53 @@ const ManageContent = () => {
                   <label className="form-check-label">
                     Free Preview
                   </label>
+
                 </div>
+
 
                 <button
                   type="button"
                   className="btn btn-success btn-sm me-2"
                   onClick={() =>
-                    handleAddLesson(chapter.id)
+                    handleAddLesson(
+                      chapter.id
+                    )
                   }
                 >
                   Save Lesson
                 </button>
 
+
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  onClick={cancelLessonForm}
+                  onClick={
+                    cancelLessonForm
+                  }
                 >
                   Cancel
                 </button>
+
               </div>
+
             )}
+
           </div>
+
         </div>
+
       ))}
 
+
+      {/* NO CHAPTERS */}
       {chapters.length === 0 && (
+
         <div className="alert alert-info">
           No chapters yet. Add your first chapter above.
         </div>
+
       )}
+
     </DashboardLayout>
   );
 };

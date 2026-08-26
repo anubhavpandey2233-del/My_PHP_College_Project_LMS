@@ -7,7 +7,7 @@
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -42,10 +42,10 @@ $user = authenticate($pdo, ['student']);
 // METHOD CHECK
 // ==========================================
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
     sendError(
-        "Only POST method is allowed",
+        "Only GET method is allowed",
         null,
         405
     );
@@ -54,56 +54,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 
 // ==========================================
-// GET JSON DATA
+// GET COURSE ID
 // ==========================================
 
-$data = json_decode(
-    file_get_contents("php://input"),
-    true
-);
-
-if (!is_array($data)) {
-
-    sendError(
-        "Invalid JSON data",
-        null,
-        400
-    );
-
-}
-
-
-// ==========================================
-// GET DATA
-// ==========================================
-
-$courseId = (int)($data['course_id'] ?? 0);
-
-$rating = (int)($data['rating'] ?? 0);
-
-$reviewText = trim(
-    $data['review_text'] ?? ''
-);
-
-
-// ==========================================
-// VALIDATION
-// ==========================================
+$courseId = (int)($_GET['course_id'] ?? 0);
 
 if ($courseId <= 0) {
 
     sendError(
         "course_id is required",
-        null,
-        422
-    );
-
-}
-
-if ($rating < 1 || $rating > 5) {
-
-    sendError(
-        "Rating must be between 1 and 5",
         null,
         422
     );
@@ -116,7 +75,9 @@ if ($rating < 1 || $rating > 5) {
 // ==========================================
 
 $stmt = $pdo->prepare("
-    SELECT id
+    SELECT
+        id,
+        title
     FROM courses
     WHERE id = ?
     LIMIT 1
@@ -161,7 +122,7 @@ $enrollment = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$enrollment) {
 
     sendError(
-        "You must be enrolled in this course to submit a review",
+        "You are not enrolled in this course",
         null,
         403
     );
@@ -174,7 +135,12 @@ if (!$enrollment) {
 // ==========================================
 
 $stmt = $pdo->prepare("
-    SELECT id
+    SELECT
+        id,
+        rating,
+        review_text,
+        status,
+        created_at
     FROM reviews
     WHERE user_id = ?
       AND course_id = ?
@@ -186,55 +152,41 @@ $stmt->execute([
     $courseId
 ]);
 
-$existingReview = $stmt->fetch(PDO::FETCH_ASSOC);
+$review = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($existingReview) {
 
-    sendError(
-        "You have already reviewed this course",
-        null,
-        409
+// ==========================================
+// REVIEW EXISTS
+// ==========================================
+
+if ($review) {
+
+    sendResponse(
+        true,
+        "Review already submitted",
+        [
+            "has_reviewed" => true,
+            "review" => $review,
+            "course" => $course
+        ],
+        200
     );
 
 }
 
 
 // ==========================================
-// INSERT REVIEW
-// ==========================================
-
-$stmt = $pdo->prepare("
-    INSERT INTO reviews
-    (
-        user_id,
-        course_id,
-        rating,
-        review_text,
-        status
-    )
-    VALUES (?, ?, ?, ?, 'pending')
-");
-
-$stmt->execute([
-    $user['id'],
-    $courseId,
-    $rating,
-    $reviewText !== ''
-        ? $reviewText
-        : null
-]);
-
-
-// ==========================================
-// RESPONSE
+// REVIEW DOES NOT EXIST
 // ==========================================
 
 sendResponse(
     true,
-    "Review submitted successfully",
+    "No review submitted yet",
     [
-        "review_id" => (int)$pdo->lastInsertId()
+        "has_reviewed" => false,
+        "review" => null,
+        "course" => $course
     ],
-    201
+    200
 );
 

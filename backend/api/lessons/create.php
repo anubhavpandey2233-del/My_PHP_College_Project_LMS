@@ -1,3 +1,4 @@
+
 <?php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
@@ -15,19 +16,75 @@ $isPreview = !empty($data['is_preview']) ? 1 : 0;
 
 if (!$chapterId || empty($title)) sendError("chapter_id and title required", null, 422);
 
-$stmt = $pdo->prepare("SELECT c.teacher_id FROM chapters ch JOIN courses c ON ch.course_id = c.id WHERE ch.id = ?");
+$stmt = $pdo->prepare("
+    SELECT c.teacher_id
+    FROM chapters ch
+    JOIN courses c ON ch.course_id = c.id
+    WHERE ch.id = ?
+");
 $stmt->execute([$chapterId]);
+
 $row = $stmt->fetch();
+
 if (!$row || ($user['role'] === 'teacher' && $row['teacher_id'] != $user['id'])) {
     sendError("Unauthorized", null, 403);
 }
 
-$stmt = $pdo->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 FROM lessons WHERE chapter_id = ?");
+$stmt = $pdo->prepare("
+    SELECT COALESCE(MAX(sort_order), 0) + 1
+    FROM lessons
+    WHERE chapter_id = ?
+");
 $stmt->execute([$chapterId]);
+
 $sort = $stmt->fetchColumn();
 
-$stmt = $pdo->prepare("INSERT INTO lessons (chapter_id, title, content, video_url, video_duration, is_preview, sort_order) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?)");
-$stmt->execute([$chapterId, $title, $content, $videoUrl, $videoDuration, $isPreview, $sort]);
+$stmt = $pdo->prepare("
+    INSERT INTO lessons
+    (
+        chapter_id,
+        title,
+        content,
+        video_url,
+        video_duration,
+        is_preview,
+        sort_order
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+");
 
-sendResponse(true, "Lesson created", ["id" => $pdo->lastInsertId()], 201);
+$stmt->execute([
+    $chapterId,
+    $title,
+    $content,
+    $videoUrl,
+    $videoDuration,
+    $isPreview,
+    $sort
+]);
+
+$lessonId = $pdo->lastInsertId();
+
+$stmt = $pdo->prepare("
+    UPDATE courses c
+    JOIN chapters ch ON ch.course_id = c.id
+    SET c.total_lessons = (
+        SELECT COUNT(*)
+        FROM lessons l
+        JOIN chapters ch2 ON l.chapter_id = ch2.id
+        WHERE ch2.course_id = c.id
+    )
+    WHERE ch.id = ?
+");
+
+$stmt->execute([$chapterId]);
+
+sendResponse(
+    true,
+    "Lesson created",
+    [
+        "id" => $lessonId
+    ],
+    201
+);
+

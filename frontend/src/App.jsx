@@ -73,6 +73,7 @@ import MyCourses from './pages/student/MyCourses';
 import LearningPage from './pages/student/LearningPage';
 import StudentProfile from './pages/student/Profile';
 import StudentQuiz from './pages/student/StudentQuiz';
+import Reviews from './pages/student/Reviews';
 
 
 // =====================================
@@ -379,6 +380,11 @@ function App() {
                   <StudentQuiz />
                 </RoleProtectedRoute>
               }
+            />
+
+            <Route
+              path="/student/reviews/:courseId"
+              element={<Reviews />}
             />
 
             <Route

@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -12,7 +11,7 @@ const MyCourses = () => {
   const [loading, setLoading] = useState(true);
 
   // ===============================
-  // Fetch My Courses
+  // FETCH MY COURSES
   // ===============================
 
   useEffect(() => {
@@ -24,7 +23,11 @@ const MyCourses = () => {
         console.log('MY COURSES API:', res.data);
 
         if (res.data.status) {
-          setCourses(res.data.data || []);
+          setCourses(
+            Array.isArray(res.data.data)
+              ? res.data.data
+              : []
+          );
         } else {
           setCourses([]);
         }
@@ -39,7 +42,7 @@ const MyCourses = () => {
   }, [filter]);
 
   // ===============================
-  // Thumbnail URL
+  // THUMBNAIL URL
   // ===============================
 
   const getThumbnailUrl = (thumbnail) => {
@@ -53,6 +56,7 @@ const MyCourses = () => {
       return null;
     }
 
+    // Already complete URL
     if (
       value.startsWith('http://') ||
       value.startsWith('https://')
@@ -60,14 +64,17 @@ const MyCourses = () => {
       return value;
     }
 
+    // /uploads/courses/file.jpg
     if (value.startsWith('/uploads/courses/')) {
       return `http://localhost/php-lms-project/backend${value}`;
     }
 
+    // uploads/courses/file.jpg
     if (value.startsWith('uploads/courses/')) {
       return `http://localhost/php-lms-project/backend/${value}`;
     }
 
+    // /php-lms-project/backend/uploads/courses/file.jpg
     if (
       value.startsWith(
         '/php-lms-project/backend/uploads/courses/'
@@ -76,11 +83,12 @@ const MyCourses = () => {
       return `http://localhost${value}`;
     }
 
+    // Only filename
     return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
   };
 
   // ===============================
-  // Image Error
+  // IMAGE ERROR
   // ===============================
 
   const handleImageError = (e, course) => {
@@ -102,53 +110,63 @@ const MyCourses = () => {
   };
 
   // ===============================
-  // Render
+  // RENDER
   // ===============================
 
   return (
     <DashboardLayout>
 
+      {/* ===============================
+          PAGE TITLE
+      =============================== */}
+
       <h2 className="mb-4">
         My Courses
       </h2>
 
+
       {/* ===============================
-          Course Filter
+          COURSE FILTER
       =============================== */}
 
       <div className="btn-group mb-4">
 
+        {/* ALL */}
+
         <button
           type="button"
-          className={`btn ${
-            filter === 'all'
+          className={`btn ${filter === 'all'
               ? 'btn-primary'
               : 'btn-outline-primary'
-          }`}
+            }`}
           onClick={() => setFilter('all')}
         >
           All
         </button>
 
+
+        {/* IN PROGRESS */}
+
         <button
           type="button"
-          className={`btn ${
-            filter === 'active'
+          className={`btn ${filter === 'active'
               ? 'btn-primary'
               : 'btn-outline-primary'
-          }`}
+            }`}
           onClick={() => setFilter('active')}
         >
           In Progress
         </button>
 
+
+        {/* COMPLETED */}
+
         <button
           type="button"
-          className={`btn ${
-            filter === 'completed'
+          className={`btn ${filter === 'completed'
               ? 'btn-primary'
               : 'btn-outline-primary'
-          }`}
+            }`}
           onClick={() => setFilter('completed')}
         >
           Completed
@@ -156,8 +174,9 @@ const MyCourses = () => {
 
       </div>
 
+
       {/* ===============================
-          Loading
+          LOADING
       =============================== */}
 
       {loading ? (
@@ -170,20 +189,38 @@ const MyCourses = () => {
 
           {courses.map((course) => {
 
+            // ===============================
+            // COURSE DATA
+            // ===============================
+
             const thumbnailUrl =
               getThumbnailUrl(course.thumbnail);
+
+            const progress =
+              Number(course.progress) || 0;
+
+            const isCompleted =
+              progress >= 100;
+
+            const courseId =
+              course.course_id || course.id;
+
 
             return (
 
               <div
                 className="col-md-4"
-                key={course.enrollment_id || course.id}
+                key={
+                  course.enrollment_id ||
+                  courseId
+                }
               >
 
                 <div className="card h-100 shadow-sm overflow-hidden">
 
+
                   {/* ===============================
-                      Thumbnail
+                      COURSE THUMBNAIL
                   =============================== */}
 
                   <div
@@ -198,18 +235,27 @@ const MyCourses = () => {
 
                       <img
                         src={thumbnailUrl}
-                        alt={course.title || 'Course'}
+                        alt={
+                          course.title ||
+                          'Course'
+                        }
                         className="w-100 h-100"
                         style={{
                           objectFit: 'cover',
                           display: 'block'
                         }}
                         onError={(e) =>
-                          handleImageError(e, course)
+                          handleImageError(
+                            e,
+                            course
+                          )
                         }
                       />
 
                     )}
+
+
+                    {/* Thumbnail fallback */}
 
                     <div
                       className="thumbnail-fallback w-100 h-100 bg-secondary align-items-center justify-content-center"
@@ -223,7 +269,8 @@ const MyCourses = () => {
                       <div className="text-center px-3">
 
                         <div className="text-white fw-bold">
-                          {course.title || 'Course'}
+                          {course.title ||
+                            'Course'}
                         </div>
 
                         <small className="text-white-50">
@@ -236,21 +283,32 @@ const MyCourses = () => {
 
                   </div>
 
+
                   {/* ===============================
-                      Course Details
+                      COURSE DETAILS
                   =============================== */}
 
                   <div className="card-body">
 
+                    {/* COURSE TITLE */}
+
                     <h5 className="card-title">
-                      {course.title}
+                      {course.title ||
+                        'Untitled Course'}
                     </h5>
 
-                    <p className="text-muted small">
-                      By {course.teacher_name || '-'}
+
+                    {/* TEACHER */}
+
+                    <p className="text-muted small mb-3">
+                      By{' '}
+                      {course.teacher_name || '-'}
                     </p>
 
-                    {/* Progress */}
+
+                    {/* ===============================
+                        PROGRESS BAR
+                    =============================== */}
 
                     <div
                       className="progress mb-2"
@@ -261,34 +319,84 @@ const MyCourses = () => {
 
                       <div
                         className="progress-bar bg-success"
+                        role="progressbar"
                         style={{
-                          width: `${Number(course.progress) || 0}%`
+                          width: `${Math.min(
+                            progress,
+                            100
+                          )}%`
                         }}
-                      ></div>
+                        aria-valuenow={progress}
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      />
 
                     </div>
 
-                    <small>
+
+                    {/* ===============================
+                        PROGRESS TEXT
+                    =============================== */}
+
+                    <small className="text-muted">
+
                       {course.completed_lessons || 0}
                       {' / '}
                       {course.total_lessons || 0}
                       {' lessons • '}
-                      {Number(course.progress) || 0}%
+                      {progress}%
+
                     </small>
 
-                    {/* Continue / Review */}
 
-                    <div className="mt-3">
+                    {/* ===============================
+                        ACTION BUTTONS
+                    =============================== */}
+
+                    <div className="mt-3 d-flex gap-2 flex-wrap">
+
+                      {/* ===============================
+                          IN PROGRESS
+                      =============================== */}
+
+                      {!isCompleted && (
+
+                        <Link
+                          to={`/student/learn/${courseId}`}
+                          className="btn btn-sm btn-primary"
+                        >
+                          Continue
+                        </Link>
+
+                      )}
+
+
+                      {/* ===============================
+                          COMPLETED
+                      =============================== */}
+
+                      {isCompleted && (
+
+                        <Link
+                          to={`/student/learn/${courseId}`}
+                          className="btn btn-sm btn-success"
+                        >
+                          Course Completed
+                        </Link>
+
+                      )}
+
+
+                      {/* ===============================
+                          REVIEWS
+                      =============================== */}
 
                       <Link
-                        to={`/student/learn/${course.course_id}`}
+                        to={`/student/reviews/${courseId}`}
                         className="btn btn-sm btn-primary"
                       >
-                        {Number(course.progress) >= 100
-                          ? 'Review'
-                          : 'Continue'}
+                        Reviews
                       </Link>
-
                     </div>
 
                   </div>
@@ -300,17 +408,30 @@ const MyCourses = () => {
             );
           })}
 
+
           {/* ===============================
-              No Courses
+              NO COURSES
           =============================== */}
 
           {courses.length === 0 && (
 
             <div className="col-12">
 
-              <p className="text-muted">
-                No published courses found.
-              </p>
+              <div className="card border-0 shadow-sm">
+
+                <div className="card-body text-center py-5">
+
+                  <h5 className="mb-2">
+                    No Courses Found
+                  </h5>
+
+                  <p className="text-muted mb-0">
+                    No published courses found.
+                  </p>
+
+                </div>
+
+              </div>
 
             </div>
 

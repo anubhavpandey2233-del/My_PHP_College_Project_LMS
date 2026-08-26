@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
@@ -115,7 +116,7 @@ const Quiz = () => {
       setLoading(true);
 
       const response = await api.get(
-        `/quizzes/list.php?course_id=${courseId}`
+        `/quizzes/list.php?course_id=${Number(courseId)}`
       );
 
       if (response.data.status) {
@@ -140,7 +141,9 @@ const Quiz = () => {
   };
 
   useEffect(() => {
-    fetchQuizzes();
+    if (courseId && chapterId) {
+      fetchQuizzes();
+    }
   }, [courseId, chapterId]);
 
   // =========================================
@@ -172,8 +175,13 @@ const Quiz = () => {
   const handleSaveQuiz = async (e) => {
     e.preventDefault();
 
+    if (!courseId || !chapterId) {
+      alert('Course or chapter ID is missing.');
+      return;
+    }
+
     if (!formData.title.trim()) {
-      alert('Quiz title is required');
+      alert('Quiz title is required.');
       return;
     }
 
@@ -181,12 +189,12 @@ const Quiz = () => {
       Number(formData.passing_percentage) < 1 ||
       Number(formData.passing_percentage) > 100
     ) {
-      alert('Passing percentage must be between 1 and 100');
+      alert('Passing percentage must be between 1 and 100.');
       return;
     }
 
     if (Number(formData.max_attempts) < 1) {
-      alert('Maximum attempts must be at least 1');
+      alert('Maximum attempts must be at least 1.');
       return;
     }
 
@@ -247,7 +255,7 @@ const Quiz = () => {
       } else {
         alert(
           response.data.message ||
-            'Failed to save quiz'
+            'Failed to save quiz.'
         );
       }
     } catch (error) {
@@ -255,7 +263,7 @@ const Quiz = () => {
 
       alert(
         error.response?.data?.message ||
-          'Failed to save quiz'
+          'Failed to save quiz.'
       );
     } finally {
       setSavingQuiz(false);
@@ -267,7 +275,14 @@ const Quiz = () => {
   // =========================================
 
   const handleEditQuiz = (quiz) => {
-    setEditingQuizId(Number(quiz.id));
+    const quizId = Number(quiz.id);
+
+    if (!quizId) {
+      alert('Invalid quiz ID.');
+      return;
+    }
+
+    setEditingQuizId(quizId);
 
     setFormData({
       title: quiz.title || '',
@@ -298,6 +313,7 @@ const Quiz = () => {
     setShowQuizForm(true);
 
     setShowQuestionForm(false);
+
     setEditingQuestionId(null);
   };
 
@@ -306,6 +322,13 @@ const Quiz = () => {
   // =========================================
 
   const handleDeleteQuiz = async (quizId) => {
+    const id = Number(quizId);
+
+    if (!id) {
+      alert('Invalid quiz ID.');
+      return;
+    }
+
     const confirmDelete = window.confirm(
       'Are you sure you want to delete this quiz?\n\nAll questions and options of this quiz will also be deleted.'
     );
@@ -318,7 +341,7 @@ const Quiz = () => {
       const response = await api.post(
         '/quizzes/delete.php',
         {
-          id: Number(quizId)
+          id
         }
       );
 
@@ -326,8 +349,7 @@ const Quiz = () => {
         alert('Quiz deleted successfully!');
 
         if (
-          Number(selectedQuizId) ===
-          Number(quizId)
+          Number(selectedQuizId) === id
         ) {
           setSelectedQuizId(null);
           setQuestions([]);
@@ -339,7 +361,7 @@ const Quiz = () => {
       } else {
         alert(
           response.data.message ||
-            'Failed to delete quiz'
+            'Failed to delete quiz.'
         );
       }
     } catch (error) {
@@ -347,7 +369,7 @@ const Quiz = () => {
 
       alert(
         error.response?.data?.message ||
-          'Failed to delete quiz'
+          'Failed to delete quiz.'
       );
     }
   };
@@ -357,11 +379,23 @@ const Quiz = () => {
   // =========================================
 
   const fetchQuestions = async (quizId) => {
+    const id = Number(quizId);
+
+    if (!id) {
+      console.error(
+        'fetchQuestions: quiz_id is missing.'
+      );
+
+      setQuestions([]);
+
+      return;
+    }
+
     try {
       setLoadingQuestions(true);
 
       const response = await api.get(
-        `/quizzes/questions/list.php?quiz_id=${quizId}`
+        `/quizzes/questions/list.php?quiz_id=${id}`
       );
 
       if (response.data.status) {
@@ -388,13 +422,22 @@ const Quiz = () => {
   // =========================================
 
   const handleSelectQuiz = async (quizId) => {
-    setSelectedQuizId(Number(quizId));
+    const id = Number(quizId);
+
+    if (!id) {
+      alert('Invalid quiz ID.');
+      return;
+    }
+
+    setSelectedQuizId(id);
+
+    setQuestions([]);
 
     setShowQuestionForm(false);
 
     setEditingQuestionId(null);
 
-    await fetchQuestions(quizId);
+    await fetchQuestions(id);
   };
 
   // =========================================
@@ -407,7 +450,9 @@ const Quiz = () => {
     if (name === 'question_type') {
       setQuestionForm((prev) => ({
         ...prev,
+
         question_type: value,
+
         options: getDefaultOptions(value)
       }));
 
@@ -416,6 +461,7 @@ const Quiz = () => {
 
     setQuestionForm((prev) => ({
       ...prev,
+
       [name]: value
     }));
   };
@@ -435,11 +481,13 @@ const Quiz = () => {
 
       updatedOptions[index] = {
         ...updatedOptions[index],
+
         option_text: value
       };
 
       return {
         ...prev,
+
         options: updatedOptions
       };
     });
@@ -566,11 +614,26 @@ const Quiz = () => {
   // =========================================
 
   const handleEditQuestion = (question) => {
-    setEditingQuestionId(
-      Number(question.id)
+    const questionId = Number(
+      question.id
     );
 
-    let options = question.options || [];
+    if (!questionId) {
+      alert('Invalid question ID.');
+      return;
+    }
+
+    if (!selectedQuizId) {
+      alert('Please select a quiz first.');
+      return;
+    }
+
+    setEditingQuestionId(
+      questionId
+    );
+
+    let options =
+      question.options || [];
 
     if (
       question.question_type ===
@@ -590,8 +653,10 @@ const Quiz = () => {
 
       options = [
         {
-          id: trueOption?.id,
+          id: trueOption?.id || null,
+
           option_text: 'True',
+
           is_correct:
             Number(
               trueOption?.is_correct
@@ -599,8 +664,10 @@ const Quiz = () => {
         },
 
         {
-          id: falseOption?.id,
+          id: falseOption?.id || null,
+
           option_text: 'False',
+
           is_correct:
             Number(
               falseOption?.is_correct
@@ -629,7 +696,7 @@ const Quiz = () => {
 
       options: options.map(
         (option) => ({
-          id: option.id,
+          id: option.id || null,
 
           option_text:
             option.option_text || '',
@@ -650,7 +717,11 @@ const Quiz = () => {
   const handleSaveQuestion = async (e) => {
     e.preventDefault();
 
-    if (!selectedQuizId) {
+    const quizId = Number(
+      selectedQuizId
+    );
+
+    if (!quizId) {
       alert(
         'Please select a quiz first.'
       );
@@ -712,9 +783,7 @@ const Quiz = () => {
           ? Number(editingQuestionId)
           : null,
 
-        quiz_id: Number(
-          selectedQuizId
-        ),
+        quiz_id: quizId,
 
         question:
           questionForm.question.trim(),
@@ -748,6 +817,11 @@ const Quiz = () => {
           )
       };
 
+      console.log(
+        'Question Request Data:',
+        requestData
+      );
+
       const url = editingQuestionId
         ? '/quizzes/questions/update.php'
         : '/quizzes/questions/create.php';
@@ -769,7 +843,7 @@ const Quiz = () => {
         resetQuestionForm();
 
         await fetchQuestions(
-          selectedQuizId
+          quizId
         );
 
         await fetchQuizzes();
@@ -801,6 +875,18 @@ const Quiz = () => {
   const handleDeleteQuestion = async (
     questionId
   ) => {
+    const id = Number(questionId);
+
+    if (!id) {
+      alert('Invalid question ID.');
+      return;
+    }
+
+    if (!selectedQuizId) {
+      alert('Please select a quiz first.');
+      return;
+    }
+
     const confirmDelete =
       window.confirm(
         'Delete this question and all its options?'
@@ -814,7 +900,7 @@ const Quiz = () => {
       const response = await api.post(
         '/quizzes/questions/delete.php',
         {
-          id: Number(questionId)
+          id
         }
       );
 
@@ -824,7 +910,7 @@ const Quiz = () => {
         );
 
         await fetchQuestions(
-          selectedQuizId
+          Number(selectedQuizId)
         );
 
         await fetchQuizzes();
@@ -887,7 +973,6 @@ const Quiz = () => {
 
       </div>
 
-
       {/* CREATE QUIZ BUTTON */}
 
       {!showQuizForm && (
@@ -906,7 +991,6 @@ const Quiz = () => {
 
         </div>
       )}
-
 
       {/* QUIZ FORM */}
 
@@ -946,7 +1030,6 @@ const Quiz = () => {
 
               </div>
 
-
               {/* DESCRIPTION */}
 
               <div className="mb-3">
@@ -965,7 +1048,6 @@ const Quiz = () => {
                 />
 
               </div>
-
 
               {/* TIME LIMIT */}
 
@@ -986,7 +1068,6 @@ const Quiz = () => {
                 />
 
               </div>
-
 
               {/* PASSING */}
 
@@ -1010,7 +1091,6 @@ const Quiz = () => {
 
               </div>
 
-
               {/* ATTEMPTS */}
 
               <div className="mb-3">
@@ -1031,7 +1111,6 @@ const Quiz = () => {
                 />
 
               </div>
-
 
               {/* STATUS */}
 
@@ -1060,7 +1139,6 @@ const Quiz = () => {
 
               </div>
 
-
               {/* SAVE */}
 
               <button
@@ -1074,7 +1152,6 @@ const Quiz = () => {
                   ? 'Update Quiz'
                   : 'Create Quiz'}
               </button>
-
 
               {/* CANCEL */}
 
@@ -1096,7 +1173,6 @@ const Quiz = () => {
 
         </div>
       )}
-
 
       {/* QUIZ LIST */}
 
@@ -1128,7 +1204,6 @@ const Quiz = () => {
             Chapter Quizzes
           </h4>
 
-
           {quizzes.map(
             (quiz, index) => (
 
@@ -1156,7 +1231,6 @@ const Quiz = () => {
 
                     </div>
 
-
                     <span
                       className={`badge ${
                         quiz.status ===
@@ -1169,7 +1243,6 @@ const Quiz = () => {
                     </span>
 
                   </div>
-
 
                   {/* QUIZ INFO */}
 
@@ -1203,7 +1276,6 @@ const Quiz = () => {
 
                   </div>
 
-
                   {/* QUIZ BUTTONS */}
 
                   <div className="d-flex gap-2 flex-wrap">
@@ -1223,7 +1295,6 @@ const Quiz = () => {
                         : 'Manage Questions'}
                     </button>
 
-
                     <button
                       type="button"
                       className="btn btn-outline-warning btn-sm"
@@ -1233,7 +1304,6 @@ const Quiz = () => {
                     >
                       Edit Quiz
                     </button>
-
 
                     <button
                       type="button"
@@ -1247,8 +1317,19 @@ const Quiz = () => {
                       Delete Quiz
                     </button>
 
-                  </div>
+                    {/* RESULTS BUTTON */}
 
+                    <Link
+                      to={`/teacher/quiz-results?quiz_id=${Number(
+                        quiz.id
+                      )}`}
+                      className="btn btn-outline-primary btn-sm"
+                    >
+                      <i className="bi bi-bar-chart me-1"></i>
+                      Results
+                    </Link>
+
+                  </div>
 
                   {/* QUESTIONS */}
 
@@ -1271,13 +1352,13 @@ const Quiz = () => {
 
                         </div>
 
-
                         {!showQuestionForm && (
                           <button
                             type="button"
                             className="btn btn-primary btn-sm"
                             onClick={() => {
                               resetQuestionForm();
+
                               setShowQuestionForm(
                                 true
                               );
@@ -1288,7 +1369,6 @@ const Quiz = () => {
                         )}
 
                       </div>
-
 
                       {/* QUESTION FORM */}
 
@@ -1325,7 +1405,6 @@ const Quiz = () => {
 
                               </div>
 
-
                               <div className="row">
 
                                 <div className="col-md-6 mb-3">
@@ -1361,7 +1440,6 @@ const Quiz = () => {
 
                                 </div>
 
-
                                 <div className="col-md-6 mb-3">
 
                                   <label className="form-label">
@@ -1385,7 +1463,6 @@ const Quiz = () => {
                                 </div>
 
                               </div>
-
 
                               {/* OPTIONS */}
 
@@ -1436,7 +1513,6 @@ const Quiz = () => {
 
                                       </div>
 
-
                                       <input
                                         type="text"
                                         className="form-control"
@@ -1457,7 +1533,6 @@ const Quiz = () => {
                                           'true_false'
                                         }
                                       />
-
 
                                       {questionForm.options.length >
                                         2 &&
@@ -1485,7 +1560,6 @@ const Quiz = () => {
 
                               </div>
 
-
                               {/* ADD OPTION */}
 
                               {questionForm.question_type !==
@@ -1503,7 +1577,6 @@ const Quiz = () => {
 
                               )}
 
-
                               <div>
 
                                 <button
@@ -1520,7 +1593,6 @@ const Quiz = () => {
                                     : 'Save Question'}
                                 </button>
 
-
                                 <button
                                   type="button"
                                   className="btn btn-secondary"
@@ -1528,6 +1600,7 @@ const Quiz = () => {
                                     setShowQuestionForm(
                                       false
                                     );
+
                                     resetQuestionForm();
                                   }}
                                   disabled={
@@ -1546,7 +1619,6 @@ const Quiz = () => {
                         </div>
 
                       )}
-
 
                       {/* QUESTIONS LIST */}
 
@@ -1614,7 +1686,6 @@ const Quiz = () => {
 
                                     </div>
 
-
                                     <div className="d-flex gap-2">
 
                                       <button
@@ -1628,7 +1699,6 @@ const Quiz = () => {
                                       >
                                         Edit
                                       </button>
-
 
                                       <button
                                         type="button"
@@ -1645,7 +1715,6 @@ const Quiz = () => {
                                     </div>
 
                                   </div>
-
 
                                   {/* OPTIONS */}
 
@@ -1682,7 +1751,6 @@ const Quiz = () => {
                                           {
                                             option.option_text
                                           }
-
 
                                           {Number(
                                             option.is_correct
@@ -1732,3 +1800,4 @@ const Quiz = () => {
 };
 
 export default Quiz;
+

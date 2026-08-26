@@ -19,11 +19,15 @@ function getAuthorizationHeader()
 
     if (isset($_SERVER['Authorization'])) {
 
-        $headers = trim($_SERVER['Authorization']);
+        $headers = trim(
+            $_SERVER['Authorization']
+        );
 
     } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
 
-        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+        $headers = trim(
+            $_SERVER['HTTP_AUTHORIZATION']
+        );
 
     } elseif (function_exists('apache_request_headers')) {
 
@@ -62,6 +66,7 @@ function getBearerToken()
             $matches
         )
     ) {
+
         return $matches[1];
     }
 
@@ -81,10 +86,17 @@ function authenticate(
     $allowedRoles = []
 ) {
 
+    // ==========================================
+    // GET TOKEN
+    // ==========================================
+
     $token = getBearerToken();
 
 
-    // Token missing
+    // ==========================================
+    // TOKEN MISSING
+    // ==========================================
+
     if (!$token) {
 
         sendError(
@@ -92,17 +104,25 @@ function authenticate(
             null,
             401
         );
+
+        exit;
     }
 
 
-    // Validate token
+    // ==========================================
+    // VALIDATE TOKEN
+    // ==========================================
+
     $user = validateToken(
         $pdo,
         $token
     );
 
 
-    // Invalid token
+    // ==========================================
+    // INVALID TOKEN
+    // ==========================================
+
     if (!$user) {
 
         sendError(
@@ -110,15 +130,21 @@ function authenticate(
             null,
             401
         );
+
+        exit;
     }
 
 
-    // Role check
+    // ==========================================
+    // ROLE CHECK
+    // ==========================================
+
     if (
         !empty($allowedRoles) &&
         !in_array(
             $user['role'],
-            $allowedRoles
+            $allowedRoles,
+            true
         )
     ) {
 
@@ -127,9 +153,14 @@ function authenticate(
             null,
             403
         );
+
+        exit;
     }
 
 
+    // ==========================================
+    // RETURN USER
+    // ==========================================
+
     return $user;
 }
-

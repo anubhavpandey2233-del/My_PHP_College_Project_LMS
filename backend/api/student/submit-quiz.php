@@ -1,47 +1,24 @@
 
 <?php
 
-// ==========================================
-// CORS
-// ==========================================
-
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Content-Type: application/json; charset=UTF-8");
 
-// ==========================================
-// HANDLE PREFLIGHT
-// ==========================================
-
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// ==========================================
-// FILES
-// ==========================================
-
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
 require_once __DIR__ . '/../../middleware/auth.php';
 
-// ==========================================
-// AUTH
-// ==========================================
-
 $user = authenticate($pdo, ['student']);
 
-// ==========================================
-// READ JSON
-// ==========================================
-
-$data = json_decode(
-    file_get_contents("php://input"),
-    true
-);
+$data = json_decode(file_get_contents("php://input"), true);
 
 if (!is_array($data)) {
     sendError("Invalid request data", null, 422);
@@ -54,24 +31,19 @@ $attemptId = isset($data['attempt_id'])
 $answers = $data['answers'] ?? [];
 
 if ($attemptId <= 0) {
-    sendError(
-        "attempt_id required",
-        null,
-        422
-    );
+    sendError("attempt_id required", null, 422);
 }
 
 if (!is_array($answers)) {
-    sendError(
-        "answers must be an object",
-        null,
-        422
-    );
+    sendError("answers must be an object", null, 422);
 }
 
-// ==========================================
-// GET ATTEMPT
-// ==========================================
+
+/*
+|--------------------------------------------------------------------------
+| GET ATTEMPT
+|--------------------------------------------------------------------------
+*/
 
 $stmt = $pdo->prepare("
     SELECT
@@ -98,16 +70,8 @@ $stmt->execute([
 $attempt = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$attempt) {
-    sendError(
-        "Quiz attempt not found",
-        null,
-        404
-    );
+    sendError("Quiz attempt not found", null, 404);
 }
-
-// ==========================================
-// CHECK ALREADY SUBMITTED
-// ==========================================
 
 if (!empty($attempt['finished_at'])) {
     sendError(
@@ -117,9 +81,12 @@ if (!empty($attempt['finished_at'])) {
     );
 }
 
-// ==========================================
-// GET QUIZ
-// ==========================================
+
+/*
+|--------------------------------------------------------------------------
+| GET QUIZ
+|--------------------------------------------------------------------------
+*/
 
 $stmt = $pdo->prepare("
     SELECT
@@ -141,16 +108,8 @@ $stmt->execute([
 $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$quiz) {
-    sendError(
-        "Quiz not found",
-        null,
-        404
-    );
+    sendError("Quiz not found", null, 404);
 }
-
-// ==========================================
-// CHECK PUBLISHED
-// ==========================================
 
 if ($quiz['status'] !== 'published') {
     sendError(
@@ -160,25 +119,12 @@ if ($quiz['status'] !== 'published') {
     );
 }
 
-// ==========================================
-// CALCULATE TIME
-// ==========================================
 
-$startedAt = strtotime(
-    $attempt['started_at']
-);
-
-$finishedAt = time();
-
-$timeTaken = $finishedAt - $startedAt;
-
-if ($timeTaken < 0) {
-    $timeTaken = 0;
-}
-
-// ==========================================
-// GET QUESTIONS
-// ==========================================
+/*
+|--------------------------------------------------------------------------
+| GET QUESTIONS
+|--------------------------------------------------------------------------
+*/
 
 $stmt = $pdo->prepare("
     SELECT
@@ -206,9 +152,12 @@ if (!$questions) {
     );
 }
 
-// ==========================================
-// START TRANSACTION
-// ==========================================
+
+/*
+|--------------------------------------------------------------------------
+| START TRANSACTION
+|--------------------------------------------------------------------------
+*/
 
 try {
 
@@ -217,25 +166,27 @@ try {
     $totalScore = 0;
     $totalMarks = 0;
 
-    // ======================================
-    // PROCESS QUESTIONS
-    // ======================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROCESS EACH QUESTION
+    |--------------------------------------------------------------------------
+    */
 
     foreach ($questions as $question) {
 
         $questionId = (int) $question['id'];
-
-        $questionMarks =
-            (float) $question['marks'];
-
-        $questionType =
-            $question['question_type'];
+        $questionMarks = (float) $question['marks'];
+        $questionType = $question['question_type'];
 
         $totalMarks += $questionMarks;
 
-        // ----------------------------------
-        // GET OPTIONS
-        // ----------------------------------
+
+        /*
+        |--------------------------------------------------------------------------
+        | GET OPTIONS
+        |--------------------------------------------------------------------------
+        */
 
         $optionStmt = $pdo->prepare("
             SELECT
@@ -251,26 +202,31 @@ try {
             $questionId
         ]);
 
-        $options =
-            $optionStmt->fetchAll(PDO::FETCH_ASSOC);
+        $options = $optionStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // ----------------------------------
-        // GET SELECTED ANSWER
-        // ----------------------------------
 
-        $selected =
-            $answers[(string) $questionId]
+        /*
+        |--------------------------------------------------------------------------
+        | GET STUDENT ANSWER
+        |--------------------------------------------------------------------------
+        */
+
+        $selected = $answers[(string) $questionId]
             ?? $answers[$questionId]
             ?? null;
+
 
         $selectedOptionId = null;
         $answerText = null;
         $isCorrect = 0;
         $marksObtained = 0;
 
-        // ==================================
-        // MULTIPLE ANSWER
-        // ==================================
+
+        /*
+        |--------------------------------------------------------------------------
+        | MULTIPLE ANSWER QUESTION
+        |--------------------------------------------------------------------------
+        */
 
         if ($questionType === 'multiple') {
 
@@ -278,50 +234,55 @@ try {
                 $selected = [];
             }
 
-            $selected = array_map(
-                'intval',
-                $selected
-            );
+            $selected = array_map('intval', $selected);
+
+            /*
+             * Remove duplicate option IDs
+             */
+            $selected = array_values(array_unique($selected));
 
             sort($selected);
+
 
             $correctOptionIds = [];
 
             foreach ($options as $option) {
 
-                if (
-                    (int) $option['is_correct'] === 1
-                ) {
-                    $correctOptionIds[] =
-                        (int) $option['id'];
+                if ((int) $option['is_correct'] === 1) {
+
+                    $correctOptionIds[] = (int) $option['id'];
                 }
             }
 
             sort($correctOptionIds);
 
-            // ------------------------------
-            // CHECK ANSWER
-            // ------------------------------
+
+            /*
+             * Check complete answer
+             */
 
             if (
-                !empty($selected) &&
-                $selected === $correctOptionIds
+                $selected === $correctOptionIds &&
+                !empty($selected)
             ) {
 
                 $isCorrect = 1;
-
-                $marksObtained =
-                    $questionMarks;
+                $marksObtained = $questionMarks;
             }
 
-            // ------------------------------
-            // SAVE SELECTED OPTION
-            // ------------------------------
+
+            /*
+             * Save selected option
+             */
 
             if (!empty($selected)) {
 
-                $selectedOptionId =
-                    $selected[0];
+                /*
+                 * First selected option is stored in
+                 * selected_option_id.
+                 */
+
+                $selectedOptionId = $selected[0];
 
                 $selectedTexts = [];
 
@@ -335,52 +296,48 @@ try {
                         )
                     ) {
 
-                        $selectedTexts[] =
-                            $option['option_text'];
+                        $selectedTexts[] = $option['option_text'];
                     }
                 }
 
-                $answerText =
-                    implode(
-                        ', ',
-                        $selectedTexts
-                    );
+                $answerText = implode(
+                    ', ',
+                    $selectedTexts
+                );
             }
-        }
 
-        // ==================================
-        // SINGLE ANSWER
-        // ==================================
 
-        else {
+        /*
+        |--------------------------------------------------------------------------
+        | SINGLE ANSWER QUESTION
+        |--------------------------------------------------------------------------
+        */
+
+        } else {
 
             if (
                 $selected !== null &&
                 $selected !== ''
             ) {
 
-                $selectedOptionId =
-                    (int) $selected;
+                $selectedOptionId = (int) $selected;
+
 
                 foreach ($options as $option) {
 
                     if (
-                        (int) $option['id']
-                        === $selectedOptionId
+                        (int) $option['id'] === $selectedOptionId
                     ) {
 
-                        $answerText =
-                            $option['option_text'];
+                        $answerText = $option['option_text'];
+
 
                         if (
-                            (int) $option['is_correct']
-                            === 1
+                            (int) $option['is_correct'] === 1
                         ) {
 
                             $isCorrect = 1;
-
-                            $marksObtained =
-                                $questionMarks;
+                            $marksObtained = $questionMarks;
                         }
 
                         break;
@@ -389,9 +346,12 @@ try {
             }
         }
 
-        // ==================================
-        // SAVE ANSWER
-        // ==================================
+
+        /*
+        |--------------------------------------------------------------------------
+        | SAVE ANSWER
+        |--------------------------------------------------------------------------
+        */
 
         $answerStmt = $pdo->prepare("
             INSERT INTO quiz_answers
@@ -403,15 +363,7 @@ try {
                 is_correct,
                 marks_obtained
             )
-            VALUES
-            (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?
-            )
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
 
         $answerStmt->execute([
@@ -423,22 +375,28 @@ try {
             $marksObtained
         ]);
 
+
         $totalScore += $marksObtained;
     }
 
-    // ==========================================
-    // TOTAL MARKS FALLBACK
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOTAL MARKS
+    |--------------------------------------------------------------------------
+    */
 
     if ($totalMarks <= 0) {
 
-        $totalMarks =
-            (float) $quiz['total_marks'];
+        $totalMarks = (float) $quiz['total_marks'];
     }
 
-    // ==========================================
-    // PERCENTAGE
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | PERCENTAGE
+    |--------------------------------------------------------------------------
+    */
 
     $percentage = 0;
 
@@ -448,12 +406,17 @@ try {
             ($totalScore / $totalMarks) * 100;
     }
 
-    $percentage =
-        round($percentage, 2);
+    $percentage = round(
+        $percentage,
+        2
+    );
 
-    // ==========================================
-    // PASS / FAIL
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | PASS / FAIL
+    |--------------------------------------------------------------------------
+    */
 
     $passingPercentage =
         (float) $quiz['passing_percentage'];
@@ -463,28 +426,91 @@ try {
             ? 1
             : 0;
 
-    // ==========================================
-    // TIME LIMIT
-    // ==========================================
 
-    if (!empty($quiz['time_limit'])) {
+    /*
+    |--------------------------------------------------------------------------
+    | ACTUAL TIME TAKEN
+    |--------------------------------------------------------------------------
+    |
+    | IMPORTANT:
+    |
+    | Do NOT use:
+    |
+    | time()
+    |
+    | Do NOT use:
+    |
+    | strtotime(started_at)
+    |
+    | Do NOT set:
+    |
+    | time_taken = 300
+    |
+    | MySQL calculates the difference between the same
+    | database/server clock values.
+    |
+    */
 
-        $timeLimitSeconds =
-            (int) $quiz['time_limit'] * 60;
+    $timeStmt = $pdo->prepare("
+        SELECT
+            TIMESTAMPDIFF(
+                SECOND,
+                started_at,
+                NOW()
+            ) AS actual_seconds
+        FROM quiz_attempts
+        WHERE id = ?
+          AND user_id = ?
+        LIMIT 1
+    ");
 
-        if (
-            $timeTaken >
-            $timeLimitSeconds
-        ) {
+    $timeStmt->execute([
+        $attemptId,
+        $user['id']
+    ]);
 
-            $timeTaken =
-                $timeLimitSeconds;
-        }
+    $timeData = $timeStmt->fetch(PDO::FETCH_ASSOC);
+
+    $timeTaken = isset($timeData['actual_seconds'])
+        ? (int) $timeData['actual_seconds']
+        : 0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAFETY
+    |--------------------------------------------------------------------------
+    */
+
+    if ($timeTaken < 0) {
+        $timeTaken = 0;
     }
 
-    // ==========================================
-    // UPDATE ATTEMPT
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | FINISHED TIME
+    |--------------------------------------------------------------------------
+    |
+    | Use MySQL NOW() so started_at and finished_at
+    | use the same database clock.
+    |
+    */
+
+    $finishStmt = $pdo->query("
+        SELECT NOW() AS finished_at
+    ");
+
+    $finishData = $finishStmt->fetch(PDO::FETCH_ASSOC);
+
+    $finishedAtDate = $finishData['finished_at'];
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE ATTEMPT
+    |--------------------------------------------------------------------------
+    */
 
     $updateStmt = $pdo->prepare("
         UPDATE quiz_attempts
@@ -493,7 +519,7 @@ try {
             percentage = ?,
             is_passed = ?,
             time_taken = ?,
-            finished_at = CURRENT_TIMESTAMP
+            finished_at = ?
         WHERE id = ?
           AND user_id = ?
     ");
@@ -503,55 +529,50 @@ try {
         $percentage,
         $isPassed,
         $timeTaken,
+        $finishedAtDate,
         $attemptId,
         $user['id']
     ]);
 
-    // ==========================================
-    // COMMIT
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMMIT
+    |--------------------------------------------------------------------------
+    */
 
     $pdo->commit();
 
-    // ==========================================
-    // RESPONSE
-    // ==========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     sendResponse(
         true,
         "Quiz submitted successfully",
         [
-            "attempt_id" =>
-                $attemptId,
-
-            "score" =>
-                $totalScore,
-
-            "total_marks" =>
-                $totalMarks,
-
-            "percentage" =>
-                $percentage,
-
-            "passing_percentage" =>
-                $passingPercentage,
-
-            "is_passed" =>
-                $isPassed,
-
-            "time_taken" =>
-                $timeTaken,
-
-            "finished_at" =>
-                date('Y-m-d H:i:s')
+            "attempt_id" => $attemptId,
+            "score" => $totalScore,
+            "total_marks" => $totalMarks,
+            "percentage" => $percentage,
+            "passing_percentage" => $passingPercentage,
+            "is_passed" => $isPassed,
+            "time_taken" => $timeTaken,
+            "finished_at" => $finishedAtDate
         ]
     );
+
 
 } catch (Throwable $e) {
 
     if ($pdo->inTransaction()) {
+
         $pdo->rollBack();
     }
+
 
     sendError(
         "Quiz submission failed",
@@ -559,3 +580,4 @@ try {
         500
     );
 }
+

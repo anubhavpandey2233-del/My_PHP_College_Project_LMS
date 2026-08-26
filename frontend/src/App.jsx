@@ -21,6 +21,13 @@ import Register from './pages/auth/Register';
 
 
 // =====================================
+// LAYOUT
+// =====================================
+
+import DashboardLayout from './layouts/DashboardLayout';
+
+
+// =====================================
 // ADMIN
 // =====================================
 
@@ -46,8 +53,14 @@ import ManageContent from './pages/teacher/ManageContent';
 import TeacherProfile from './pages/teacher/Profile';
 import TeacherEnrollments from './pages/teacher/Enrollments';
 
-// Teacher Quiz
+
+// =====================================
+// TEACHER QUIZ
+// =====================================
+
 import Quiz from './pages/teacher/Quiz';
+import QuizResults from './pages/teacher/QuizResults';
+import QuizResultDetails from './pages/teacher/QuizResultDetails';
 
 
 // =====================================
@@ -59,8 +72,6 @@ import StudentChangePassword from './pages/student/ChangePassword';
 import MyCourses from './pages/student/MyCourses';
 import LearningPage from './pages/student/LearningPage';
 import StudentProfile from './pages/student/Profile';
-
-// Student Quiz
 import StudentQuiz from './pages/student/StudentQuiz';
 
 
@@ -85,6 +96,7 @@ import ContactUs from './pages/support/ContactUs';
 function App() {
 
   return (
+
     <ThemeProvider>
 
       <AuthProvider>
@@ -93,8 +105,9 @@ function App() {
 
           <Routes>
 
+
             {/* =================================
-                AUTH ROUTES
+                AUTH
             ================================= */}
 
             <Route
@@ -109,7 +122,7 @@ function App() {
 
 
             {/* =================================
-                PUBLIC COURSE ROUTES
+                PUBLIC COURSES
             ================================= */}
 
             <Route
@@ -124,7 +137,7 @@ function App() {
 
 
             {/* =================================
-                ADMIN ROUTES
+                ADMIN
             ================================= */}
 
             <Route
@@ -201,7 +214,7 @@ function App() {
 
 
             {/* =================================
-                TEACHER ROUTES
+                TEACHER
             ================================= */}
 
             <Route
@@ -265,6 +278,38 @@ function App() {
 
 
             {/* =================================
+                QUIZ RESULTS LIST
+            ================================= */}
+
+            <Route
+              path="/teacher/quiz-results"
+              element={
+                <RoleProtectedRoute allowedRoles={['teacher']}>
+                  <DashboardLayout>
+                    <QuizResults />
+                  </DashboardLayout>
+                </RoleProtectedRoute>
+              }
+            />
+
+
+            {/* =================================
+                INDIVIDUAL RESULT DETAILS
+            ================================= */}
+
+            <Route
+              path="/teacher/quiz-results/:quizId/:studentId"
+              element={
+                <RoleProtectedRoute allowedRoles={['teacher']}>
+                  <DashboardLayout>
+                    <QuizResultDetails />
+                  </DashboardLayout>
+                </RoleProtectedRoute>
+              }
+            />
+
+
+            {/* =================================
                 TEACHER ENROLLMENTS
             ================================= */}
 
@@ -297,7 +342,7 @@ function App() {
 
 
             {/* =================================
-                STUDENT ROUTES
+                STUDENT
             ================================= */}
 
             <Route
@@ -326,8 +371,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
-            {/* STUDENT QUIZ */}
 
             <Route
               path="/student/quiz/:quizId"
@@ -358,7 +401,7 @@ function App() {
 
 
             {/* =================================
-                SUPPORT ROUTES
+                SUPPORT
             ================================= */}
 
             <Route
@@ -383,7 +426,7 @@ function App() {
 
 
             {/* =================================
-                DEFAULT ROUTES
+                DEFAULT
             ================================= */}
 
             <Route

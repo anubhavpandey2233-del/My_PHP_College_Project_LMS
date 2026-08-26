@@ -187,8 +187,8 @@ const Sidebar = () => {
 
 
               {/* =====================================
-                  TEACHER ENROLLMENTS
-              ===================================== */}
+        TEACHER ENROLLMENTS
+    ===================================== */}
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -198,6 +198,21 @@ const Sidebar = () => {
               >
                 <i className="bi bi-person-check me-2"></i>
                 Enrollments
+              </Link>
+
+
+              {/* =====================================
+        TEACHER QUIZ RESULTS
+    ===================================== */}
+
+              <Link
+                className={`sidebar-link ${isActive(
+                  '/teacher/quiz-results'
+                )}`}
+                to="/teacher/quiz-results"
+              >
+                <i className="bi bi-bar-chart-line me-2"></i>
+                Quiz Results
               </Link>
 
 

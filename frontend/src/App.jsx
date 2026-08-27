@@ -40,6 +40,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import Categories from './pages/admin/Categories';
 import Profile from './pages/admin/Profile';
 import StudentReviews from './pages/admin/Reviews/StudentReviews';
+import ContactMessages from './pages/admin/ContactMessages';
 
 
 // =====================================
@@ -216,6 +217,30 @@ function App() {
             />
 
 
+            {/* =================================
+                ADMIN CONTACT MESSAGES
+            ================================= */}
+
+            <Route
+              path="/admin/contact-messages"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <ContactMessages />
+                </RoleProtectedRoute>
+              }
+            />
+
+
+            <Route
+              path="/admin/contact-messages/:id"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <ContactMessages />
+                </RoleProtectedRoute>
+              }
+            />
+
+
             <Route
               path="/admin/profile"
               element={
@@ -304,10 +329,6 @@ function App() {
             />
 
 
-            {/* =================================
-                QUIZ RESULTS LIST
-            ================================= */}
-
             <Route
               path="/teacher/quiz-results"
               element={
@@ -319,10 +340,6 @@ function App() {
               }
             />
 
-
-            {/* =================================
-                INDIVIDUAL RESULT DETAILS
-            ================================= */}
 
             <Route
               path="/teacher/quiz-results/:quizId/:studentId"
@@ -497,6 +514,7 @@ function App() {
               }
             />
 
+
           </Routes>
 
         </BrowserRouter>
@@ -506,7 +524,6 @@ function App() {
     </ThemeProvider>
 
   );
-
 }
 
 

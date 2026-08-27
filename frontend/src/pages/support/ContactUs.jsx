@@ -14,6 +14,7 @@ import {
 
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import api from '../../services/api';
 
 const ContactUs = () => {
 
@@ -26,43 +27,84 @@ const ContactUs = () => {
     message: ''
   });
 
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
   const handleChange = (e) => {
+
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
+
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    alert('Thank you! Your message has been submitted.');
+    setSaving(true);
+    setError('');
 
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    try {
+
+      const response = await api.post(
+        '/contact/submit.php',
+        formData
+      );
+
+      if (response.data.status) {
+
+        alert(
+          'Thank you! Your message has been submitted successfully.'
+        );
+
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+
+      } else {
+
+        setError(
+          response.data.message ||
+          'Failed to submit your message'
+        );
+
+      }
+
+    } catch (err) {
+
+      console.error(
+        'Contact Submit Error:',
+        err
+      );
+
+      setError(
+        err.response?.data?.message ||
+        'Failed to submit your message'
+      );
+
+    } finally {
+
+      setSaving(false);
+
+    }
+
   };
 
   return (
     <div className="d-flex flex-column min-vh-100">
 
-      {/* ================= HEADER ================= */}
-
       <Header />
-
-
-      {/* ================= MAIN ================= */}
 
       <main className="contact-page flex-grow-1">
 
         <div className="container py-5">
-
-          {/* Back Button */}
 
           <button
             type="button"
@@ -72,9 +114,6 @@ const ContactUs = () => {
             <FaArrowLeft />
             <span>Back</span>
           </button>
-
-
-          {/* ================= HERO ================= */}
 
           <div className="contact-hero text-center">
 
@@ -90,13 +129,7 @@ const ContactUs = () => {
 
           </div>
 
-
-          {/* ================= CONTACT CONTENT ================= */}
-
           <div className="row g-4">
-
-
-            {/* ================= CONTACT INFO ================= */}
 
             <div className="col-lg-5">
 
@@ -108,9 +141,6 @@ const ContactUs = () => {
                   If you have any questions, feedback or issues
                   with PHP LMS, feel free to contact our support team.
                 </p>
-
-
-                {/* Email */}
 
                 <a
                   href="mailto:support@phplms.com"
@@ -126,9 +156,6 @@ const ContactUs = () => {
                   </div>
                 </a>
 
-
-                {/* Phone */}
-
                 <a
                   href="tel:+919876543210"
                   className="contact-info-item"
@@ -143,9 +170,6 @@ const ContactUs = () => {
                   </div>
                 </a>
 
-
-                {/* Location */}
-
                 <div className="contact-info-item">
 
                   <div className="contact-info-icon">
@@ -158,9 +182,6 @@ const ContactUs = () => {
                   </div>
 
                 </div>
-
-
-                {/* Support */}
 
                 <div className="contact-support-note">
 
@@ -180,9 +201,6 @@ const ContactUs = () => {
               </div>
 
             </div>
-
-
-            {/* ================= CONTACT FORM ================= */}
 
             <div className="col-lg-7">
 
@@ -204,11 +222,13 @@ const ContactUs = () => {
 
                 </div>
 
+                {error && (
+                  <div className="alert alert-danger">
+                    {error}
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit}>
-
-
-                  {/* Name */}
 
                   <div className="mb-3">
 
@@ -229,9 +249,6 @@ const ContactUs = () => {
 
                   </div>
 
-
-                  {/* Email */}
-
                   <div className="mb-3">
 
                     <label className="contact-label">
@@ -250,9 +267,6 @@ const ContactUs = () => {
                     />
 
                   </div>
-
-
-                  {/* Subject */}
 
                   <div className="mb-3">
 
@@ -273,9 +287,6 @@ const ContactUs = () => {
 
                   </div>
 
-
-                  {/* Message */}
-
                   <div className="mb-4">
 
                     <label className="contact-label">
@@ -295,15 +306,27 @@ const ContactUs = () => {
 
                   </div>
 
-
-                  {/* Submit */}
-
                   <button
                     type="submit"
                     className="contact-submit-btn"
+                    disabled={saving}
                   >
-                    <FaPaperPlane />
-                    Send Message
+
+                    {saving ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        ></span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <FaPaperPlane />
+                        Send Message
+                      </>
+                    )}
+
                   </button>
 
                 </form>
@@ -317,9 +340,6 @@ const ContactUs = () => {
         </div>
 
       </main>
-
-
-      {/* ================= FOOTER ================= */}
 
       <Footer />
 

@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../middleware/auth.php';
 // AUTHENTICATION
 // ==========================================
 
-$user = authenticate($pdo, ['teacher']);
+$user = authenticate($pdo, ['admin', 'teacher']);
 
 
 // ==========================================

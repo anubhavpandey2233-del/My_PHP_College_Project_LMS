@@ -11,15 +11,47 @@ import api from '../services/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+
+      return storedUser
+        ? JSON.parse(storedUser)
+        : null;
+
+    } catch (error) {
+      console.error('Stored user error:', error);
+      return null;
+    }
+  });
 
   const [token, setToken] = useState(
-    localStorage.getItem('token') || null
+    () => localStorage.getItem('token') || null
   );
 
   const [loading, setLoading] = useState(true);
 
+
+  const saveAuth = (newToken, newUser) => {
+
+    localStorage.setItem(
+      'token',
+      newToken
+    );
+
+    localStorage.setItem(
+      'user',
+      JSON.stringify(newUser)
+    );
+
+    setToken(newToken);
+    setUser(newUser);
+  };
+
+
   const clearAuth = () => {
+
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
@@ -27,56 +59,112 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+
   const fetchCurrentUser = async (storedToken) => {
-    const res = await api.get('/auth/me.php');
+
+    const res = await api.get(
+      '/auth/me.php'
+    );
 
     if (!res.data.status) {
       throw new Error(
-        res.data.message || 'Authentication failed'
+        res.data.message ||
+        'Authentication failed'
       );
     }
 
-    const loggedInUser = res.data.data.user;
+    const currentUser =
+      res.data.data?.user;
 
-    setUser(loggedInUser);
-    setToken(storedToken);
+    if (!currentUser) {
+      throw new Error(
+        'User data not found'
+      );
+    }
 
-    localStorage.setItem(
-      'user',
-      JSON.stringify(loggedInUser)
+    saveAuth(
+      storedToken,
+      currentUser
     );
 
-    return loggedInUser;
+    return currentUser;
   };
 
+
   useEffect(() => {
+
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('token');
+
+      const storedToken =
+        localStorage.getItem('token');
+
+      const storedUser =
+        localStorage.getItem('user');
+
 
       if (!storedToken) {
+
         setLoading(false);
         return;
+
       }
 
+
+      if (storedUser) {
+
+        try {
+
+          const parsedUser =
+            JSON.parse(storedUser);
+
+          setUser(parsedUser);
+          setToken(storedToken);
+
+        } catch (error) {
+
+          localStorage.removeItem('user');
+
+        }
+
+      }
+
+
       try {
-        await fetchCurrentUser(storedToken);
+
+        await fetchCurrentUser(
+          storedToken
+        );
+
       } catch (error) {
+
         console.error(
           'Authentication Error:',
           error
         );
 
         clearAuth();
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
+
     initAuth();
+
   }, []);
 
-  const login = async (email, password) => {
+
+  const login = async (
+    email,
+    password
+  ) => {
+
     try {
+
       const res = await api.post(
         '/auth/login.php',
         {
@@ -85,26 +173,47 @@ export const AuthProvider = ({ children }) => {
         }
       );
 
+
       if (!res.data.status) {
+
         return {
           success: false,
           message:
-            res.data.message || 'Login failed'
+            res.data.message ||
+            'Login failed'
         };
+
       }
 
-      const loginData = res.data.data;
-      const newToken = loginData.token;
 
-      localStorage.setItem(
-        'token',
-        newToken
-      );
+      const loginData =
+        res.data.data;
 
-      setToken(newToken);
+
+      const newToken =
+        loginData?.token;
+
 
       const loggedInUser =
-        await fetchCurrentUser(newToken);
+        loginData?.user;
+
+
+      if (!newToken || !loggedInUser) {
+
+        return {
+          success: false,
+          message:
+            'Invalid login response'
+        };
+
+      }
+
+
+      saveAuth(
+        newToken,
+        loggedInUser
+      );
+
 
       return {
         success: true,
@@ -112,6 +221,7 @@ export const AuthProvider = ({ children }) => {
       };
 
     } catch (error) {
+
       console.error(
         'Login Error:',
         error
@@ -124,10 +234,13 @@ export const AuthProvider = ({ children }) => {
         message:
           error.response?.data?.message ||
           error.message ||
-          'Something went wrong'
+          'Something went wrong while logging in'
       };
+
     }
+
   };
+
 
   const register = async (
     name,
@@ -135,7 +248,9 @@ export const AuthProvider = ({ children }) => {
     password,
     role = 'student'
   ) => {
+
     try {
+
       const res = await api.post(
         '/auth/register.php',
         {
@@ -149,6 +264,7 @@ export const AuthProvider = ({ children }) => {
       return res.data;
 
     } catch (error) {
+
       console.error(
         'Register Error:',
         error
@@ -160,25 +276,38 @@ export const AuthProvider = ({ children }) => {
           error.response?.data?.message ||
           'Registration failed'
       };
+
     }
+
   };
 
+
   const logout = async () => {
+
     try {
+
       await api.post(
         '/auth/logout.php'
       );
+
     } catch (error) {
+
       console.warn(
         'Logout API Error:',
         error
       );
+
     } finally {
+
       clearAuth();
+
     }
+
   };
 
+
   return (
+
     <AuthContext.Provider
       value={{
         user,
@@ -191,10 +320,15 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!user
       }}
     >
+
       {children}
+
     </AuthContext.Provider>
+
   );
+
 };
+
 
 export const useAuth = () =>
   useContext(AuthContext);

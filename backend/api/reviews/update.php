@@ -32,10 +32,10 @@ require_once __DIR__ . '/../../middleware/auth.php';
 
 
 // ==========================================
-// AUTHENTICATION
+// ADMIN AUTHENTICATION
 // ==========================================
 
-$user = authenticate($pdo, ['student']);
+$user = authenticate($pdo, ['admin']);
 
 
 // ==========================================
@@ -77,7 +77,7 @@ if (!is_array($data)) {
 // GET DATA
 // ==========================================
 
-$courseId = (int)($data['course_id'] ?? 0);
+$reviewId = (int)($data['id'] ?? 0);
 
 $rating = (int)($data['rating'] ?? 0);
 
@@ -85,20 +85,25 @@ $reviewText = trim(
     $data['review_text'] ?? ''
 );
 
+$status = strtolower(
+    trim($data['status'] ?? '')
+);
+
 
 // ==========================================
 // VALIDATION
 // ==========================================
 
-if ($courseId <= 0) {
+if ($reviewId <= 0) {
 
     sendError(
-        "course_id is required",
+        "Review id is required",
         null,
         422
     );
 
 }
+
 
 if ($rating < 1 || $rating > 5) {
 
@@ -111,30 +116,45 @@ if ($rating < 1 || $rating > 5) {
 }
 
 
+$allowedStatuses = [
+    'pending',
+    'approved',
+    'rejected'
+];
+
+if (!in_array($status, $allowedStatuses, true)) {
+
+    sendError(
+        "Invalid review status",
+        null,
+        422
+    );
+
+}
+
+
 // ==========================================
-// CHECK COURSE
+// CHECK REVIEW
 // ==========================================
 
 $stmt = $pdo->prepare("
     SELECT
-        id,
-        title,
-        teacher_id
-    FROM courses
+        id
+    FROM reviews
     WHERE id = ?
     LIMIT 1
 ");
 
 $stmt->execute([
-    $courseId
+    $reviewId
 ]);
 
-$course = $stmt->fetch(PDO::FETCH_ASSOC);
+$review = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$course) {
+if (!$review) {
 
     sendError(
-        "Course not found",
+        "Review not found",
         null,
         404
     );
@@ -143,149 +163,25 @@ if (!$course) {
 
 
 // ==========================================
-// CHECK ENROLLMENT
+// UPDATE REVIEW
 // ==========================================
 
 $stmt = $pdo->prepare("
-    SELECT id
-    FROM enrollments
-    WHERE student_id = ?
-      AND course_id = ?
-    LIMIT 1
+    UPDATE reviews
+    SET
+        rating = ?,
+        review_text = ?,
+        status = ?
+    WHERE id = ?
 ");
 
 $stmt->execute([
-    $user['id'],
-    $courseId
-]);
-
-$enrollment = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$enrollment) {
-
-    sendError(
-        "You must be enrolled in this course to submit a review",
-        null,
-        403
-    );
-
-}
-
-
-// ==========================================
-// CHECK EXISTING REVIEW
-// ==========================================
-
-$stmt = $pdo->prepare("
-    SELECT id
-    FROM reviews
-    WHERE user_id = ?
-      AND course_id = ?
-    LIMIT 1
-");
-
-$stmt->execute([
-    $user['id'],
-    $courseId
-]);
-
-$existingReview = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if ($existingReview) {
-
-    sendError(
-        "You have already reviewed this course",
-        null,
-        409
-    );
-
-}
-
-
-// ==========================================
-// INSERT REVIEW
-// ==========================================
-
-$stmt = $pdo->prepare("
-    INSERT INTO reviews
-    (
-        user_id,
-        course_id,
-        rating,
-        review_text,
-        status
-    )
-    VALUES (?, ?, ?, ?, 'pending')
-");
-
-$stmt->execute([
-    $user['id'],
-    $courseId,
     $rating,
     $reviewText !== ''
         ? $reviewText
-        : null
-]);
-
-$reviewId = (int)$pdo->lastInsertId();
-
-
-// ==========================================
-// GET STUDENT NAME
-// ==========================================
-
-$stmt = $pdo->prepare("
-    SELECT name
-    FROM users
-    WHERE id = ?
-    LIMIT 1
-");
-
-$stmt->execute([
-    $user['id']
-]);
-
-$student = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-// ==========================================
-// CREATE TEACHER NOTIFICATION
-// ==========================================
-
-$studentName = $student['name'] ?? 'A student';
-
-$notificationTitle = "New Course Review";
-
-$notificationMessage =
-    $studentName .
-    " submitted a " .
-    $rating .
-    "-star review for your course \"" .
-    $course['title'] .
-    "\".";
-
-$notificationLink =
-    "/teacher/reviews/" . $courseId;
-
-$stmt = $pdo->prepare("
-    INSERT INTO notifications
-    (
-        user_id,
-        title,
-        message,
-        type,
-        is_read,
-        link
-    )
-    VALUES (?, ?, ?, ?, 0, ?)
-");
-
-$stmt->execute([
-    $course['teacher_id'],
-    $notificationTitle,
-    $notificationMessage,
-    'review',
-    $notificationLink
+        : null,
+    $status,
+    $reviewId
 ]);
 
 
@@ -295,10 +191,9 @@ $stmt->execute([
 
 sendResponse(
     true,
-    "Review submitted successfully",
+    "Review updated successfully",
     [
         "review_id" => $reviewId
-    ],
-    201
+    ]
 );
 

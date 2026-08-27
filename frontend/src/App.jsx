@@ -39,6 +39,7 @@ import AdminEnrollments from './pages/admin/Enrollments';
 import AdminUsers from './pages/admin/AdminUsers';
 import Categories from './pages/admin/Categories';
 import Profile from './pages/admin/Profile';
+import StudentReviews from './pages/admin/Reviews/StudentReviews';
 
 
 // =====================================
@@ -150,6 +151,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/admin/users"
               element={
@@ -158,6 +160,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/admin/categories"
@@ -168,6 +171,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/admin/subcategories"
               element={
@@ -176,6 +180,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/admin/courses"
@@ -186,6 +191,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/admin/enrollments"
               element={
@@ -195,6 +201,21 @@ function App() {
               }
             />
 
+
+            {/* =================================
+                ADMIN REVIEWS
+            ================================= */}
+
+            <Route
+              path="/admin/reviews"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <StudentReviews />
+                </RoleProtectedRoute>
+              }
+            />
+
+
             <Route
               path="/admin/profile"
               element={
@@ -203,6 +224,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/admin/change-password"
@@ -227,6 +249,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/teacher/courses"
               element={
@@ -235,6 +258,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/teacher/courses/create"
@@ -245,6 +269,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/teacher/courses/edit/:id"
               element={
@@ -253,6 +278,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/teacher/courses/:id/content"
@@ -323,6 +349,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/teacher/change-password"
               element={
@@ -331,6 +358,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/teacher/profile"
@@ -355,6 +383,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/student/my-courses"
               element={
@@ -363,6 +392,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/student/learn/:courseId"
@@ -373,6 +403,7 @@ function App() {
               }
             />
 
+
             <Route
               path="/student/quiz/:quizId"
               element={
@@ -382,10 +413,16 @@ function App() {
               }
             />
 
+
             <Route
               path="/student/reviews/:courseId"
-              element={<Reviews />}
+              element={
+                <RoleProtectedRoute allowedRoles={['student']}>
+                  <Reviews />
+                </RoleProtectedRoute>
+              }
             />
+
 
             <Route
               path="/student/profile"
@@ -395,6 +432,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+
 
             <Route
               path="/student/change-password"
@@ -415,15 +453,18 @@ function App() {
               element={<HelpCenter />}
             />
 
+
             <Route
               path="/privacy-policy"
               element={<PrivacyPolicy />}
             />
 
+
             <Route
               path="/terms-conditions"
               element={<TermsConditions />}
             />
+
 
             <Route
               path="/contact-us"
@@ -445,6 +486,7 @@ function App() {
               }
             />
 
+
             <Route
               path="*"
               element={
@@ -462,8 +504,11 @@ function App() {
       </AuthProvider>
 
     </ThemeProvider>
+
   );
+
 }
+
 
 export default App;
 

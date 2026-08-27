@@ -1,47 +1,30 @@
 
 <?php
 
-// =====================================
-// CORS
-// =====================================
-
 require_once __DIR__ . '/../../config/cors.php';
-
-
-// =====================================
-// Required Files
-// =====================================
-
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
 require_once __DIR__ . '/../../helpers/token.php';
 
 
-// =====================================
-// Get JSON Data
-// =====================================
+// ==========================================
+// GET REQUEST DATA
+// ==========================================
 
 $data = json_decode(
     file_get_contents("php://input"),
     true
 );
 
-$email = trim(
-    $data['email'] ?? ''
-);
-
-$password =
-    $data['password'] ?? '';
+$email = trim($data['email'] ?? '');
+$password = $data['password'] ?? '';
 
 
-// =====================================
-// Validation
-// =====================================
+// ==========================================
+// VALIDATION
+// ==========================================
 
-if (
-    empty($email) ||
-    empty($password)
-) {
+if (empty($email) || empty($password)) {
 
     sendError(
         "Email and password are required",
@@ -51,9 +34,9 @@ if (
 }
 
 
-// =====================================
-// Find User
-// =====================================
+// ==========================================
+// GET USER
+// ==========================================
 
 $stmt = $pdo->prepare("
     SELECT
@@ -61,6 +44,9 @@ $stmt = $pdo->prepare("
         u.name,
         u.email,
         u.password,
+        u.phone,
+        u.bio,
+        u.avatar,
         u.status,
         r.name AS role
     FROM users u
@@ -74,13 +60,12 @@ $stmt->execute([
     $email
 ]);
 
-$user =
-    $stmt->fetch();
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
-// =====================================
-// Check Credentials
-// =====================================
+// ==========================================
+// CHECK LOGIN
+// ==========================================
 
 if (
     !$user ||
@@ -98,13 +83,11 @@ if (
 }
 
 
-// =====================================
-// Check Account Status
-// =====================================
+// ==========================================
+// CHECK USER STATUS
+// ==========================================
 
-if (
-    $user['status'] !== 'active'
-) {
+if ($user['status'] !== 'active') {
 
     sendError(
         "Your account is inactive or banned",
@@ -114,9 +97,9 @@ if (
 }
 
 
-// =====================================
-// Create Token
-// =====================================
+// ==========================================
+// CREATE TOKEN
+// ==========================================
 
 $token = createUserToken(
     $pdo,
@@ -124,22 +107,42 @@ $token = createUserToken(
 );
 
 
-// =====================================
-// Response
-// =====================================
+// ==========================================
+// USER DATA
+// ==========================================
+
+$loggedInUser = [
+
+    "id" => $user['id'],
+
+    "name" => $user['name'],
+
+    "email" => $user['email'],
+
+    "phone" => $user['phone'] ?? '',
+
+    "bio" => $user['bio'] ?? '',
+
+    "avatar" => $user['avatar'] ?? '',
+
+    "role" => $user['role']
+
+];
+
+
+// ==========================================
+// RESPONSE
+// ==========================================
 
 sendResponse(
     true,
     "Login successful",
     [
+
         "token" => $token,
 
-        "user" => [
-            "id" => $user['id'],
-            "name" => $user['name'],
-            "email" => $user['email'],
-            "role" => $user['role']
-        ]
+        "user" => $loggedInUser
+
     ]
 );
 

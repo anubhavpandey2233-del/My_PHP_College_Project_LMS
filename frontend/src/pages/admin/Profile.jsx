@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
 
-    const { setUser } = useAuth();
+    const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -19,16 +19,12 @@ const Profile = () => {
     const [avatar, setAvatar] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState('');
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-
-    // =====================================
-    // Avatar URL
-    // =====================================
 
     const getAvatarUrl = (avatarName) => {
 
@@ -40,26 +36,46 @@ const Profile = () => {
     };
 
 
-    // =====================================
-    // Fetch Profile
-    // =====================================
-
     useEffect(() => {
 
-        fetchProfile();
+        if (!user) {
+            return;
+        }
 
-    }, []);
+        setFormData({
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            bio: user.bio || ''
+        });
+
+        if (user.avatar) {
+            setAvatarPreview(
+                getAvatarUrl(user.avatar)
+            );
+        }
+
+    }, [user]);
 
 
     const fetchProfile = async () => {
 
         try {
 
-            const response = await api.get('/auth/me.php');
+            const response = await api.get(
+                '/auth/me.php'
+            );
 
             if (response.data.status) {
 
-                const profile = response.data.data.user;
+                const profile =
+                    response.data.data?.user;
+
+                if (!profile) {
+                    return;
+                }
+
+                setUser(profile);
 
                 setFormData({
                     name: profile.name || '',
@@ -68,49 +84,45 @@ const Profile = () => {
                     bio: profile.bio || ''
                 });
 
-                setUser(profile);
-
                 if (profile.avatar) {
 
                     setAvatarPreview(
-                        getAvatarUrl(profile.avatar)
+                        getAvatarUrl(
+                            profile.avatar
+                        )
                     );
 
                 }
-
-            } else {
-
-                setError(
-                    response.data.message ||
-                    'Failed to load profile'
-                );
 
             }
 
         } catch (err) {
 
-            console.error('Profile Fetch Error:', err);
-
-            setError(
-                err.response?.data?.message ||
-                'Failed to load profile'
+            console.error(
+                'Profile Fetch Error:',
+                err
             );
 
-        } finally {
-
-            setLoading(false);
-
         }
+
     };
 
 
-    // =====================================
-    // Input Change
-    // =====================================
+    useEffect(() => {
+
+        if (user) {
+            fetchProfile();
+        }
+
+    }, []);
+
 
     const handleChange = (e) => {
 
-        const { name, value } = e.target;
+        const {
+            name,
+            value
+        } = e.target;
 
         setFormData((prev) => ({
             ...prev,
@@ -120,25 +132,20 @@ const Profile = () => {
     };
 
 
-    // =====================================
-    // Avatar Change
-    // =====================================
-
     const handleAvatarChange = (e) => {
 
-        const file = e.target.files?.[0];
+        const file =
+            e.target.files?.[0];
 
         if (!file) {
             return;
         }
-
 
         const allowedTypes = [
             'image/jpeg',
             'image/png',
             'image/webp'
         ];
-
 
         if (!allowedTypes.includes(file.type)) {
 
@@ -149,7 +156,6 @@ const Profile = () => {
             return;
         }
 
-
         if (file.size > 2 * 1024 * 1024) {
 
             setError(
@@ -159,12 +165,9 @@ const Profile = () => {
             return;
         }
 
-
         setError('');
         setMessage('');
-
         setAvatar(file);
-
 
         const previewUrl =
             URL.createObjectURL(file);
@@ -174,10 +177,6 @@ const Profile = () => {
     };
 
 
-    // =====================================
-    // Submit Profile
-    // =====================================
-
     const handleSubmit = async (e) => {
 
         e.preventDefault();
@@ -186,11 +185,9 @@ const Profile = () => {
         setMessage('');
         setError('');
 
-
         try {
 
             const data = new FormData();
-
 
             data.append(
                 'name',
@@ -212,7 +209,6 @@ const Profile = () => {
                 formData.bio
             );
 
-
             if (avatar) {
 
                 data.append(
@@ -222,52 +218,36 @@ const Profile = () => {
 
             }
 
-
-            // IMPORTANT:
-            // POST is used because PHP reads
-            // $_POST and $_FILES.
-
-            const response = await api.post(
-                '/profile/update.php',
-                data
-            );
-
+            const response =
+                await api.post(
+                    '/profile/update.php',
+                    data
+                );
 
             if (response.data.status) {
 
                 const updatedUser =
                     response.data.data.user;
 
-
-                // Update AuthContext
-
                 setUser(updatedUser);
-
-
-                // Update localStorage
 
                 localStorage.setItem(
                     'user',
                     JSON.stringify(updatedUser)
                 );
 
-
-                // Update form
-
                 setFormData({
-                    name: updatedUser.name || '',
-                    email: updatedUser.email || '',
-                    phone: updatedUser.phone || '',
-                    bio: updatedUser.bio || ''
+                    name:
+                        updatedUser.name || '',
+                    email:
+                        updatedUser.email || '',
+                    phone:
+                        updatedUser.phone || '',
+                    bio:
+                        updatedUser.bio || ''
                 });
 
-
-                // Clear selected file
-
                 setAvatar(null);
-
-
-                // Update avatar
 
                 if (updatedUser.avatar) {
 
@@ -278,7 +258,6 @@ const Profile = () => {
                     );
 
                 }
-
 
                 setMessage(
                     response.data.message ||
@@ -315,38 +294,6 @@ const Profile = () => {
     };
 
 
-    // =====================================
-    // Loading
-    // =====================================
-
-    if (loading) {
-
-        return (
-
-            <div className="text-center py-5">
-
-                <div
-                    className="spinner-border text-primary"
-                    role="status"
-                >
-
-                    <span className="visually-hidden">
-                        Loading...
-                    </span>
-
-                </div>
-
-            </div>
-
-        );
-
-    }
-
-
-    // =====================================
-    // UI
-    // =====================================
-
     return (
 
         <div className="container-fluid">
@@ -358,9 +305,6 @@ const Profile = () => {
                     <div className="card shadow-sm border-0">
 
                         <div className="card-body p-4">
-
-
-                            {/* Header */}
 
                             <div className="mb-4">
 
@@ -375,27 +319,19 @@ const Profile = () => {
                             </div>
 
 
-                            {/* Success Message */}
-
                             {message && (
 
                                 <div className="alert alert-success">
-
                                     {message}
-
                                 </div>
 
                             )}
 
 
-                            {/* Error Message */}
-
                             {error && (
 
                                 <div className="alert alert-danger">
-
                                     {error}
-
                                 </div>
 
                             )}
@@ -403,10 +339,6 @@ const Profile = () => {
 
                             <form onSubmit={handleSubmit}>
 
-
-                                {/* =================================
-                                    Avatar
-                                ================================= */}
 
                                 <div className="text-center mb-4">
 
@@ -449,7 +381,6 @@ const Profile = () => {
                                             Change Photo
                                         </label>
 
-
                                         <input
                                             id="avatar"
                                             type="file"
@@ -470,10 +401,6 @@ const Profile = () => {
                                 </div>
 
 
-                                {/* =================================
-                                    Name
-                                ================================= */}
-
                                 <div className="mb-3">
 
                                     <label className="form-label">
@@ -491,10 +418,6 @@ const Profile = () => {
 
                                 </div>
 
-
-                                {/* =================================
-                                    Email
-                                ================================= */}
 
                                 <div className="mb-3">
 
@@ -514,10 +437,6 @@ const Profile = () => {
                                 </div>
 
 
-                                {/* =================================
-                                    Phone
-                                ================================= */}
-
                                 <div className="mb-3">
 
                                     <label className="form-label">
@@ -534,10 +453,6 @@ const Profile = () => {
 
                                 </div>
 
-
-                                {/* =================================
-                                    Bio
-                                ================================= */}
 
                                 <div className="mb-4">
 
@@ -556,10 +471,6 @@ const Profile = () => {
                                 </div>
 
 
-                                {/* =================================
-                                    Buttons
-                                ================================= */}
-
                                 <div className="d-flex gap-2">
 
                                     <button
@@ -567,12 +478,10 @@ const Profile = () => {
                                         className="btn btn-primary"
                                         disabled={saving}
                                     >
-
                                         {saving
                                             ? 'Saving...'
                                             : 'Save Changes'
                                         }
-
                                     </button>
 
 

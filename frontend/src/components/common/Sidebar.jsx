@@ -12,7 +12,7 @@ const Sidebar = () => {
 
 
   // =====================================
-  // Avatar URL
+  // AVATAR URL
   // =====================================
 
   const avatarUrl = user?.avatar
@@ -31,7 +31,6 @@ const Sidebar = () => {
     >
 
       <div className="p-3">
-
 
         {/* =====================================
             PANEL TITLE
@@ -119,6 +118,10 @@ const Sidebar = () => {
               </Link>
 
 
+              {/* =====================================
+                  ADMIN REVIEWS
+              ===================================== */}
+
               <Link
                 className={`sidebar-link ${isActive(
                   '/admin/reviews'
@@ -186,10 +189,6 @@ const Sidebar = () => {
               </Link>
 
 
-              {/* =====================================
-        TEACHER ENROLLMENTS
-    ===================================== */}
-
               <Link
                 className={`sidebar-link ${isActive(
                   '/teacher/enrollments'
@@ -200,10 +199,6 @@ const Sidebar = () => {
                 Enrollments
               </Link>
 
-
-              {/* =====================================
-        TEACHER QUIZ RESULTS
-    ===================================== */}
 
               <Link
                 className={`sidebar-link ${isActive(
@@ -327,9 +322,7 @@ const Sidebar = () => {
                   minWidth: '42px'
                 }}
               >
-
                 <i className="bi bi-person-fill fs-5"></i>
-
               </div>
 
             )}
@@ -360,7 +353,6 @@ const Sidebar = () => {
   );
 
 };
-
 
 export default Sidebar;
 

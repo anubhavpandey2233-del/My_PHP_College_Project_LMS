@@ -13,6 +13,13 @@ import RoleProtectedRoute from './components/common/RoleProtectedRoute';
 
 
 // =====================================
+// HOME
+// =====================================
+
+import Home from './pages/home/Home';
+
+
+// =====================================
 // AUTH
 // =====================================
 
@@ -110,6 +117,17 @@ function App() {
 
 
             {/* =================================
+                HOME
+                PUBLIC - LOGIN NOT REQUIRED
+            ================================= */}
+
+            <Route
+              path="/"
+              element={<Home />}
+            />
+
+
+            {/* =================================
                 AUTH
             ================================= */}
 
@@ -152,7 +170,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/admin/users"
               element={
@@ -161,7 +178,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/admin/categories"
@@ -172,7 +188,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/admin/subcategories"
               element={
@@ -182,7 +197,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/admin/courses"
               element={
@@ -191,7 +205,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/admin/enrollments"
@@ -230,7 +243,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/admin/contact-messages/:id"
               element={
@@ -249,7 +261,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/admin/change-password"
@@ -274,7 +285,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/teacher/courses"
               element={
@@ -283,7 +293,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/teacher/courses/create"
@@ -294,7 +303,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/teacher/courses/edit/:id"
               element={
@@ -303,7 +311,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/teacher/courses/:id/content"
@@ -328,7 +335,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/teacher/quiz-results"
               element={
@@ -339,7 +345,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/teacher/quiz-results/:quizId/:studentId"
@@ -366,7 +371,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/teacher/change-password"
               element={
@@ -375,7 +379,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/teacher/profile"
@@ -400,7 +403,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/student/my-courses"
               element={
@@ -409,7 +411,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/student/learn/:courseId"
@@ -420,7 +421,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/student/quiz/:quizId"
               element={
@@ -429,7 +429,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/student/reviews/:courseId"
@@ -440,7 +439,6 @@ function App() {
               }
             />
 
-
             <Route
               path="/student/profile"
               element={
@@ -449,7 +447,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-
 
             <Route
               path="/student/change-password"
@@ -470,18 +467,15 @@ function App() {
               element={<HelpCenter />}
             />
 
-
             <Route
               path="/privacy-policy"
               element={<PrivacyPolicy />}
             />
 
-
             <Route
               path="/terms-conditions"
               element={<TermsConditions />}
             />
-
 
             <Route
               path="/contact-us"
@@ -490,30 +484,18 @@ function App() {
 
 
             {/* =================================
-                DEFAULT
+                404 / UNKNOWN ROUTE
             ================================= */}
-
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to="/login"
-                  replace
-                />
-              }
-            />
-
 
             <Route
               path="*"
               element={
                 <Navigate
-                  to="/login"
+                  to="/"
                   replace
                 />
               }
             />
-
 
           </Routes>
 

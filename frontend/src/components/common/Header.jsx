@@ -1,25 +1,20 @@
-
 import {
     useEffect,
     useRef,
     useState
 } from 'react';
-
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-
 import {
     MdDarkMode,
     MdLightMode,
     MdEmail,
     MdNotifications
 } from 'react-icons/md';
-
 import api from '../../services/api';
 
 const Header = () => {
-
     const {
         user,
         logout,
@@ -36,77 +31,58 @@ const Header = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [showNotifications, setShowNotifications] = useState(false);
-
     const [loadingNotifications, setLoadingNotifications] = useState(false);
 
     const notificationRef = useRef(null);
-
-    const isTeacher =
-        isAuthenticated &&
-        user?.role === 'teacher';
 
     const isAdmin =
         isAuthenticated &&
         user?.role === 'admin';
 
-    const hasNotificationAccess =
-        isTeacher || isAdmin;
-
     const fetchNotifications = async () => {
-
-        if (!hasNotificationAccess) {
-            return [];
+        if (!isAdmin) {
+            setNotifications([]);
+            setUnreadCount(0);
+            return;
         }
 
         try {
-
             setLoadingNotifications(true);
 
             const response = await api.get(
                 '/notifications/list.php'
             );
 
-            if (response.data.status) {
-
+            if (response.data?.status) {
                 const notificationData =
-                    response.data.data?.notifications || [];
+                    response.data?.data?.notifications || [];
 
                 const count =
                     Number(
-                        response.data.data?.unread_count || 0
+                        response.data?.data?.unread_count || 0
                     );
 
                 setNotifications(notificationData);
                 setUnreadCount(count);
-
-                return notificationData;
+            } else {
+                setNotifications([]);
+                setUnreadCount(0);
             }
-
-            setNotifications([]);
-            setUnreadCount(0);
-
-            return [];
-
         } catch (error) {
-
             console.error(
                 'Notification Error:',
                 error
             );
 
-            return [];
-
+            setNotifications([]);
+            setUnreadCount(0);
         } finally {
-
             setLoadingNotifications(false);
-
         }
     };
 
     const markAsRead = async (notificationId) => {
-
         try {
-
             const response = await api.post(
                 '/notifications/mark-read.php',
                 {
@@ -114,8 +90,7 @@ const Header = () => {
                 }
             );
 
-            if (response.data.status) {
-
+            if (response.data?.status) {
                 setNotifications((prev) =>
                     prev.map((notification) =>
                         Number(notification.id) ===
@@ -136,9 +111,7 @@ const Header = () => {
             }
 
             return false;
-
         } catch (error) {
-
             console.error(
                 'Mark Notification Read Error:',
                 error
@@ -149,9 +122,7 @@ const Header = () => {
     };
 
     const handleNotificationClick = async () => {
-
-        const willOpen =
-            !showNotifications;
+        const willOpen = !showNotifications;
 
         setShowNotifications(willOpen);
 
@@ -163,22 +134,14 @@ const Header = () => {
     const handleSingleNotificationClick = async (
         notification
     ) => {
-
-        if (
-            Number(notification.is_read) === 0
-        ) {
-
-            await markAsRead(
-                notification.id
-            );
+        if (Number(notification.is_read) === 0) {
+            await markAsRead(notification.id);
         }
 
         setShowNotifications(false);
 
         if (notification.link) {
-
             navigate(notification.link);
-
             return;
         }
 
@@ -186,59 +149,42 @@ const Header = () => {
             notification.type === 'contact_message' ||
             notification.type === 'contact'
         ) {
-
             navigate('/admin/contact-messages');
-
-            return;
         }
     };
 
     useEffect(() => {
-
-        if (hasNotificationAccess) {
-
+        if (isAdmin) {
             fetchNotifications();
-
         } else {
-
             setNotifications([]);
             setUnreadCount(0);
             setShowNotifications(false);
-
         }
-
-    }, [hasNotificationAccess]);
+    }, [isAdmin]);
 
     useEffect(() => {
-
-        if (!hasNotificationAccess) {
+        if (!isAdmin) {
             return;
         }
 
-        const interval =
-            setInterval(() => {
-
-                fetchNotifications();
-
-            }, 30000);
+        const interval = setInterval(() => {
+            fetchNotifications();
+        }, 30000);
 
         return () => {
             clearInterval(interval);
         };
-
-    }, [hasNotificationAccess]);
+    }, [isAdmin]);
 
     useEffect(() => {
-
         const handleClickOutside = (event) => {
-
             if (
                 notificationRef.current &&
                 !notificationRef.current.contains(
                     event.target
                 )
             ) {
-
                 setShowNotifications(false);
             }
         };
@@ -249,38 +195,30 @@ const Header = () => {
         );
 
         return () => {
-
             document.removeEventListener(
                 'mousedown',
                 handleClickOutside
             );
-
         };
-
     }, []);
 
     const handleLogout = async () => {
-
         await logout();
-
         navigate('/login');
     };
 
     const formatNotificationTime = (date) => {
-
         if (!date) {
             return '';
         }
 
-        const notificationDate =
-            new Date(date);
+        const notificationDate = new Date(date);
 
         if (
             Number.isNaN(
                 notificationDate.getTime()
             )
         ) {
-
             return date;
         }
 
@@ -288,13 +226,8 @@ const Header = () => {
     };
 
     return (
-
-        <nav
-            className="navbar navbar-expand-lg shadow-sm lms-header"
-        >
-
+        <nav className="navbar navbar-expand-lg shadow-sm lms-header">
             <div className="container">
-
                 <Link
                     className="navbar-brand fw-bold"
                     to="/"
@@ -308,11 +241,8 @@ const Header = () => {
                         gap: '10px'
                     }}
                 >
-
                     {isAuthenticated ? (
-
                         <>
-
                             <span
                                 className="text-white d-none d-md-inline"
                                 style={{
@@ -338,13 +268,11 @@ const Header = () => {
                                 </span>
                             </Link>
 
-                            {hasNotificationAccess && (
-
+                            {isAdmin && (
                                 <div
                                     className="position-relative"
                                     ref={notificationRef}
                                 >
-
                                     <button
                                         type="button"
                                         className="btn btn-outline-light d-flex align-items-center justify-content-center position-relative"
@@ -359,13 +287,11 @@ const Header = () => {
                                             borderRadius: '50%'
                                         }}
                                     >
-
                                         <MdNotifications
                                             size={22}
                                         />
 
                                         {unreadCount > 0 && (
-
                                             <span
                                                 className="position-absolute badge rounded-pill bg-danger"
                                                 style={{
@@ -384,13 +310,10 @@ const Header = () => {
                                                     ? '99+'
                                                     : unreadCount}
                                             </span>
-
                                         )}
-
                                     </button>
 
                                     {showNotifications && (
-
                                         <div
                                             className="position-absolute end-0 mt-2 bg-white shadow-lg rounded-3 border"
                                             style={{
@@ -400,18 +323,15 @@ const Header = () => {
                                                 overflow: 'hidden'
                                             }}
                                         >
-
                                             <div
                                                 className="d-flex justify-content-between align-items-center px-3 py-3 border-bottom"
                                             >
-
                                                 <div
                                                     className="d-flex align-items-center"
                                                     style={{
                                                         gap: '8px'
                                                     }}
                                                 >
-
                                                     <MdNotifications
                                                         size={21}
                                                         className="text-primary"
@@ -420,17 +340,13 @@ const Header = () => {
                                                     <strong>
                                                         Notifications
                                                     </strong>
-
                                                 </div>
 
                                                 {unreadCount > 0 && (
-
                                                     <span className="badge bg-danger">
                                                         {unreadCount} new
                                                     </span>
-
                                                 )}
-
                                             </div>
 
                                             <div
@@ -439,21 +355,12 @@ const Header = () => {
                                                     overflowY: 'auto'
                                                 }}
                                             >
-
                                                 {loadingNotifications ? (
-
-                                                    <div
-                                                        className="text-center text-muted py-5"
-                                                    >
+                                                    <div className="text-center text-muted py-5">
                                                         Loading notifications...
                                                     </div>
-
                                                 ) : notifications.length === 0 ? (
-
-                                                    <div
-                                                        className="text-center text-muted py-5"
-                                                    >
-
+                                                    <div className="text-center text-muted py-5">
                                                         <MdNotifications
                                                             size={35}
                                                             className="mb-2"
@@ -462,21 +369,16 @@ const Header = () => {
                                                         <div>
                                                             No notifications
                                                         </div>
-
                                                     </div>
-
                                                 ) : (
-
                                                     notifications.map(
                                                         (notification) => {
-
                                                             const isUnread =
                                                                 Number(
                                                                     notification.is_read
                                                                 ) === 0;
 
                                                             return (
-
                                                                 <div
                                                                     key={
                                                                         notification.id
@@ -492,63 +394,43 @@ const Header = () => {
                                                                         )
                                                                     }
                                                                     style={{
-                                                                        cursor:
-                                                                            notification.link ||
-                                                                            notification.type === 'contact_message' ||
-                                                                            notification.type === 'contact'
-                                                                                ? 'pointer'
-                                                                                : 'default'
+                                                                        cursor: 'pointer'
                                                                     }}
                                                                 >
-
                                                                     <div
                                                                         className="d-flex"
                                                                         style={{
                                                                             gap: '10px'
                                                                         }}
                                                                     >
-
                                                                         <MdNotifications
                                                                             size={21}
                                                                             className="text-primary mt-1 flex-shrink-0"
                                                                         />
 
-                                                                        <div
-                                                                            className="flex-grow-1"
-                                                                        >
-
-                                                                            <div
-                                                                                className="fw-semibold"
-                                                                            >
+                                                                        <div className="flex-grow-1">
+                                                                            <div className="fw-semibold">
                                                                                 {
                                                                                     notification.title
                                                                                 }
                                                                             </div>
 
-                                                                            <div
-                                                                                className="small text-muted mt-1"
-                                                                            >
+                                                                            <div className="small text-muted mt-1">
                                                                                 {
                                                                                     notification.message
                                                                                 }
                                                                             </div>
 
                                                                             {notification.created_at && (
-
-                                                                                <div
-                                                                                    className="small text-secondary mt-1"
-                                                                                >
+                                                                                <div className="small text-secondary mt-1">
                                                                                     {formatNotificationTime(
                                                                                         notification.created_at
                                                                                     )}
                                                                                 </div>
-
                                                                             )}
-
                                                                         </div>
 
                                                                         {isUnread && (
-
                                                                             <span
                                                                                 className="rounded-circle bg-primary flex-shrink-0"
                                                                                 style={{
@@ -557,28 +439,17 @@ const Header = () => {
                                                                                     marginTop: '7px'
                                                                                 }}
                                                                             />
-
                                                                         )}
-
                                                                     </div>
-
                                                                 </div>
-
                                                             );
-
                                                         }
                                                     )
-
                                                 )}
-
                                             </div>
-
                                         </div>
-
                                     )}
-
                                 </div>
-
                             )}
 
                             <button
@@ -597,17 +468,11 @@ const Header = () => {
                                     flexShrink: 0
                                 }}
                             >
-
                                 {theme === 'light' ? (
-
                                     <MdDarkMode size={21} />
-
                                 ) : (
-
                                     <MdLightMode size={21} />
-
                                 )}
-
                             </button>
 
                             <button
@@ -620,25 +485,29 @@ const Header = () => {
                             >
                                 Logout
                             </button>
-
                         </>
-
                     ) : (
-
                         <>
+                            <Link
+                                to="/contact-us"
+                                className="btn btn-outline-light btn-sm d-flex align-items-center"
+                                style={{
+                                    gap: '5px',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                <MdEmail size={17} />
+
+                                <span>
+                                    Contact Us
+                                </span>
+                            </Link>
 
                             <Link
                                 to="/login"
                                 className="btn btn-outline-light btn-sm"
                             >
                                 Login
-                            </Link>
-
-                            <Link
-                                to="/register"
-                                className="btn btn-light btn-sm"
-                            >
-                                Register
                             </Link>
 
                             <button
@@ -656,30 +525,18 @@ const Header = () => {
                                     padding: '0'
                                 }}
                             >
-
                                 {theme === 'light' ? (
-
                                     <MdDarkMode size={21} />
-
                                 ) : (
-
                                     <MdLightMode size={21} />
-
                                 )}
-
                             </button>
-
                         </>
-
                     )}
-
                 </div>
-
             </div>
-
         </nav>
     );
 };
 
 export default Header;
-

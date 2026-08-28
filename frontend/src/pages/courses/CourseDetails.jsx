@@ -26,7 +26,6 @@ const CourseDetails = () => {
     // =====================================
 
     const [course, setCourse] = useState(null);
-
     const [loading, setLoading] = useState(true);
 
 
@@ -35,7 +34,6 @@ const CourseDetails = () => {
     // =====================================
 
     const [enrolling, setEnrolling] = useState(false);
-
     const [message, setMessage] = useState('');
 
 
@@ -44,7 +42,6 @@ const CourseDetails = () => {
     // =====================================
 
     const [reviews, setReviews] = useState([]);
-
     const [reviewsLoading, setReviewsLoading] = useState(true);
 
 
@@ -64,9 +61,14 @@ const CourseDetails = () => {
                     `/courses/get.php?slug=${encodeURIComponent(slug)}`
                 );
 
+                console.log('COURSE DETAILS API:', res.data);
+
                 if (res.data.status) {
 
-                    setCourse(res.data.data);
+                    setCourse(
+                        res.data.data?.course ||
+                        res.data.data
+                    );
 
                 } else {
 
@@ -91,7 +93,9 @@ const CourseDetails = () => {
 
         };
 
-        fetchCourse();
+        if (slug) {
+            fetchCourse();
+        }
 
     }, [slug]);
 
@@ -174,6 +178,9 @@ const CourseDetails = () => {
             return null;
         }
 
+
+        // Already complete URL
+
         if (
             value.startsWith('http://') ||
             value.startsWith('https://')
@@ -183,17 +190,9 @@ const CourseDetails = () => {
 
         }
 
-        if (value.startsWith('/uploads/courses/')) {
 
-            return `http://localhost/php-lms-project/backend${value}`;
-
-        }
-
-        if (value.startsWith('uploads/courses/')) {
-
-            return `http://localhost/php-lms-project/backend/${value}`;
-
-        }
+        // API already returned:
+        // /php-lms-project/backend/uploads/courses/file.jpg
 
         if (
             value.startsWith(
@@ -204,6 +203,31 @@ const CourseDetails = () => {
             return `http://localhost${value}`;
 
         }
+
+
+        // /uploads/courses/file.jpg
+
+        if (
+            value.startsWith('/uploads/courses/')
+        ) {
+
+            return `http://localhost/php-lms-project/backend${value}`;
+
+        }
+
+
+        // uploads/courses/file.jpg
+
+        if (
+            value.startsWith('uploads/courses/')
+        ) {
+
+            return `http://localhost/php-lms-project/backend/${value}`;
+
+        }
+
+
+        // Normal filename
 
         return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
 
@@ -226,6 +250,7 @@ const CourseDetails = () => {
             return null;
         }
 
+
         if (
             value.startsWith('http://') ||
             value.startsWith('https://')
@@ -235,17 +260,6 @@ const CourseDetails = () => {
 
         }
 
-        if (value.startsWith('/uploads/avatars/')) {
-
-            return `http://localhost/php-lms-project/backend${value}`;
-
-        }
-
-        if (value.startsWith('uploads/avatars/')) {
-
-            return `http://localhost/php-lms-project/backend/${value}`;
-
-        }
 
         if (
             value.startsWith(
@@ -256,6 +270,25 @@ const CourseDetails = () => {
             return `http://localhost${value}`;
 
         }
+
+
+        if (
+            value.startsWith('/uploads/avatars/')
+        ) {
+
+            return `http://localhost/php-lms-project/backend${value}`;
+
+        }
+
+
+        if (
+            value.startsWith('uploads/avatars/')
+        ) {
+
+            return `http://localhost/php-lms-project/backend/${value}`;
+
+        }
+
 
         return `http://localhost/php-lms-project/backend/uploads/avatars/${value}`;
 
@@ -373,6 +406,17 @@ const CourseDetails = () => {
 
 
     // =====================================
+    // BACK BUTTON
+    // =====================================
+
+    const handleBack = () => {
+
+        navigate(-1);
+
+    };
+
+
+    // =====================================
     // RENDER STARS
     // =====================================
 
@@ -382,7 +426,7 @@ const CourseDetails = () => {
             0,
             Math.min(
                 5,
-                Number(rating) || 0
+                Math.round(Number(rating) || 0)
             )
         );
 
@@ -430,7 +474,14 @@ const CourseDetails = () => {
 
         }
 
-        return formattedDate.toLocaleDateString();
+        return formattedDate.toLocaleDateString(
+            'en-IN',
+            {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }
+        );
 
     };
 
@@ -476,6 +527,14 @@ const CourseDetails = () => {
 
                 <div className="container my-5 flex-grow-1">
 
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary mb-4"
+                        onClick={handleBack}
+                    >
+                        ← Back
+                    </button>
+
                     <div className="alert alert-danger">
 
                         Course not found.
@@ -498,7 +557,10 @@ const CourseDetails = () => {
     // =====================================
 
     const thumbnailUrl =
-        getThumbnailUrl(course.thumbnail);
+        course.thumbnail_url ||
+        getThumbnailUrl(
+            course.thumbnail
+        );
 
 
     const originalPrice =
@@ -531,6 +593,24 @@ const CourseDetails = () => {
 
             <div className="container my-5 flex-grow-1">
 
+
+                {/* =====================================
+                    BACK BUTTON
+                ===================================== */}
+
+                <div className="mb-4">
+
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={handleBack}
+                    >
+                        ← Back
+                    </button>
+
+                </div>
+
+
                 <div className="row">
 
 
@@ -550,7 +630,7 @@ const CourseDetails = () => {
                             }}
                         >
 
-                            {thumbnailUrl && (
+                            {thumbnailUrl ? (
 
                                 <img
                                     src={thumbnailUrl}
@@ -568,7 +648,7 @@ const CourseDetails = () => {
                                     }
                                 />
 
-                            )}
+                            ) : null}
 
 
                             <div
@@ -583,8 +663,10 @@ const CourseDetails = () => {
 
                                 <h3 className="text-white text-center px-3">
 
-                                    {course.title ||
-                                        'Course'}
+                                    {
+                                        course.title ||
+                                        'Course'
+                                    }
 
                                 </h3>
 
@@ -602,11 +684,15 @@ const CourseDetails = () => {
 
                         <p className="text-muted">
 
-                            By {course.teacher_name}
+                            By {course.teacher_name || 'Instructor'}
+
                             {' • '}
-                            {course.level}
+
+                            {course.level || '-'}
+
                             {' • '}
-                            {course.language}
+
+                            {course.language || '-'}
 
                         </p>
 
@@ -641,7 +727,7 @@ const CourseDetails = () => {
                                 <ul>
 
                                     {course.requirements.map(
-                                        requirement => (
+                                        (requirement) => (
 
                                             <li
                                                 key={
@@ -678,7 +764,7 @@ const CourseDetails = () => {
                                 <ul>
 
                                     {course.outcomes.map(
-                                        outcome => (
+                                        (outcome) => (
 
                                             <li
                                                 key={
@@ -805,7 +891,6 @@ const CourseDetails = () => {
                                                         {/* STUDENT INFO */}
 
                                                         <div className="d-flex justify-content-between align-items-start mb-3">
-
 
                                                             <div className="d-flex align-items-center gap-3">
 
@@ -959,7 +1044,7 @@ const CourseDetails = () => {
 
                                             <h3 className="text-primary mb-1">
 
-                                                ₹{finalPrice}
+                                                ₹{finalPrice.toLocaleString('en-IN')}
 
                                             </h3>
 
@@ -968,14 +1053,14 @@ const CourseDetails = () => {
 
                                                 <span className="text-muted text-decoration-line-through me-2">
 
-                                                    ₹{originalPrice}
+                                                    ₹{originalPrice.toLocaleString('en-IN')}
 
                                                 </span>
 
 
                                                 <span className="text-success fw-bold">
 
-                                                    Save ₹{discountAmount}
+                                                    Save ₹{discountAmount.toLocaleString('en-IN')}
 
                                                 </span>
 
@@ -987,7 +1072,7 @@ const CourseDetails = () => {
 
                                         <h3 className="text-primary">
 
-                                            ₹{originalPrice}
+                                            ₹{originalPrice.toLocaleString('en-IN')}
 
                                         </h3>
 
@@ -1006,7 +1091,7 @@ const CourseDetails = () => {
 
                                     {' '}
 
-                                    {course.duration_hours}
+                                    {course.duration_hours || 0}
 
                                     {' '}
                                     hours
@@ -1022,7 +1107,7 @@ const CourseDetails = () => {
 
                                     {' '}
 
-                                    {course.category_name}
+                                    {course.category_name || '-'}
 
                                 </p>
 
@@ -1035,7 +1120,7 @@ const CourseDetails = () => {
 
                                     {' '}
 
-                                    {course.total_students}
+                                    {course.total_students || 0}
 
                                 </p>
 
@@ -1056,6 +1141,7 @@ const CourseDetails = () => {
                                 {/* ENROLL */}
 
                                 <button
+                                    type="button"
                                     className="btn btn-primary w-100 mt-2"
                                     onClick={handleEnroll}
                                     disabled={enrolling}

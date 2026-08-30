@@ -1,4 +1,3 @@
-
 <?php
 
 // =====================================
@@ -25,6 +24,16 @@ $data = json_decode(
     true
 );
 
+if (!is_array($data)) {
+
+    sendError(
+        "Invalid JSON data",
+        null,
+        400
+    );
+}
+
+
 $name = trim(
     $data['name'] ?? ''
 );
@@ -46,10 +55,12 @@ $role = strtolower(
 
 $errors = [];
 
+
 if (
     empty($name) ||
     strlen($name) < 3
 ) {
+
     $errors['name'] =
         "Name must be at least 3 characters";
 }
@@ -62,6 +73,7 @@ if (
         FILTER_VALIDATE_EMAIL
     )
 ) {
+
     $errors['email'] =
         "Valid email is required";
 }
@@ -71,6 +83,7 @@ if (
     empty($password) ||
     strlen($password) < 6
 ) {
+
     $errors['password'] =
         "Password must be at least 6 characters";
 }
@@ -83,6 +96,7 @@ if (
         true
     )
 ) {
+
     $errors['role'] =
         "Invalid role";
 }
@@ -113,6 +127,7 @@ $stmt->execute([
     $email
 ]);
 
+
 if ($stmt->fetch()) {
 
     sendError(
@@ -125,12 +140,6 @@ if ($stmt->fetch()) {
 
 // =====================================
 // ADMIN CHECK
-//
-// Only ONE admin account is allowed.
-// Logout does NOT delete the account.
-// Therefore another admin cannot register
-// until the existing admin is deleted
-// from the database.
 // =====================================
 
 if ($role === 'admin') {
@@ -159,6 +168,39 @@ if ($role === 'admin') {
 
 
 // =====================================
+// TEACHER APPROVAL CHECK
+// =====================================
+
+if ($role === 'teacher') {
+
+    $stmt = $pdo->prepare("
+        SELECT id
+        FROM instructor_applications
+        WHERE email = ?
+        AND status = 'approved'
+        ORDER BY id DESC
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        $email
+    ]);
+
+    $approvedApplication =
+        $stmt->fetch();
+
+    if (!$approvedApplication) {
+
+        sendError(
+            "Your instructor application has not been approved by the admin yet.",
+            null,
+            403
+        );
+    }
+}
+
+
+// =====================================
 // ROLE ID
 // =====================================
 
@@ -180,11 +222,10 @@ if ($role === 'admin') {
 // HASH PASSWORD
 // =====================================
 
-$hashedPassword =
-    password_hash(
-        $password,
-        PASSWORD_DEFAULT
-    );
+$hashedPassword = password_hash(
+    $password,
+    PASSWORD_DEFAULT
+);
 
 
 // =====================================
@@ -226,7 +267,7 @@ sendResponse(
     "Registration successful",
     [
         "user" => [
-            "id" => $userId,
+            "id" => (int) $userId,
             "name" => $name,
             "email" => $email,
             "role" => $role
@@ -234,4 +275,3 @@ sendResponse(
     ],
     201
 );
-

@@ -1,7 +1,24 @@
-
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaTimes, FaPlay, FaCode, FaBriefcase, FaDesktop, FaPalette, FaBullhorn, FaChartBar, FaUser, FaHeartbeat, FaMusic, FaUsers, FaBookOpen, FaGraduationCap, FaArrowRight, FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import {
+    FaTimes,
+    FaPlay,
+    FaCode,
+    FaBriefcase,
+    FaDesktop,
+    FaPalette,
+    FaBullhorn,
+    FaChartBar,
+    FaUser,
+    FaHeartbeat,
+    FaMusic,
+    FaUsers,
+    FaBookOpen,
+    FaGraduationCap,
+    FaArrowRight,
+    FaChevronDown,
+    FaChevronRight
+} from 'react-icons/fa';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import api from '../../services/api';
@@ -11,13 +28,17 @@ const Home = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [courses, setCourses] = useState([]);
+
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
     const [selectedTab, setSelectedTab] = useState(null);
+
     const [hoveredCategory, setHoveredCategory] = useState(null);
+
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingSubcategories, setLoadingSubcategories] = useState(true);
     const [loadingCourses, setLoadingCourses] = useState(true);
+
     const [error, setError] = useState('');
     const [showCategoryMenu, setShowCategoryMenu] = useState(false);
     const [showOfferBar, setShowOfferBar] = useState(true);
@@ -30,15 +51,52 @@ const Home = () => {
     const getCategoryIcon = (name) => {
         const value = String(name || '').toLowerCase();
 
-        if (value.includes('development') && !value.includes('personal')) return <FaCode />;
-        if (value.includes('business')) return <FaBriefcase />;
-        if (value.includes('software') || value.includes('information technology') || value === 'it') return <FaDesktop />;
-        if (value.includes('design') || value.includes('ui') || value.includes('ux')) return <FaPalette />;
-        if (value.includes('marketing')) return <FaBullhorn />;
-        if (value.includes('data')) return <FaChartBar />;
-        if (value.includes('personal')) return <FaUser />;
-        if (value.includes('health') || value.includes('fitness')) return <FaHeartbeat />;
-        if (value.includes('music')) return <FaMusic />;
+        if (value.includes('development') && !value.includes('personal')) {
+            return <FaCode />;
+        }
+
+        if (value.includes('business')) {
+            return <FaBriefcase />;
+        }
+
+        if (
+            value.includes('software') ||
+            value.includes('information technology') ||
+            value === 'it'
+        ) {
+            return <FaDesktop />;
+        }
+
+        if (
+            value.includes('design') ||
+            value.includes('ui') ||
+            value.includes('ux')
+        ) {
+            return <FaPalette />;
+        }
+
+        if (value.includes('marketing')) {
+            return <FaBullhorn />;
+        }
+
+        if (value.includes('data')) {
+            return <FaChartBar />;
+        }
+
+        if (value.includes('personal')) {
+            return <FaUser />;
+        }
+
+        if (
+            value.includes('health') ||
+            value.includes('fitness')
+        ) {
+            return <FaHeartbeat />;
+        }
+
+        if (value.includes('music')) {
+            return <FaMusic />;
+        }
 
         return <FaBookOpen />;
     };
@@ -46,15 +104,52 @@ const Home = () => {
     const getCategoryClass = (name) => {
         const value = String(name || '').toLowerCase();
 
-        if (value.includes('development') && !value.includes('personal')) return 'development';
-        if (value.includes('business')) return 'business';
-        if (value.includes('software') || value.includes('information technology') || value === 'it') return 'software';
-        if (value.includes('design') || value.includes('ui') || value.includes('ux')) return 'design';
-        if (value.includes('marketing')) return 'marketing';
-        if (value.includes('data')) return 'data';
-        if (value.includes('personal')) return 'personal';
-        if (value.includes('health') || value.includes('fitness')) return 'health';
-        if (value.includes('music')) return 'music';
+        if (value.includes('development') && !value.includes('personal')) {
+            return 'development';
+        }
+
+        if (value.includes('business')) {
+            return 'business';
+        }
+
+        if (
+            value.includes('software') ||
+            value.includes('information technology') ||
+            value === 'it'
+        ) {
+            return 'software';
+        }
+
+        if (
+            value.includes('design') ||
+            value.includes('ui') ||
+            value.includes('ux')
+        ) {
+            return 'design';
+        }
+
+        if (value.includes('marketing')) {
+            return 'marketing';
+        }
+
+        if (value.includes('data')) {
+            return 'data';
+        }
+
+        if (value.includes('personal')) {
+            return 'personal';
+        }
+
+        if (
+            value.includes('health') ||
+            value.includes('fitness')
+        ) {
+            return 'health';
+        }
+
+        if (value.includes('music')) {
+            return 'music';
+        }
 
         return 'more';
     };
@@ -66,13 +161,23 @@ const Home = () => {
             const response = await api.get('/categories/list.php');
 
             if (response.data?.status) {
-                const data = response.data?.data?.categories || response.data?.data || [];
-                setCategories(Array.isArray(data) ? data : []);
+                const data =
+                    response.data?.data?.categories ||
+                    response.data?.data ||
+                    [];
+
+                setCategories(
+                    Array.isArray(data) ? data : []
+                );
             } else {
                 setCategories([]);
             }
         } catch (error) {
-            console.error('Category Fetch Error:', error);
+            console.error(
+                'Category Fetch Error:',
+                error
+            );
+
             setCategories([]);
         } finally {
             setLoadingCategories(false);
@@ -83,16 +188,29 @@ const Home = () => {
         setLoadingSubcategories(true);
 
         try {
-            const response = await api.get('/subcategories/list.php');
+            const response =
+                await api.get(
+                    '/subcategories/list.php'
+                );
 
             if (response.data?.status) {
-                const data = response.data?.data?.subcategories || response.data?.data || [];
-                setSubcategories(Array.isArray(data) ? data : []);
+                const data =
+                    response.data?.data?.subcategories ||
+                    response.data?.data ||
+                    [];
+
+                setSubcategories(
+                    Array.isArray(data) ? data : []
+                );
             } else {
                 setSubcategories([]);
             }
         } catch (error) {
-            console.error('Subcategory Fetch Error:', error);
+            console.error(
+                'Subcategory Fetch Error:',
+                error
+            );
+
             setSubcategories([]);
         } finally {
             setLoadingSubcategories(false);
@@ -104,19 +222,37 @@ const Home = () => {
         setError('');
 
         try {
-            const response = await api.get('/courses/list.php');
+            const response =
+                await api.get('/courses/list.php');
 
             if (response.data?.status) {
-                const data = response.data?.data?.courses || response.data?.data || [];
-                setCourses(Array.isArray(data) ? data : []);
+                const data =
+                    response.data?.data?.courses ||
+                    response.data?.data ||
+                    [];
+
+                setCourses(
+                    Array.isArray(data) ? data : []
+                );
             } else {
                 setCourses([]);
-                setError(response.data?.message || 'Unable to load courses');
+                setError(
+                    response.data?.message ||
+                    'Unable to load courses'
+                );
             }
         } catch (error) {
-            console.error('Course Fetch Error:', error);
+            console.error(
+                'Course Fetch Error:',
+                error
+            );
+
             setCourses([]);
-            setError(error.response?.data?.message || 'Unable to load courses');
+
+            setError(
+                error.response?.data?.message ||
+                'Unable to load courses'
+            );
         } finally {
             setLoadingCourses(false);
         }
@@ -150,38 +286,28 @@ const Home = () => {
                     0
                 );
 
+                // price = original price
                 const originalPrice = Number(
-                    course.price ??
-                    course.original_price ??
-                    course.cross_price ??
-                    0
+                    course.price || 0
                 );
 
+                // discount_price = discount amount
                 const discountAmount = Number(
-                    course.discount ??
-                    course.discount_amount ??
-                    0
+                    course.discount_price || 0
                 );
 
-                let finalPrice = originalPrice;
-
-                if (
-                    course.discount_price !== null &&
-                    course.discount_price !== undefined &&
-                    course.discount_price !== ''
-                ) {
-                    finalPrice = Number(course.discount_price);
-                } else if (
+                // final price = original price - discount
+                const finalPrice =
                     discountAmount > 0 &&
-                    discountAmount < originalPrice
-                ) {
-                    finalPrice = originalPrice - discountAmount;
-                }
+                        discountAmount < originalPrice
+                        ? originalPrice - discountAmount
+                        : originalPrice;
 
-                const actualDiscount = Math.max(
-                    0,
-                    originalPrice - finalPrice
-                );
+                const actualDiscount =
+                    discountAmount > 0 &&
+                        discountAmount < originalPrice
+                        ? discountAmount
+                        : 0;
 
                 const teacherName =
                     course.teacher_name ??
@@ -189,7 +315,7 @@ const Home = () => {
                     course.user_name ??
                     'Instructor';
 
-                const teacherImage =
+                let teacherImage =
                     course.teacher_image_url ||
                     course.teacher_image ||
                     course.instructor_image_url ||
@@ -197,6 +323,23 @@ const Home = () => {
                     course.user_image_url ||
                     course.user_image ||
                     null;
+
+                if (teacherImage) {
+                    teacherImage =
+                        String(teacherImage).trim();
+
+                    if (
+                        !teacherImage.startsWith(
+                            'http://'
+                        ) &&
+                        !teacherImage.startsWith(
+                            'https://'
+                        )
+                    ) {
+                        teacherImage =
+                            `http://localhost${teacherImage.startsWith('/') ? '' : '/'}${teacherImage}`;
+                    }
+                }
 
                 let courseImage =
                     course.thumbnail_url ||
@@ -206,27 +349,51 @@ const Home = () => {
                     null;
 
                 if (courseImage) {
-                    courseImage = String(courseImage).trim();
+                    courseImage =
+                        String(courseImage).trim();
 
                     if (
-                        !courseImage.startsWith('http://') &&
-                        !courseImage.startsWith('https://')
+                        !courseImage.startsWith(
+                            'http://'
+                        ) &&
+                        !courseImage.startsWith(
+                            'https://'
+                        )
                     ) {
-                        courseImage = `http://localhost${courseImage.startsWith('/') ? '' : '/'}${courseImage}`;
+                        courseImage =
+                            `http://localhost${courseImage.startsWith('/') ? '' : '/'}${courseImage}`;
                     }
                 }
 
                 return {
                     ...course,
-                    normalizedEnrollmentCount: enrollmentCount,
-                    normalizedReviewCount: reviewCount,
-                    normalizedRating: rating,
-                    normalizedOriginalPrice: originalPrice,
-                    normalizedDiscountAmount: actualDiscount,
-                    normalizedFinalPrice: finalPrice,
-                    normalizedTeacherName: teacherName,
-                    normalizedTeacherImage: teacherImage,
-                    normalizedCourseImage: courseImage
+
+                    normalizedEnrollmentCount:
+                        enrollmentCount,
+
+                    normalizedReviewCount:
+                        reviewCount,
+
+                    normalizedRating:
+                        rating,
+
+                    normalizedOriginalPrice:
+                        originalPrice,
+
+                    normalizedDiscountAmount:
+                        actualDiscount,
+
+                    normalizedFinalPrice:
+                        finalPrice,
+
+                    normalizedTeacherName:
+                        teacherName,
+
+                    normalizedTeacherImage:
+                        teacherImage,
+
+                    normalizedCourseImage:
+                        courseImage
                 };
             })
             .filter(
@@ -294,19 +461,24 @@ const Home = () => {
     ]);
 
     const bestSellerCourses = useMemo(() => {
-        return [...normalizedCourses]
-            .sort(
-                (a, b) =>
-                    b.normalizedEnrollmentCount -
-                    a.normalizedEnrollmentCount
-            );
+        return [...normalizedCourses].sort(
+            (a, b) =>
+                b.normalizedEnrollmentCount -
+                a.normalizedEnrollmentCount
+        );
     }, [normalizedCourses]);
 
     const newCourses = useMemo(() => {
         return [...normalizedCourses]
             .sort((a, b) => {
-                const dateA = new Date(a.created_at ?? 0).getTime();
-                const dateB = new Date(b.created_at ?? 0).getTime();
+                const dateA = new Date(
+                    a.created_at ?? 0
+                ).getTime();
+
+                const dateB = new Date(
+                    b.created_at ?? 0
+                ).getTime();
+
                 return dateB - dateA;
             })
             .slice(0, 4);
@@ -330,7 +502,9 @@ const Home = () => {
         filteredCourses
     ]);
 
-    const getSubcategoriesForCategory = (categoryId) => {
+    const getSubcategoriesForCategory = (
+        categoryId
+    ) => {
         return subcategories.filter(
             (subcategory) =>
                 Number(subcategory.category_id) ===
@@ -342,12 +516,15 @@ const Home = () => {
         setSelectedCategory(Number(categoryId));
         setSelectedSubcategory(null);
         setSelectedTab(null);
+
         setShowCategoryMenu(false);
         setHoveredCategory(null);
 
         setTimeout(() => {
             document
-                .querySelector('.home-courses-section')
+                .querySelector(
+                    '.home-courses-section'
+                )
                 ?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -355,19 +532,24 @@ const Home = () => {
         }, 100);
     };
 
-    const handleSubcategoryClick = (subcategoryId) => {
+    const handleSubcategoryClick = (
+        subcategoryId
+    ) => {
         const id = Number(subcategoryId);
 
-        const selectedSub = subcategories.find(
-            (subcategory) =>
-                Number(subcategory.id) === id
-        );
+        const selectedSub =
+            subcategories.find(
+                (subcategory) =>
+                    Number(subcategory.id) === id
+            );
 
         setSelectedSubcategory(id);
 
         if (selectedSub?.category_id) {
             setSelectedCategory(
-                Number(selectedSub.category_id)
+                Number(
+                    selectedSub.category_id
+                )
             );
         }
 
@@ -377,7 +559,9 @@ const Home = () => {
 
         setTimeout(() => {
             document
-                .querySelector('.home-courses-section')
+                .querySelector(
+                    '.home-courses-section'
+                )
                 ?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -418,14 +602,20 @@ const Home = () => {
     };
 
     const formatPrice = (price) => {
-        return `₹${Number(price || 0).toLocaleString('en-IN')}`;
+        return `₹${Number(
+            price || 0
+        ).toLocaleString('en-IN')}`;
     };
 
     const getEnrollmentText = (count) => {
         const value = Number(count || 0);
 
         if (value >= 1000) {
-            return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K+ Enrolled`;
+            return `${(
+                value / 1000
+            ).toFixed(
+                value >= 10000 ? 0 : 1
+            )}K+ Enrolled`;
         }
 
         return `${value}+ Enrolled`;
@@ -459,20 +649,30 @@ const Home = () => {
     };
 
     const handleImageError = (event) => {
-        if (event.currentTarget.dataset.fallback) {
+        if (
+            event.currentTarget.dataset
+                .fallback
+        ) {
             return;
         }
 
-        event.currentTarget.dataset.fallback = 'true';
+        event.currentTarget.dataset.fallback =
+            'true';
+
         event.currentTarget.src =
             '/images/courses/default-course.jpg';
     };
 
-    const renderCourseCard = (course, type = 'slider') => {
-        const badge = getCourseBadge(course);
+    const renderCourseCard = (
+        course,
+        type = 'slider'
+    ) => {
+        const badge =
+            getCourseBadge(course);
 
         const hasDiscount =
-            course.normalizedDiscountAmount > 0;
+            course.normalizedDiscountAmount >
+            0;
 
         return (
             <div
@@ -492,9 +692,17 @@ const Home = () => {
                     }
                 >
                     <img
-                        src={course.normalizedCourseImage}
-                        alt={course.title || 'Course'}
-                        onError={handleImageError}
+                        src={
+                            course.normalizedCourseImage ||
+                            '/images/courses/default-course.jpg'
+                        }
+                        alt={
+                            course.title ||
+                            'Course'
+                        }
+                        onError={
+                            handleImageError
+                        }
                     />
 
                     <span
@@ -521,22 +729,33 @@ const Home = () => {
                                 : 'home-course-title'
                         }
                     >
-                        {course.title || 'Untitled Course'}
+                        {course.title ||
+                            'Untitled Course'}
                     </Link>
 
                     <div className="home-course-instructor">
                         {course.normalizedTeacherImage ? (
                             <img
-                                src={course.normalizedTeacherImage}
-                                alt={course.normalizedTeacherName}
+                                src={
+                                    course.normalizedTeacherImage
+                                }
+                                alt={
+                                    course.normalizedTeacherName
+                                }
                                 className="home-instructor-avatar"
-                                onError={(event) => {
-                                    event.currentTarget.style.display = 'none';
+                                onError={(
+                                    event
+                                ) => {
+                                    event.currentTarget.style.display =
+                                        'none';
 
                                     if (
-                                        event.currentTarget.nextElementSibling
+                                        event
+                                            .currentTarget
+                                            .nextElementSibling
                                     ) {
-                                        event.currentTarget.nextElementSibling.style.display = 'flex';
+                                        event.currentTarget.nextElementSibling.style.display =
+                                            'flex';
                                     }
                                 }}
                             />
@@ -555,21 +774,32 @@ const Home = () => {
                         </span>
 
                         <span>
-                            {course.normalizedTeacherName}
+                            {
+                                course.normalizedTeacherName
+                            }
                         </span>
                     </div>
 
                     <div className="home-course-rating">
                         <strong>
-                            {course.normalizedRating > 0
-                                ? course.normalizedRating.toFixed(1)
+                            {course.normalizedRating >
+                                0
+                                ? course.normalizedRating.toFixed(
+                                    1
+                                )
                                 : '0.0'}
                         </strong>
 
-                        <span className="home-star">★</span>
+                        <span className="home-star">
+                            ★
+                        </span>
 
                         <span>
-                            ({course.normalizedReviewCount})
+                            (
+                            {
+                                course.normalizedReviewCount
+                            }
+                            )
                         </span>
                     </div>
 
@@ -610,30 +840,38 @@ const Home = () => {
         );
     };
 
-    const visibleCategories = categories.slice(0, 9);
+    const visibleCategories =
+        categories.slice(0, 9);
 
-    const totalStudents =
-        normalizedCourses.reduce(
-            (total, course) =>
-                total +
-                course.normalizedEnrollmentCount,
-            0
-        );
+    const totalStudents = normalizedCourses.reduce(
+        (total, course) => {
+            return total + Number(
+                course.total_students ??
+                course.enrollment_count ??
+                course.enrolled_count ??
+                0
+            );
+        },
+        0
+    );
 
     const totalCourses = normalizedCourses.length;
 
-    const totalTeachers =
-        new Set(
-            normalizedCourses.map(
+    const totalTeachers = new Set(
+        normalizedCourses
+            .map(
                 (course) =>
                     course.teacher_id ??
                     course.user_id ??
                     course.teacher_name
             )
-        ).size;
+            .filter(Boolean)
+    ).size;
 
     const slideCourses = (direction) => {
-        if (!courseSliderRef.current) return;
+        if (!courseSliderRef.current) {
+            return;
+        }
 
         const container =
             courseSliderRef.current;
@@ -643,10 +881,13 @@ const Home = () => {
                 '.home-course-card'
             );
 
-        if (!card) return;
+        if (!card) {
+            return;
+        }
 
         const cardWidth =
-            card.getBoundingClientRect().width;
+            card.getBoundingClientRect()
+                .width;
 
         const gap = 20;
 
@@ -660,7 +901,9 @@ const Home = () => {
     };
 
     const slideNewCourses = (direction) => {
-        if (!newCourseSliderRef.current) return;
+        if (!newCourseSliderRef.current) {
+            return;
+        }
 
         const container =
             newCourseSliderRef.current;
@@ -670,10 +913,13 @@ const Home = () => {
                 '.home-new-course-card'
             );
 
-        if (!card) return;
+        if (!card) {
+            return;
+        }
 
         const cardWidth =
-            card.getBoundingClientRect().width;
+            card.getBoundingClientRect()
+                .width;
 
         const gap = 20;
 
@@ -698,8 +944,9 @@ const Home = () => {
                         </strong>
 
                         <span>
-                            Get flat 50% OFF on all courses.
-                            Limited time only!
+                            Get flat 50% OFF on all
+                            courses. Limited time
+                            only!
                         </span>
 
                         <Link
@@ -730,8 +977,12 @@ const Home = () => {
                         <div
                             className="home-category-menu"
                             onMouseLeave={() => {
-                                setHoveredCategory(null);
-                                setShowCategoryMenu(false);
+                                setHoveredCategory(
+                                    null
+                                );
+                                setShowCategoryMenu(
+                                    false
+                                );
                             }}
                         >
                             <button
@@ -739,7 +990,8 @@ const Home = () => {
                                 className="home-category-button"
                                 onClick={() =>
                                     setShowCategoryMenu(
-                                        (prev) => !prev
+                                        (prev) =>
+                                            !prev
                                     )
                                 }
                             >
@@ -759,22 +1011,29 @@ const Home = () => {
                                     Categories
                                 </span>
 
-                                <FaChevronDown size={12} />
+                                <FaChevronDown
+                                    size={12}
+                                />
                             </button>
 
                             {showCategoryMenu && (
                                 <div className="home-category-dropdown">
                                     {loadingCategories ? (
                                         <div className="p-3 text-muted">
-                                            Loading categories...
+                                            Loading
+                                            categories...
                                         </div>
-                                    ) : visibleCategories.length === 0 ? (
+                                    ) : visibleCategories.length ===
+                                        0 ? (
                                         <div className="p-3 text-muted">
-                                            No categories available
+                                            No categories
+                                            available
                                         </div>
                                     ) : (
                                         visibleCategories.map(
-                                            (category) => {
+                                            (
+                                                category
+                                            ) => {
                                                 const categorySubs =
                                                     getSubcategoriesForCategory(
                                                         category.id
@@ -782,7 +1041,9 @@ const Home = () => {
 
                                                 return (
                                                     <div
-                                                        key={category.id}
+                                                        key={
+                                                            category.id
+                                                        }
                                                         className="home-category-dropdown-wrapper"
                                                         onMouseEnter={() =>
                                                             setHoveredCategory(
@@ -808,7 +1069,9 @@ const Home = () => {
                                                             </span>
 
                                                             <span>
-                                                                {category.name}
+                                                                {
+                                                                    category.name
+                                                                }
                                                             </span>
 
                                                             <FaChevronRight />
@@ -829,7 +1092,9 @@ const Home = () => {
                                                                     }
                                                                 >
                                                                     <div className="home-subcategory-title">
-                                                                        {category.name}
+                                                                        {
+                                                                            category.name
+                                                                        }
                                                                     </div>
 
                                                                     {loadingSubcategories ? (
@@ -839,7 +1104,8 @@ const Home = () => {
                                                                     ) : categorySubs.length ===
                                                                         0 ? (
                                                                         <div className="home-subcategory-empty">
-                                                                            No subcategories
+                                                                            No
+                                                                            subcategories
                                                                         </div>
                                                                     ) : (
                                                                         categorySubs.map(
@@ -907,7 +1173,8 @@ const Home = () => {
                             </Link>
 
                             <Link to="/become-instructor">
-                                Become an Instructor
+                                Become an
+                                Instructor
                             </Link>
 
                             <Link to="/contact-us">
@@ -931,16 +1198,23 @@ const Home = () => {
                         <div className="home-hero-wrapper">
                             <div className="home-hero-content">
                                 <h1>
-                                    Learn new skills.
+                                    Learn new
+                                    skills.
                                     <br />
-                                    <span>Advance</span> your career.
+                                    <span>
+                                        Advance
+                                    </span>{' '}
+                                    your career.
                                 </h1>
 
                                 <p>
-                                    Explore courses from expert instructors.
+                                    Explore courses
+                                    from expert
+                                    instructors.
                                     <br />
-                                    Learn at your own pace.
-                                    Get future ready.
+                                    Learn at your own
+                                    pace. Get future
+                                    ready.
                                 </p>
 
                                 <div className="home-hero-buttons">
@@ -955,7 +1229,9 @@ const Home = () => {
                                         type="button"
                                         className="home-secondary-button"
                                     >
-                                        <FaPlay size={12} />
+                                        <FaPlay
+                                            size={12}
+                                        />
                                         Watch Video
                                     </button>
                                 </div>
@@ -968,11 +1244,14 @@ const Home = () => {
 
                                         <div>
                                             <strong>
-                                                Expert Instructors
+                                                Expert
+                                                Instructors
                                             </strong>
 
                                             <span>
-                                                Learn from industry experts
+                                                Learn from
+                                                industry
+                                                experts
                                             </span>
                                         </div>
                                     </div>
@@ -984,11 +1263,14 @@ const Home = () => {
 
                                         <div>
                                             <strong>
-                                                Lifetime Access
+                                                Lifetime
+                                                Access
                                             </strong>
 
                                             <span>
-                                                Learn on your schedule
+                                                Learn on
+                                                your
+                                                schedule
                                             </span>
                                         </div>
                                     </div>
@@ -1004,7 +1286,9 @@ const Home = () => {
                                             </strong>
 
                                             <span>
-                                                Earn completion certificate
+                                                Earn
+                                                completion
+                                                certificate
                                             </span>
                                         </div>
                                     </div>
@@ -1077,18 +1361,25 @@ const Home = () => {
                         <div className="home-category-list">
                             {loadingCategories ? (
                                 <div className="text-muted">
-                                    Loading categories...
+                                    Loading
+                                    categories...
                                 </div>
-                            ) : visibleCategories.length === 0 ? (
+                            ) : visibleCategories.length ===
+                                0 ? (
                                 <div className="text-muted">
-                                    No categories available
+                                    No categories
+                                    available
                                 </div>
                             ) : (
                                 visibleCategories.map(
-                                    (category) => (
+                                    (
+                                        category
+                                    ) => (
                                         <button
                                             type="button"
-                                            key={category.id}
+                                            key={
+                                                category.id
+                                            }
                                             className={`home-category-card ${Number(
                                                 selectedCategory
                                             ) ===
@@ -1115,7 +1406,9 @@ const Home = () => {
                                             </div>
 
                                             <span>
-                                                {category.name}
+                                                {
+                                                    category.name
+                                                }
                                             </span>
                                         </button>
                                     )
@@ -1131,41 +1424,53 @@ const Home = () => {
                             <button
                                 type="button"
                                 className={
-                                    selectedTab === null &&
-                                        selectedCategory === null
+                                    selectedTab ===
+                                        null &&
+                                        selectedCategory ===
+                                        null
                                         ? 'home-course-tab active'
                                         : 'home-course-tab'
                                 }
-                                onClick={clearCategoryFilter}
+                                onClick={
+                                    clearCategoryFilter
+                                }
                             >
                                 Best Sellers
                             </button>
 
                             {categories
                                 .slice(0, 8)
-                                .map((category) => (
-                                    <button
-                                        type="button"
-                                        key={category.id}
-                                        className={
-                                            Number(
-                                                selectedTab
-                                            ) ===
+                                .map(
+                                    (
+                                        category
+                                    ) => (
+                                        <button
+                                            type="button"
+                                            key={
+                                                category.id
+                                            }
+                                            className={
                                                 Number(
+                                                    selectedTab
+                                                ) ===
+                                                    Number(
+                                                        category.id
+                                                    )
+                                                    ? 'home-course-tab active'
+                                                    : 'home-course-tab'
+                                            }
+                                            onClick={() =>
+                                                handleTabClick(
                                                     category.id
                                                 )
-                                                ? 'home-course-tab active'
-                                                : 'home-course-tab'
-                                        }
-                                        onClick={() =>
-                                            handleTabClick(
-                                                category.id
-                                            )
-                                        }
-                                    >
-                                        {category.name}
-                                    </button>
-                                ))}
+                                            }
+                                        >
+                                            {
+                                                category.name
+                                            }
+                                        </button>
+                                    )
+                                )}
                         </div>
 
                         <div className="home-course-slider-wrapper">
@@ -1173,7 +1478,9 @@ const Home = () => {
                                 type="button"
                                 className="home-slider-arrow home-slider-arrow-left"
                                 onClick={() =>
-                                    slideCourses('left')
+                                    slideCourses(
+                                        'left'
+                                    )
                                 }
                                 aria-label="Previous courses"
                             >
@@ -1182,19 +1489,26 @@ const Home = () => {
 
                             <div
                                 className="home-course-slider"
-                                ref={courseSliderRef}
+                                ref={
+                                    courseSliderRef
+                                }
                             >
                                 {loadingCourses ? (
                                     <div className="home-course-loading">
-                                        Loading courses...
+                                        Loading
+                                        courses...
                                     </div>
-                                ) : displayedCourses.length === 0 ? (
+                                ) : displayedCourses.length ===
+                                    0 ? (
                                     <div className="home-course-empty">
-                                        No courses available.
+                                        No courses
+                                        available.
                                     </div>
                                 ) : (
                                     displayedCourses.map(
-                                        (course) =>
+                                        (
+                                            course
+                                        ) =>
                                             renderCourseCard(
                                                 course,
                                                 'slider'
@@ -1207,7 +1521,9 @@ const Home = () => {
                                 type="button"
                                 className="home-slider-arrow home-slider-arrow-right"
                                 onClick={() =>
-                                    slideCourses('right')
+                                    slideCourses(
+                                        'right'
+                                    )
                                 }
                                 aria-label="Next courses"
                             >
@@ -1217,7 +1533,8 @@ const Home = () => {
 
                         <div className="home-show-all">
                             <Link to="/courses">
-                                Show all courses
+                                Show all
+                                courses
                                 <FaArrowRight />
                             </Link>
                         </div>
@@ -1227,21 +1544,38 @@ const Home = () => {
                 <section className="home-new-section">
                     <div className="home-container">
                         <div className="home-section-heading">
-                            <h2>New Courses</h2>
-                            <p>Recently published courses from our instructors.</p>
+                            <h2>
+                                New Courses
+                            </h2>
+
+                            <p>
+                                Recently published
+                                courses from our
+                                instructors.
+                            </p>
                         </div>
 
                         {loadingCourses ? (
                             <div className="home-course-loading">
                                 Loading...
                             </div>
-                        ) : newCourses.length === 0 ? (
+                        ) : newCourses.length ===
+                            0 ? (
                             <div className="home-course-empty">
-                                No new courses available.
+                                No new courses
+                                available.
                             </div>
                         ) : (
                             <div className="home-new-courses-grid">
-                                {newCourses.map((course) => renderCourseCard(course))}
+                                {newCourses.map(
+                                    (
+                                        course
+                                    ) =>
+                                        renderCourseCard(
+                                            course,
+                                            'new'
+                                        )
+                                )}
                             </div>
                         )}
                     </div>
@@ -1254,4 +1588,3 @@ const Home = () => {
 };
 
 export default Home;
-

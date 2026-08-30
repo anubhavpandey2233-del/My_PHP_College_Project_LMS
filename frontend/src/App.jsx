@@ -1,4 +1,3 @@
-
 import {
   BrowserRouter,
   Routes,
@@ -48,6 +47,7 @@ import Categories from './pages/admin/Categories';
 import Profile from './pages/admin/Profile';
 import StudentReviews from './pages/admin/Reviews/StudentReviews';
 import ContactMessages from './pages/admin/ContactMessages';
+import AdminInstructorApplications from './pages/admin/AdminInstructorApplications';
 
 
 // =====================================
@@ -94,6 +94,14 @@ import CourseDetails from './pages/courses/CourseDetails';
 
 
 // =====================================
+// BECOME INSTRUCTOR
+// =====================================
+
+import BecomeInstructor from './pages/BecomeInstructor/BecomeInstructor';
+import InstructorApplication from './pages/BecomeInstructor/InstructorApplication';
+
+
+// =====================================
 // SUPPORT
 // =====================================
 
@@ -118,7 +126,6 @@ function App() {
 
             {/* =================================
                 HOME
-                PUBLIC - LOGIN NOT REQUIRED
             ================================= */}
 
             <Route
@@ -252,6 +259,24 @@ function App() {
               }
             />
 
+
+            {/* =================================
+                ADMIN INSTRUCTOR APPLICATIONS
+            ================================= */}
+
+            <Route
+              path="/admin/instructor-applications"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminInstructorApplications />
+                </RoleProtectedRoute>
+              }
+            />
+
+
+            {/* =================================
+                ADMIN PROFILE
+            ================================= */}
 
             <Route
               path="/admin/profile"
@@ -477,6 +502,26 @@ function App() {
               element={<TermsConditions />}
             />
 
+
+            {/* =================================
+                BECOME INSTRUCTOR
+            ================================= */}
+
+            <Route
+              path="/become-instructor"
+              element={<BecomeInstructor />}
+            />
+
+            <Route
+              path="/become-instructor/apply"
+              element={<InstructorApplication />}
+            />
+
+
+            {/* =================================
+                CONTACT
+            ================================= */}
+
             <Route
               path="/contact-us"
               element={<ContactUs />}
@@ -484,7 +529,7 @@ function App() {
 
 
             {/* =================================
-                404 / UNKNOWN ROUTE
+                404
             ================================= */}
 
             <Route
@@ -510,4 +555,3 @@ function App() {
 
 
 export default App;
-

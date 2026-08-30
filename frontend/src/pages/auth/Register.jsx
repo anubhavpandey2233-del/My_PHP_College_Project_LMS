@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -115,6 +114,7 @@ const Register = () => {
 
             setError(
                 err.response?.data?.message ||
+                err.message ||
                 'Something went wrong while registering'
             );
 
@@ -351,4 +351,3 @@ const Register = () => {
 
 
 export default Register;
-

@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . '/../../config/database.php';
@@ -10,7 +9,7 @@ require_once __DIR__ . '/../../middleware/auth.php';
 // AUTHENTICATION
 // ==========================================
 
-$user = authenticate($pdo, ['student']);
+$user = authenticate($pdo);
 
 
 // ==========================================
@@ -76,7 +75,6 @@ if (!$course) {
 
 }
 
-
 if ($course['status'] !== 'published') {
 
     sendError(
@@ -140,7 +138,7 @@ $enrollmentId = $pdo->lastInsertId();
 
 
 // ==========================================
-// UPDATE COURSE STUDENT COUNT
+// UPDATE STUDENT COUNT
 // ==========================================
 
 $stmt = $pdo->prepare("
@@ -165,8 +163,6 @@ $notificationMessage =
     " enrolled in your course: " .
     $course['title'];
 
-$notificationType = "enrollment";
-
 $stmt = $pdo->prepare("
     INSERT INTO notifications
     (
@@ -178,15 +174,13 @@ $stmt = $pdo->prepare("
         link,
         created_at
     )
-    VALUES (?, ?, ?, ?, 0, ?, NOW())
+    VALUES (?, ?, ?, 'enrollment', 0, NULL, NOW())
 ");
 
 $stmt->execute([
     $course['teacher_id'],
     $notificationTitle,
-    $notificationMessage,
-    $notificationType,
-    null
+    $notificationMessage
 ]);
 
 
@@ -202,4 +196,3 @@ sendResponse(
     ],
     201
 );
-

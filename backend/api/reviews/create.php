@@ -1,4 +1,3 @@
-
 <?php
 
 // ==========================================
@@ -215,7 +214,7 @@ $stmt = $pdo->prepare("
         review_text,
         status
     )
-    VALUES (?, ?, ?, ?, 'pending')
+    VALUES (?, ?, ?, ?, 'approved')
 ");
 
 $stmt->execute([
@@ -297,8 +296,8 @@ sendResponse(
     true,
     "Review submitted successfully",
     [
-        "review_id" => $reviewId
+        "review_id" => $reviewId,
+        "status" => "approved"
     ],
     201
 );
-

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -28,6 +29,7 @@ const Home = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [reviews, setReviews] = useState([]);
 
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
@@ -38,13 +40,14 @@ const Home = () => {
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingSubcategories, setLoadingSubcategories] = useState(true);
     const [loadingCourses, setLoadingCourses] = useState(true);
+    const [loadingReviews, setLoadingReviews] = useState(true);
 
     const [error, setError] = useState('');
     const [showCategoryMenu, setShowCategoryMenu] = useState(false);
     const [showOfferBar, setShowOfferBar] = useState(true);
 
     const courseSliderRef = useRef(null);
-    const newCourseSliderRef = useRef(null);
+    const reviewSliderRef = useRef(null);
 
     const heroImage = '/images/home/hero.jpg';
 
@@ -173,11 +176,7 @@ const Home = () => {
                 setCategories([]);
             }
         } catch (error) {
-            console.error(
-                'Category Fetch Error:',
-                error
-            );
-
+            console.error('Category Fetch Error:', error);
             setCategories([]);
         } finally {
             setLoadingCategories(false);
@@ -188,10 +187,9 @@ const Home = () => {
         setLoadingSubcategories(true);
 
         try {
-            const response =
-                await api.get(
-                    '/subcategories/list.php'
-                );
+            const response = await api.get(
+                '/subcategories/list.php'
+            );
 
             if (response.data?.status) {
                 const data =
@@ -222,8 +220,9 @@ const Home = () => {
         setError('');
 
         try {
-            const response =
-                await api.get('/courses/list.php');
+            const response = await api.get(
+                '/courses/list.php'
+            );
 
             if (response.data?.status) {
                 const data =
@@ -258,11 +257,57 @@ const Home = () => {
         }
     };
 
+    const fetchReviews = async () => {
+        setLoadingReviews(true);
+
+        try {
+            const response = await api.get(
+                '/reviews/home.php'
+            );
+
+            if (response.data?.status) {
+                const data =
+                    response.data?.data?.reviews ||
+                    response.data?.data ||
+                    [];
+
+                const reviewList = Array.isArray(data)
+                    ? data
+                    : [];
+
+                setReviews(reviewList);
+            } else {
+                setReviews([]);
+            }
+        } catch (error) {
+            console.error(
+                'Review Fetch Error:',
+                error
+            );
+
+            setReviews([]);
+        } finally {
+            setLoadingReviews(false);
+        }
+    };
     useEffect(() => {
         fetchCategories();
         fetchSubcategories();
         fetchCourses();
     }, []);
+
+    useEffect(() => {
+        if (loadingCourses) {
+            return;
+        }
+
+        if (courses.length > 0) {
+            fetchReviews(courses);
+        } else {
+            setReviews([]);
+            setLoadingReviews(false);
+        }
+    }, [loadingCourses, courses]);
 
     const normalizedCourses = useMemo(() => {
         return courses
@@ -286,21 +331,19 @@ const Home = () => {
                     0
                 );
 
-                // price = original price
                 const originalPrice = Number(
                     course.price || 0
                 );
 
-                // discount_price = discount amount
                 const discountAmount = Number(
                     course.discount_price || 0
                 );
 
-                // final price = original price - discount
                 const finalPrice =
                     discountAmount > 0 &&
                         discountAmount < originalPrice
-                        ? originalPrice - discountAmount
+                        ? originalPrice -
+                        discountAmount
                         : originalPrice;
 
                 const actualDiscount =
@@ -337,7 +380,12 @@ const Home = () => {
                         )
                     ) {
                         teacherImage =
-                            `http://localhost${teacherImage.startsWith('/') ? '' : '/'}${teacherImage}`;
+                            `http://localhost${teacherImage.startsWith(
+                                '/'
+                            )
+                                ? ''
+                                : '/'
+                            }${teacherImage}`;
                     }
                 }
 
@@ -361,37 +409,32 @@ const Home = () => {
                         )
                     ) {
                         courseImage =
-                            `http://localhost${courseImage.startsWith('/') ? '' : '/'}${courseImage}`;
+                            `http://localhost${courseImage.startsWith(
+                                '/'
+                            )
+                                ? ''
+                                : '/'
+                            }${courseImage}`;
                     }
                 }
 
                 return {
                     ...course,
-
                     normalizedEnrollmentCount:
                         enrollmentCount,
-
                     normalizedReviewCount:
                         reviewCount,
-
-                    normalizedRating:
-                        rating,
-
+                    normalizedRating: rating,
                     normalizedOriginalPrice:
                         originalPrice,
-
                     normalizedDiscountAmount:
                         actualDiscount,
-
                     normalizedFinalPrice:
                         finalPrice,
-
                     normalizedTeacherName:
                         teacherName,
-
                     normalizedTeacherImage:
                         teacherImage,
-
                     normalizedCourseImage:
                         courseImage
                 };
@@ -607,6 +650,23 @@ const Home = () => {
         ).toLocaleString('en-IN')}`;
     };
 
+
+    const getStudentImage = (avatar) => {
+        if (!avatar) {
+            return null;
+        }
+
+        const image = String(avatar).trim();
+
+        if (
+            image.startsWith('http://') ||
+            image.startsWith('https://')
+        ) {
+            return image;
+        }
+
+        return `http://localhost/php-lms-project/backend/uploads/avatars/${image}`;
+    };
     const getEnrollmentText = (count) => {
         const value = Number(count || 0);
 
@@ -661,6 +721,30 @@ const Home = () => {
 
         event.currentTarget.src =
             '/images/courses/default-course.jpg';
+    };
+
+    const getReviewAvatar = (review) => {
+        let avatar =
+            review.student_avatar ||
+            review.user_avatar ||
+            review.avatar ||
+            null;
+
+        if (!avatar) {
+            return null;
+        }
+
+        avatar = String(avatar).trim();
+
+        if (
+            avatar.startsWith('http://') ||
+            avatar.startsWith('https://')
+        ) {
+            return avatar;
+        }
+
+        return `http://localhost${avatar.startsWith('/') ? '' : '/'
+            }${avatar}`;
     };
 
     const renderCourseCard = (
@@ -840,22 +924,129 @@ const Home = () => {
         );
     };
 
+    const renderReviewCard = (review) => {
+        const avatar =
+            getReviewAvatar(review);
+
+        return (
+            <div
+                className="home-review-card"
+                key={review.id}
+            >
+                <div className="home-review-header">
+                    {review.student_avatar ? (
+                        <img
+                            src={getStudentImage(review.student_avatar)}
+                            alt={
+                                review.student_name ||
+                                'Student'
+                            }
+                            className="home-review-avatar"
+                            onError={(event) => {
+                                event.currentTarget.style.display =
+                                    'none';
+
+                                if (
+                                    event.currentTarget
+                                        .nextElementSibling
+                                ) {
+                                    event.currentTarget
+                                        .nextElementSibling.style.display =
+                                        'flex';
+                                }
+                            }}
+                        />
+                    ) : null}
+
+                    <span
+                        className="home-review-avatar home-review-avatar-fallback"
+                        style={{
+                            display: review.student_avatar
+                                ? 'none'
+                                : 'flex'
+                        }}
+                    >
+                        <FaUser />
+                    </span>
+
+                    <div className="home-review-user">
+                        <strong>
+                            {review.student_name ||
+                                'Student'}
+                        </strong>
+
+                        <span>
+                            {review.course_title ||
+                                'Course'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="home-review-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                            key={star}
+                            className={
+                                star <=
+                                    Number(
+                                        review.rating || 0
+                                    )
+                                    ? 'filled'
+                                    : ''
+                            }
+                        >
+                            ★
+                        </span>
+                    ))}
+
+                    <strong>
+                        {Number(
+                            review.rating || 0
+                        ).toFixed(1)}
+                    </strong>
+                </div>
+
+                <p className="home-review-text">
+                    {review.review_text ||
+                        'Great course!'}
+                </p>
+
+                <div className="home-review-date">
+                    {review.created_at
+                        ? new Date(
+                            review.created_at
+                        ).toLocaleDateString(
+                            'en-IN',
+                            {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                            }
+                        )
+                        : ''}
+                </div>
+            </div>
+        );
+    };
+
     const visibleCategories =
         categories.slice(0, 9);
 
-    const totalStudents = normalizedCourses.reduce(
-        (total, course) => {
-            return total + Number(
-                course.total_students ??
-                course.enrollment_count ??
-                course.enrolled_count ??
-                0
-            );
-        },
-        0
-    );
+    const totalStudents =
+        normalizedCourses.reduce(
+            (total, course) =>
+                total +
+                Number(
+                    course.total_students ??
+                    course.enrollment_count ??
+                    course.enrolled_count ??
+                    0
+                ),
+            0
+        );
 
-    const totalCourses = normalizedCourses.length;
+    const totalCourses =
+        normalizedCourses.length;
 
     const totalTeachers = new Set(
         normalizedCourses
@@ -900,17 +1091,17 @@ const Home = () => {
         });
     };
 
-    const slideNewCourses = (direction) => {
-        if (!newCourseSliderRef.current) {
+    const slideReviews = (direction) => {
+        if (!reviewSliderRef.current) {
             return;
         }
 
         const container =
-            newCourseSliderRef.current;
+            reviewSliderRef.current;
 
         const card =
             container.querySelector(
-                '.home-new-course-card'
+                '.home-review-card'
             );
 
         if (!card) {
@@ -977,12 +1168,8 @@ const Home = () => {
                         <div
                             className="home-category-menu"
                             onMouseLeave={() => {
-                                setHoveredCategory(
-                                    null
-                                );
-                                setShowCategoryMenu(
-                                    false
-                                );
+                                setHoveredCategory(null);
+                                setShowCategoryMenu(false);
                             }}
                         >
                             <button
@@ -990,8 +1177,7 @@ const Home = () => {
                                 className="home-category-button"
                                 onClick={() =>
                                     setShowCategoryMenu(
-                                        (prev) =>
-                                            !prev
+                                        (prev) => !prev
                                     )
                                 }
                             >
@@ -1031,9 +1217,7 @@ const Home = () => {
                                         </div>
                                     ) : (
                                         visibleCategories.map(
-                                            (
-                                                category
-                                            ) => {
+                                            (category) => {
                                                 const categorySubs =
                                                     getSubcategoriesForCategory(
                                                         category.id
@@ -1120,11 +1304,11 @@ const Home = () => {
                                                                                     className={`home-subcategory-item ${Number(
                                                                                         selectedSubcategory
                                                                                     ) ===
-                                                                                            Number(
-                                                                                                subcategory.id
-                                                                                            )
-                                                                                            ? 'active'
-                                                                                            : ''
+                                                                                        Number(
+                                                                                            subcategory.id
+                                                                                        )
+                                                                                        ? 'active'
+                                                                                        : ''
                                                                                         }`}
                                                                                     onClick={() =>
                                                                                         handleSubcategoryClick(
@@ -1173,8 +1357,7 @@ const Home = () => {
                             </Link>
 
                             <Link to="/become-instructor">
-                                Become an
-                                Instructor
+                                Become an Instructor
                             </Link>
 
                             <Link to="/contact-us">
@@ -1372,9 +1555,7 @@ const Home = () => {
                                 </div>
                             ) : (
                                 visibleCategories.map(
-                                    (
-                                        category
-                                    ) => (
+                                    (category) => (
                                         <button
                                             type="button"
                                             key={
@@ -1383,11 +1564,11 @@ const Home = () => {
                                             className={`home-category-card ${Number(
                                                 selectedCategory
                                             ) ===
-                                                    Number(
-                                                        category.id
-                                                    )
-                                                    ? 'selected'
-                                                    : ''
+                                                Number(
+                                                    category.id
+                                                )
+                                                ? 'selected'
+                                                : ''
                                                 }`}
                                             onClick={() =>
                                                 handleCategoryClick(
@@ -1427,6 +1608,8 @@ const Home = () => {
                                     selectedTab ===
                                         null &&
                                         selectedCategory ===
+                                        null &&
+                                        selectedSubcategory ===
                                         null
                                         ? 'home-course-tab active'
                                         : 'home-course-tab'
@@ -1441,9 +1624,7 @@ const Home = () => {
                             {categories
                                 .slice(0, 8)
                                 .map(
-                                    (
-                                        category
-                                    ) => (
+                                    (category) => (
                                         <button
                                             type="button"
                                             key={
@@ -1501,14 +1682,12 @@ const Home = () => {
                                 ) : displayedCourses.length ===
                                     0 ? (
                                     <div className="home-course-empty">
-                                        No courses
-                                        available.
+                                        {error ||
+                                            'No courses available.'}
                                     </div>
                                 ) : (
                                     displayedCourses.map(
-                                        (
-                                            course
-                                        ) =>
+                                        (course) =>
                                             renderCourseCard(
                                                 course,
                                                 'slider'
@@ -1533,8 +1712,7 @@ const Home = () => {
 
                         <div className="home-show-all">
                             <Link to="/courses">
-                                Show all
-                                courses
+                                Show all courses
                                 <FaArrowRight />
                             </Link>
                         </div>
@@ -1568,14 +1746,92 @@ const Home = () => {
                         ) : (
                             <div className="home-new-courses-grid">
                                 {newCourses.map(
-                                    (
-                                        course
-                                    ) =>
+                                    (course) =>
                                         renderCourseCard(
                                             course,
                                             'new'
                                         )
                                 )}
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                <section className="home-reviews-section">
+                    <div className="home-container">
+                        <div className="home-section-heading">
+                            <h2>
+                                What Our Students Say
+                            </h2>
+
+                            <p>
+                                See what our students
+                                think about their
+                                learning experience.
+                            </p>
+                        </div>
+
+                        {loadingReviews ? (
+                            <div className="home-review-loading">
+                                Loading reviews...
+                            </div>
+                        ) : reviews.length ===
+                            0 ? (
+                            <div className="home-review-empty">
+                                <FaBookOpen />
+
+                                <h3>
+                                    No reviews yet
+                                </h3>
+
+                                <p>
+                                    Student reviews
+                                    will appear
+                                    here once they
+                                    are approved.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="home-review-slider-wrapper">
+                                <button
+                                    type="button"
+                                    className="home-review-arrow home-review-arrow-left"
+                                    onClick={() =>
+                                        slideReviews(
+                                            'left'
+                                        )
+                                    }
+                                    aria-label="Previous reviews"
+                                >
+                                    &#10094;
+                                </button>
+
+                                <div
+                                    className="home-review-slider"
+                                    ref={
+                                        reviewSliderRef
+                                    }
+                                >
+                                    {reviews.map(
+                                        (review) =>
+                                            renderReviewCard(
+                                                review
+                                            )
+                                    )}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="home-review-arrow home-review-arrow-right"
+                                    onClick={() =>
+                                        slideReviews(
+                                            'right'
+                                        )
+                                    }
+                                    aria-label="Next reviews"
+                                >
+                                    &#10095;
+                                </button>
                             </div>
                         )}
                     </div>

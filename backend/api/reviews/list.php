@@ -1,21 +1,10 @@
-
 <?php
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
 require_once __DIR__ . '/../../middleware/auth.php';
 
-
-// ==========================================
-// ADMIN AUTHENTICATION
-// ==========================================
-
 $user = authenticate($pdo, ['admin']);
-
-
-// ==========================================
-// GET REVIEWS
-// ==========================================
 
 $stmt = $pdo->prepare("
     SELECT
@@ -25,6 +14,7 @@ $stmt = $pdo->prepare("
 
         u.name AS student_name,
         u.email AS student_email,
+        u.avatar AS student_avatar,
 
         c.title AS course_title,
 
@@ -48,14 +38,9 @@ $stmt->execute();
 
 $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-// ==========================================
-// RESPONSE
-// ==========================================
-
 sendResponse(
     true,
     "Reviews fetched successfully",
-    $reviews
+    $reviews,
+    200
 );
-

@@ -12,6 +12,7 @@ import {
 
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import './Header.css';
 
 import {
     MdDarkMode,
@@ -19,11 +20,12 @@ import {
     MdEmail,
     MdNotifications,
     MdHome,
+    MdShoppingCart,
+    MdFavorite,
     MdAccountCircle
 } from 'react-icons/md';
 
 import api from '../../services/api';
-
 
 const Header = () => {
 
@@ -41,47 +43,23 @@ const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-
-    // ==========================================
-    // ROLE
-    // ==========================================
-
     const userRole =
         String(user?.role || '').toLowerCase().trim();
 
     const isAdmin =
-        isAuthenticated &&
-        userRole === 'admin';
+        isAuthenticated && userRole === 'admin';
 
     const isTeacher =
-        isAuthenticated &&
-        userRole === 'teacher';
+        isAuthenticated && userRole === 'teacher';
 
     const isStudent =
-        isAuthenticated &&
-        userRole === 'student';
-
-
-    // ==========================================
-    // HOME PAGE
-    // ==========================================
+        isAuthenticated && userRole === 'student';
 
     const isHomePage =
         location.pathname === '/';
 
-
-    // ==========================================
-    // SHOW HOME BUTTON
-    // ==========================================
-
     const showHomeButton =
-        isAuthenticated &&
-        !isHomePage;
-
-
-    // ==========================================
-    // ACCOUNT PATH
-    // ==========================================
+        isAuthenticated && !isHomePage;
 
     const accountPath =
         isAdmin
@@ -92,10 +70,10 @@ const Header = () => {
                     ? '/student/dashboard'
                     : '/';
 
-
-    // ==========================================
-    // NOTIFICATIONS
-    // ==========================================
+    const avatar =
+    user?.avatar
+        ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
+        : null;
 
     const [notifications, setNotifications] =
         useState([]);
@@ -111,11 +89,6 @@ const Header = () => {
 
     const notificationRef =
         useRef(null);
-
-
-    // ==========================================
-    // FETCH ADMIN NOTIFICATIONS
-    // ==========================================
 
     const fetchNotifications = async () => {
 
@@ -175,13 +148,7 @@ const Header = () => {
             setLoadingNotifications(false);
 
         }
-
     };
-
-
-    // ==========================================
-    // MARK NOTIFICATION AS READ
-    // ==========================================
 
     const markAsRead = async (
         notificationId
@@ -237,15 +204,8 @@ const Header = () => {
             );
 
             return false;
-
         }
-
     };
-
-
-    // ==========================================
-    // NOTIFICATION BUTTON
-    // ==========================================
 
     const handleNotificationClick =
         async () => {
@@ -262,13 +222,7 @@ const Header = () => {
                 await fetchNotifications();
 
             }
-
         };
-
-
-    // ==========================================
-    // SINGLE NOTIFICATION
-    // ==========================================
 
     const handleSingleNotificationClick =
         async (notification) => {
@@ -282,7 +236,6 @@ const Header = () => {
                 await markAsRead(
                     notification.id
                 );
-
             }
 
             setShowNotifications(false);
@@ -294,7 +247,6 @@ const Header = () => {
                 );
 
                 return;
-
             }
 
             if (
@@ -307,15 +259,8 @@ const Header = () => {
                 navigate(
                     '/admin/contact-messages'
                 );
-
             }
-
         };
-
-
-    // ==========================================
-    // ADMIN NOTIFICATIONS ON LOGIN
-    // ==========================================
 
     useEffect(() => {
 
@@ -332,11 +277,6 @@ const Header = () => {
         }
 
     }, [isAdmin]);
-
-
-    // ==========================================
-    // AUTO REFRESH NOTIFICATIONS
-    // ==========================================
 
     useEffect(() => {
 
@@ -361,11 +301,6 @@ const Header = () => {
         };
 
     }, [isAdmin]);
-
-
-    // ==========================================
-    // CLICK OUTSIDE NOTIFICATION
-    // ==========================================
 
     useEffect(() => {
 
@@ -403,11 +338,6 @@ const Header = () => {
 
     }, []);
 
-
-    // ==========================================
-    // LOGOUT
-    // ==========================================
-
     const handleLogout = async () => {
 
         await logout();
@@ -420,11 +350,6 @@ const Header = () => {
         );
 
     };
-
-
-    // ==========================================
-    // NOTIFICATION DATE
-    // ==========================================
 
     const formatNotificationTime =
         (date) => {
@@ -450,11 +375,6 @@ const Header = () => {
 
         };
 
-
-    // ==========================================
-    // HOME NAVIGATION
-    // ==========================================
-
     const handleHomeClick = () => {
 
         setShowNotifications(false);
@@ -463,674 +383,450 @@ const Header = () => {
 
     };
 
-
     return (
 
-        <nav
-            className="
-                navbar
-                navbar-expand-lg
-                shadow-sm
-                lms-header
-            "
-        >
+        <header className="lms-header">
 
-            <div className="container">
+            <div className="lms-header-main">
 
+                <div className="lms-header-inner">
 
-                {/* ==================================
-                    LOGO
-                ================================== */}
+                    {/* LOGO */}
 
-                <Link
-                    className="
-                        navbar-brand
-                        fw-bold
-                    "
-                    to="/"
-                    onClick={() =>
-                        setShowNotifications(false)
-                    }
-                >
-                    PHP LMS
-                </Link>
+                    <Link
+                        to="/"
+                        className="lms-logo"
+                        onClick={() =>
+                            setShowNotifications(false)
+                        }
+                    >
+
+                        <span className="lms-logo-icon">
+                            🎓
+                        </span>
+
+                        <span>
+                            LMS
+                        </span>
+
+                    </Link>
 
 
-                <div
-                    className="
-                        d-flex
-                        align-items-center
-                    "
-                    style={{
-                        gap: '10px'
-                    }}
-                >
+                    {/* SEARCH */}
+
+                    <div className="lms-search-box">
+
+                        <span className="lms-search-icon">
+                            🔍
+                        </span>
+
+                        <input
+                            type="text"
+                            placeholder="Search courses..."
+                        />
+
+                    </div>
 
 
-                    {/* ==================================
-                        LOGGED IN USER
-                    ================================== */}
+                    {/* RIGHT SIDE */}
 
-                    {isAuthenticated ? (
-
-                        <>
+                    <div className="lms-header-actions">
 
 
-                            {/* ==============================
-                                HELLO USER
-                            ============================== */}
+                        {/* WISHLIST */}
 
-                            <span
-                                className="
-                                    text-white
-                                    d-none
-                                    d-md-inline
-                                "
-                                style={{
-                                    fontSize: '15px',
-                                    whiteSpace: 'nowrap'
-                                }}
+                        {isAuthenticated && (
+
+                            <Link
+                                to="/wishlist"
+                                className="lms-header-icon"
+                                title="Wishlist"
                             >
 
-                                Hello, {user?.name}
+                                <MdFavorite
+                                    size={23}
+                                />
 
-                            </span>
+                            </Link>
 
-
-                            {/* ==============================
-                                HOME ICON
-                            ============================== */}
-
-                            {showHomeButton && (
-
-                                <button
-                                    type="button"
-                                    className="
-                                        btn
-                                        btn-outline-light
-                                        d-flex
-                                        align-items-center
-                                        justify-content-center
-                                    "
-                                    onClick={
-                                        handleHomeClick
-                                    }
-                                    title="Home"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        padding: '0',
-                                        borderRadius: '50%'
-                                    }}
-                                >
-
-                                    <MdHome
-                                        size={22}
-                                    />
-
-                                </button>
-
-                            )}
+                        )}
 
 
-                            {/* ==============================
-                                MY ACCOUNT
-                            ============================== */}
+                        {/* CART */}
+
+                        {isAuthenticated && (
+
+                            <Link
+                                to="/cart"
+                                className="lms-header-icon"
+                                title="Cart"
+                            >
+
+                                <MdShoppingCart
+                                    size={23}
+                                />
+
+                            </Link>
+
+                        )}
+
+
+                        {/* USER */}
+
+                        {isAuthenticated ? (
 
                             <Link
                                 to={accountPath}
-                                className="
-                                    btn
-                                    btn-outline-light
-                                    btn-sm
-                                    d-flex
-                                    align-items-center
-                                "
+                                className="lms-user-button"
                                 onClick={() =>
                                     setShowNotifications(false)
                                 }
-                                style={{
-                                    gap: '5px',
-                                    whiteSpace: 'nowrap'
-                                }}
                             >
+
+                                {avatar ? (
+
+                                    <img
+                                        src={avatar}
+                                        alt={
+                                            user?.name ||
+                                            'Profile'
+                                        }
+                                        className="lms-user-avatar"
+                                        onError={(event) => {
+
+                                            event.currentTarget.style.display =
+                                                'none';
+
+                                            if (
+                                                event.currentTarget
+                                                    .nextElementSibling
+                                            ) {
+
+                                                event.currentTarget
+                                                    .nextElementSibling
+                                                    .style.display =
+                                                    'block';
+
+                                            }
+
+                                        }}
+                                    />
+
+                                ) : null}
+
 
                                 <MdAccountCircle
-                                    size={18}
+                                    size={29}
+                                    className="lms-user-avatar-fallback"
+                                    style={{
+                                        display: avatar
+                                            ? 'none'
+                                            : 'block'
+                                    }}
                                 />
 
+
                                 <span>
-                                    My Account
+                                    {user?.name ||
+                                        'Account'}
                                 </span>
 
                             </Link>
 
-
-                            {/* ==============================
-                                CONTACT US
-                            ============================== */}
-
-                            <Link
-                                to="/contact-us"
-                                className="
-                                    btn
-                                    btn-outline-light
-                                    btn-sm
-                                    d-flex
-                                    align-items-center
-                                "
-                                onClick={() =>
-                                    setShowNotifications(false)
-                                }
-                                style={{
-                                    gap: '5px',
-                                    whiteSpace: 'nowrap'
-                                }}
-                            >
-
-                                <MdEmail
-                                    size={17}
-                                />
-
-                                <span>
-                                    Contact Us
-                                </span>
-
-                            </Link>
-
-
-                            {/* ==============================
-                                ADMIN NOTIFICATIONS
-                            ============================== */}
-
-                            {isAdmin && (
-
-                                <div
-                                    className="
-                                        position-relative
-                                    "
-                                    ref={
-                                        notificationRef
-                                    }
-                                >
-
-                                    <button
-                                        type="button"
-                                        className="
-                                            btn
-                                            btn-outline-light
-                                            d-flex
-                                            align-items-center
-                                            justify-content-center
-                                            position-relative
-                                        "
-                                        onClick={
-                                            handleNotificationClick
-                                        }
-                                        title="Notifications"
-                                        style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            padding: '0',
-                                            borderRadius: '50%'
-                                        }}
-                                    >
-
-                                        <MdNotifications
-                                            size={22}
-                                        />
-
-
-                                        {unreadCount > 0 && (
-
-                                            <span
-                                                className="
-                                                    position-absolute
-                                                    badge
-                                                    rounded-pill
-                                                    bg-danger
-                                                "
-                                                style={{
-                                                    fontSize: '9px',
-                                                    minWidth: '18px',
-                                                    height: '18px',
-                                                    padding: '2px 4px',
-                                                    top: '-5px',
-                                                    right: '-5px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }}
-                                            >
-
-                                                {unreadCount > 99
-                                                    ? '99+'
-                                                    : unreadCount}
-
-                                            </span>
-
-                                        )}
-
-                                    </button>
-
-
-                                    {/* ==========================
-                                        NOTIFICATION DROPDOWN
-                                    ========================== */}
-
-                                    {showNotifications && (
-
-                                        <div
-                                            className="
-                                                position-absolute
-                                                end-0
-                                                mt-2
-                                                bg-white
-                                                shadow-lg
-                                                rounded-3
-                                                border
-                                            "
-                                            style={{
-                                                width: '360px',
-                                                maxWidth: '90vw',
-                                                zIndex: 1050,
-                                                overflow: 'hidden'
-                                            }}
-                                        >
-
-
-                                            {/* HEADER */}
-
-                                            <div
-                                                className="
-                                                    d-flex
-                                                    justify-content-between
-                                                    align-items-center
-                                                    px-3
-                                                    py-3
-                                                    border-bottom
-                                                "
-                                            >
-
-                                                <div
-                                                    className="
-                                                        d-flex
-                                                        align-items-center
-                                                    "
-                                                    style={{
-                                                        gap: '8px'
-                                                    }}
-                                                >
-
-                                                    <MdNotifications
-                                                        size={21}
-                                                        className="
-                                                            text-primary
-                                                        "
-                                                    />
-
-                                                    <strong>
-                                                        Notifications
-                                                    </strong>
-
-                                                </div>
-
-
-                                                {unreadCount > 0 && (
-
-                                                    <span
-                                                        className="
-                                                            badge
-                                                            bg-danger
-                                                        "
-                                                    >
-                                                        {unreadCount} new
-                                                    </span>
-
-                                                )}
-
-                                            </div>
-
-
-                                            {/* NOTIFICATIONS */}
-
-                                            <div
-                                                style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}
-                                            >
-
-                                                {loadingNotifications ? (
-
-                                                    <div
-                                                        className="
-                                                            text-center
-                                                            text-muted
-                                                            py-5
-                                                        "
-                                                    >
-                                                        Loading notifications...
-                                                    </div>
-
-                                                ) : notifications.length === 0 ? (
-
-                                                    <div
-                                                        className="
-                                                            text-center
-                                                            text-muted
-                                                            py-5
-                                                        "
-                                                    >
-
-                                                        <MdNotifications
-                                                            size={35}
-                                                            className="mb-2"
-                                                        />
-
-                                                        <div>
-                                                            No notifications
-                                                        </div>
-
-                                                    </div>
-
-                                                ) : (
-
-                                                    notifications.map(
-                                                        (notification) => {
-
-                                                            const isUnread =
-                                                                Number(
-                                                                    notification.is_read
-                                                                ) === 0;
-
-                                                            return (
-
-                                                                <div
-                                                                    key={
-                                                                        notification.id
-                                                                    }
-                                                                    className={`
-                                                                        px-3
-                                                                        py-3
-                                                                        border-bottom
-                                                                        ${
-                                                                            isUnread
-                                                                                ? 'bg-light'
-                                                                                : ''
-                                                                        }
-                                                                    `}
-                                                                    onClick={() =>
-                                                                        handleSingleNotificationClick(
-                                                                            notification
-                                                                        )
-                                                                    }
-                                                                    style={{
-                                                                        cursor: 'pointer'
-                                                                    }}
-                                                                >
-
-                                                                    <div
-                                                                        className="
-                                                                            d-flex
-                                                                        "
-                                                                        style={{
-                                                                            gap: '10px'
-                                                                        }}
-                                                                    >
-
-                                                                        <MdNotifications
-                                                                            size={21}
-                                                                            className="
-                                                                                text-primary
-                                                                                mt-1
-                                                                                flex-shrink-0
-                                                                            "
-                                                                        />
-
-
-                                                                        <div
-                                                                            className="
-                                                                                flex-grow-1
-                                                                            "
-                                                                        >
-
-                                                                            <div
-                                                                                className="
-                                                                                    fw-semibold
-                                                                                "
-                                                                            >
-                                                                                {
-                                                                                    notification.title
-                                                                                }
-                                                                            </div>
-
-
-                                                                            <div
-                                                                                className="
-                                                                                    small
-                                                                                    text-muted
-                                                                                    mt-1
-                                                                                "
-                                                                            >
-                                                                                {
-                                                                                    notification.message
-                                                                                }
-                                                                            </div>
-
-
-                                                                            {notification.created_at && (
-
-                                                                                <div
-                                                                                    className="
-                                                                                        small
-                                                                                        text-secondary
-                                                                                        mt-1
-                                                                                    "
-                                                                                >
-
-                                                                                    {formatNotificationTime(
-                                                                                        notification.created_at
-                                                                                    )}
-
-                                                                                </div>
-
-                                                                            )}
-
-                                                                        </div>
-
-
-                                                                        {isUnread && (
-
-                                                                            <span
-                                                                                className="
-                                                                                    rounded-circle
-                                                                                    bg-primary
-                                                                                    flex-shrink-0
-                                                                                "
-                                                                                style={{
-                                                                                    width: '8px',
-                                                                                    height: '8px',
-                                                                                    marginTop: '7px'
-                                                                                }}
-                                                                            />
-
-                                                                        )}
-
-                                                                    </div>
-
-                                                                </div>
-
-                                                            );
-
-                                                        }
-                                                    )
-
-                                                )}
-
-                                            </div>
-
-                                        </div>
-
-                                    )}
-
-                                </div>
-
-                            )}
-
-
-                            {/* ==============================
-                                THEME
-                            ============================== */}
-
-                            <button
-                                type="button"
-                                className="theme-toggle"
-                                onClick={toggleTheme}
-                                title={
-                                    theme === 'light'
-                                        ? 'Dark Mode'
-                                        : 'Light Mode'
-                                }
-                                style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    padding: '0',
-                                    flexShrink: 0
-                                }}
-                            >
-
-                                {theme === 'light' ? (
-
-                                    <MdDarkMode
-                                        size={21}
-                                    />
-
-                                ) : (
-
-                                    <MdLightMode
-                                        size={21}
-                                    />
-
-                                )}
-
-                            </button>
-
-
-                            {/* ==============================
-                                LOGOUT
-                            ============================== */}
-
-                            <button
-                                type="button"
-                                className="
-                                    btn
-                                    btn-outline-light
-                                    btn-sm
-                                "
-                                onClick={
-                                    handleLogout
-                                }
-                                style={{
-                                    whiteSpace: 'nowrap'
-                                }}
-                            >
-                                Logout
-                            </button>
-
-                        </>
-
-                    ) : (
-
-                        /* ==================================
-                           LOGGED OUT
-                        ================================== */
-
-                        <>
-
-                            <Link
-                                to="/contact-us"
-                                className="
-                                    btn
-                                    btn-outline-light
-                                    btn-sm
-                                    d-flex
-                                    align-items-center
-                                "
-                                style={{
-                                    gap: '5px',
-                                    whiteSpace: 'nowrap'
-                                }}
-                            >
-
-                                <MdEmail
-                                    size={17}
-                                />
-
-                                <span>
-                                    Contact Us
-                                </span>
-
-                            </Link>
-
+                        ) : (
 
                             <Link
                                 to="/login"
-                                className="
-                                    btn
-                                    btn-outline-light
-                                    btn-sm
-                                "
+                                className="lms-login-button"
                             >
                                 Login
                             </Link>
 
+                        )}
+
+
+                        {/* HOME */}
+
+                        {showHomeButton && (
 
                             <button
                                 type="button"
-                                className="theme-toggle"
-                                onClick={toggleTheme}
-                                title={
-                                    theme === 'light'
-                                        ? 'Dark Mode'
-                                        : 'Light Mode'
+                                className="lms-header-icon"
+                                onClick={
+                                    handleHomeClick
                                 }
-                                style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    padding: '0'
-                                }}
+                                title="Home"
                             >
 
-                                {theme === 'light' ? (
-
-                                    <MdDarkMode
-                                        size={21}
-                                    />
-
-                                ) : (
-
-                                    <MdLightMode
-                                        size={21}
-                                    />
-
-                                )}
+                                <MdHome
+                                    size={23}
+                                />
 
                             </button>
 
-                        </>
+                        )}
 
-                    )}
+
+                        {/* ADMIN NOTIFICATION */}
+
+                        {isAdmin && (
+
+                            <div
+                                className="lms-notification-wrapper"
+                                ref={
+                                    notificationRef
+                                }
+                            >
+
+                                <button
+                                    type="button"
+                                    className="lms-header-icon"
+                                    onClick={
+                                        handleNotificationClick
+                                    }
+                                    title="Notifications"
+                                >
+
+                                    <MdNotifications
+                                        size={23}
+                                    />
+
+                                    {unreadCount > 0 && (
+
+                                        <span className="lms-notification-badge">
+
+                                            {unreadCount > 99
+                                                ? '99+'
+                                                : unreadCount}
+
+                                        </span>
+
+                                    )}
+
+                                </button>
+
+
+                                {showNotifications && (
+
+                                    <div className="lms-notification-dropdown">
+
+                                        <div className="lms-notification-header">
+
+                                            <div>
+
+                                                <MdNotifications
+                                                    size={21}
+                                                />
+
+                                                <strong>
+                                                    Notifications
+                                                </strong>
+
+                                            </div>
+
+                                            {unreadCount > 0 && (
+
+                                                <span>
+                                                    {unreadCount} new
+                                                </span>
+
+                                            )}
+
+                                        </div>
+
+
+                                        <div className="lms-notification-list">
+
+                                            {loadingNotifications ? (
+
+                                                <div className="lms-notification-empty">
+                                                    Loading notifications...
+                                                </div>
+
+                                            ) : notifications.length === 0 ? (
+
+                                                <div className="lms-notification-empty">
+
+                                                    <MdNotifications
+                                                        size={35}
+                                                    />
+
+                                                    <div>
+                                                        No notifications
+                                                    </div>
+
+                                                </div>
+
+                                            ) : (
+
+                                                notifications.map(
+                                                    (notification) => {
+
+                                                        const isUnread =
+                                                            Number(
+                                                                notification.is_read
+                                                            ) === 0;
+
+                                                        return (
+
+                                                            <div
+                                                                key={
+                                                                    notification.id
+                                                                }
+                                                                className={`lms-notification-item ${
+                                                                    isUnread
+                                                                        ? 'unread'
+                                                                        : ''
+                                                                }`}
+                                                                onClick={() =>
+                                                                    handleSingleNotificationClick(
+                                                                        notification
+                                                                    )
+                                                                }
+                                                            >
+
+                                                                <MdNotifications
+                                                                    size={21}
+                                                                />
+
+                                                                <div>
+
+                                                                    <strong>
+                                                                        {
+                                                                            notification.title
+                                                                        }
+                                                                    </strong>
+
+                                                                    <p>
+                                                                        {
+                                                                            notification.message
+                                                                        }
+                                                                    </p>
+
+                                                                    {notification.created_at && (
+
+                                                                        <small>
+                                                                            {
+                                                                                formatNotificationTime(
+                                                                                    notification.created_at
+                                                                                )
+                                                                            }
+                                                                        </small>
+
+                                                                    )}
+
+                                                                </div>
+
+                                                                {isUnread && (
+
+                                                                    <span className="notification-dot" />
+
+                                                                )}
+
+                                                            </div>
+
+                                                        );
+
+                                                    }
+                                                )
+
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+                        )}
+
+
+                        {/* THEME */}
+
+                        <button
+                            type="button"
+                            className="
+                                lms-header-icon
+                                theme-toggle
+                            "
+                            onClick={
+                                toggleTheme
+                            }
+                            title={
+                                theme === 'light'
+                                    ? 'Dark Mode'
+                                    : 'Light Mode'
+                            }
+                        >
+
+                            {theme === 'light' ? (
+
+                                <MdDarkMode
+                                    size={22}
+                                />
+
+                            ) : (
+
+                                <MdLightMode
+                                    size={22}
+                                />
+
+                            )}
+
+                        </button>
+
+
+                        {/* CONTACT */}
+
+                        <Link
+                            to="/contact-us"
+                            className="lms-contact-button"
+                            onClick={() =>
+                                setShowNotifications(false)
+                            }
+                        >
+
+                            <MdEmail
+                                size={18}
+                            />
+
+                            <span>
+                                Contact Us
+                            </span>
+
+                        </Link>
+
+
+                        {/* LOGOUT */}
+
+                        {isAuthenticated && (
+
+                            <button
+                                type="button"
+                                className="lms-logout-button"
+                                onClick={
+                                    handleLogout
+                                }
+                            >
+
+                                Logout
+
+                            </button>
+
+                        )}
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </nav>
+        </header>
 
     );
 
 };
-
 
 export default Header;

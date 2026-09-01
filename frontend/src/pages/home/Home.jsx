@@ -1376,167 +1376,180 @@ const Home = () => {
             </div>
 
             <main>
-                <section className="home-hero">
-                    <div className="home-container">
-                        <div className="home-hero-wrapper">
-                            <div className="home-hero-content">
-                                <h1>
-                                    Learn new
-                                    skills.
-                                    <br />
-                                    <span>
-                                        Advance
-                                    </span>{' '}
-                                    your career.
-                                </h1>
+                <section className="lms-main-hero">
 
-                                <p>
-                                    Explore courses
-                                    from expert
-                                    instructors.
-                                    <br />
-                                    Learn at your own
-                                    pace. Get future
-                                    ready.
-                                </p>
+                    <img
+                        src="src\assets\images\2176.jpg"
+                        alt="Students learning online"
+                        className="lms-main-hero-bg"
+                    />
 
-                                <div className="home-hero-buttons">
-                                    <Link
-                                        to="/courses"
-                                        className="home-primary-button"
-                                    >
-                                        Explore Courses
-                                    </Link>
+                    <div className="lms-main-hero-shade"></div>
 
-                                    <button
-                                        type="button"
-                                        className="home-secondary-button"
-                                    >
-                                        <FaPlay
-                                            size={12}
-                                        />
-                                        Watch Video
-                                    </button>
-                                </div>
+                    <div className="lms-main-hero-container">
 
-                                <div className="home-hero-features">
-                                    <div className="home-feature">
-                                        <div className="home-feature-icon">
-                                            <FaUsers />
-                                        </div>
+                        <div className="lms-main-hero-left">
 
-                                        <div>
-                                            <strong>
-                                                Expert
-                                                Instructors
-                                            </strong>
+                            <span className="lms-main-hero-tag">
+                                Learn • Grow • Succeed
+                            </span>
 
-                                            <span>
-                                                Learn from
-                                                industry
-                                                experts
-                                            </span>
-                                        </div>
-                                    </div>
+                            <h1 className="lms-main-hero-title">
+                                Learn new skills.
+                                <br />
+                                <span>Advance</span> your career.
+                            </h1>
 
-                                    <div className="home-feature">
-                                        <div className="home-feature-icon">
-                                            <FaBookOpen />
-                                        </div>
+                            <p className="lms-main-hero-description">
+                                Explore courses from expert instructors.
+                                Learn at your own pace and build the skills
+                                you need for your future.
+                            </p>
 
-                                        <div>
-                                            <strong>
-                                                Lifetime
-                                                Access
-                                            </strong>
+                            <div className="lms-main-hero-buttons">
 
-                                            <span>
-                                                Learn on
-                                                your
-                                                schedule
-                                            </span>
-                                        </div>
-                                    </div>
+                                <Link
+                                    to="/courses"
+                                    className="lms-main-hero-primary"
+                                >
+                                    Explore Courses
+                                </Link>
 
-                                    <div className="home-feature">
-                                        <div className="home-feature-icon">
-                                            <FaGraduationCap />
-                                        </div>
+                                <button
+                                    type="button"
+                                    className="lms-main-hero-video"
+                                >
+                                    <FaPlay size={11} />
+                                    Watch Video
+                                </button>
 
-                                        <div>
-                                            <strong>
-                                                Certificate
-                                            </strong>
-
-                                            <span>
-                                                Earn
-                                                completion
-                                                certificate
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div className="home-hero-image-wrapper">
-                                <img
-                                    src={heroImage}
-                                    alt="Students learning online"
-                                    className="home-hero-image"
-                                />
+                            <div className="lms-main-hero-benefits">
 
-                                <div className="home-hero-stats">
-                                    <div className="home-stat-item">
-                                        <div className="home-stat-icon purple">
-                                            <FaUsers />
-                                        </div>
+                                <div className="lms-main-hero-benefit">
 
-                                        <div>
-                                            <strong>
-                                                {totalStudents}+
-                                            </strong>
+                                    <span className="lms-main-hero-benefit-icon">
+                                        <FaUsers />
+                                    </span>
 
-                                            <span>
-                                                Enrollments
-                                            </span>
-                                        </div>
+                                    <div>
+                                        <strong>
+                                            Expert Instructors
+                                        </strong>
+
+                                        <small>
+                                            Industry experts
+                                        </small>
                                     </div>
 
-                                    <div className="home-stat-item">
-                                        <div className="home-stat-icon green">
-                                            <FaBookOpen />
-                                        </div>
-
-                                        <div>
-                                            <strong>
-                                                {totalCourses}+
-                                            </strong>
-
-                                            <span>
-                                                Courses
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="home-stat-item">
-                                        <div className="home-stat-icon orange">
-                                            <FaGraduationCap />
-                                        </div>
-
-                                        <div>
-                                            <strong>
-                                                {totalTeachers}+
-                                            </strong>
-
-                                            <span>
-                                                Instructors
-                                            </span>
-                                        </div>
-                                    </div>
                                 </div>
+
+
+                                <div className="lms-main-hero-benefit">
+
+                                    <span className="lms-main-hero-benefit-icon">
+                                        <FaBookOpen />
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            Lifetime Access
+                                        </strong>
+
+                                        <small>
+                                            Learn anytime
+                                        </small>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="lms-main-hero-benefit">
+
+                                    <span className="lms-main-hero-benefit-icon">
+                                        <FaGraduationCap />
+                                    </span>
+
+                                    <div>
+                                        <strong>
+                                            Certificate
+                                        </strong>
+
+                                        <small>
+                                            On completion
+                                        </small>
+                                    </div>
+
+                                </div>
+
                             </div>
+
                         </div>
+
+
+                        <div className="lms-main-hero-right">
+
+                            <div className="lms-main-hero-stat-card">
+
+                                <div className="lms-main-hero-stat-icon">
+                                    <FaUsers />
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        {totalStudents}+
+                                    </strong>
+
+                                    <span>
+                                        Enrollments
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div className="lms-main-hero-stat-card">
+
+                                <div className="lms-main-hero-stat-icon">
+                                    <FaBookOpen />
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        {totalCourses}+
+                                    </strong>
+
+                                    <span>
+                                        Courses
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div className="lms-main-hero-stat-card">
+
+                                <div className="lms-main-hero-stat-icon">
+                                    <FaGraduationCap />
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        {totalTeachers}+
+                                    </strong>
+
+                                    <span>
+                                        Instructors
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </section>
 
                 <section className="home-category-icons">

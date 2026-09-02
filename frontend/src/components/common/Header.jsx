@@ -58,8 +58,9 @@ const Header = () => {
     const isHomePage =
         location.pathname === '/';
 
+    // Home button should appear on every page except Home
     const showHomeButton =
-        isAuthenticated && !isHomePage;
+        !isHomePage;
 
     const accountPath =
         isAdmin
@@ -71,9 +72,9 @@ const Header = () => {
                     : '/';
 
     const avatar =
-    user?.avatar
-        ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
-        : null;
+        user?.avatar
+            ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
+            : null;
 
     const [notifications, setNotifications] =
         useState([]);
@@ -747,10 +748,7 @@ const Header = () => {
 
                         <button
                             type="button"
-                            className="
-                                lms-header-icon
-                                theme-toggle
-                            "
+                            className="lms-header-icon theme-toggle"
                             onClick={
                                 toggleTheme
                             }

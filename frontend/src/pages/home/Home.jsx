@@ -1,5 +1,9 @@
-import axios from 'axios';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useEffect,
+    useMemo,
+    useRef,
+    useState
+} from 'react';
 import { Link } from 'react-router-dom';
 import {
     FaTimes,
@@ -18,8 +22,13 @@ import {
     FaGraduationCap,
     FaArrowRight,
     FaChevronDown,
-    FaChevronRight
+    FaChevronRight,
+    FaShoppingCart,
+    FaHeart,
+    FaRegHeart,
+    FaCheck
 } from 'react-icons/fa';
+
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import api from '../../services/api';
@@ -34,8 +43,11 @@ const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
     const [selectedTab, setSelectedTab] = useState(null);
-
     const [hoveredCategory, setHoveredCategory] = useState(null);
+    const [hoveredCourse, setHoveredCourse] = useState(null);
+
+    const [cartItems, setCartItems] = useState([]);
+    const [wishlistItems, setWishlistItems] = useState([]);
 
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingSubcategories, setLoadingSubcategories] = useState(true);
@@ -49,12 +61,41 @@ const Home = () => {
     const courseSliderRef = useRef(null);
     const reviewSliderRef = useRef(null);
 
-    const heroImage = '/images/home/hero.jpg';
+    /*
+     * Load cart and wishlist from localStorage.
+     */
+    useEffect(() => {
+        const savedCart = JSON.parse(
+            localStorage.getItem('lmsCart') || '[]'
+        );
 
+        const savedWishlist = JSON.parse(
+            localStorage.getItem('lmsWishlist') || '[]'
+        );
+
+        setCartItems(
+            Array.isArray(savedCart)
+                ? savedCart
+                : []
+        );
+
+        setWishlistItems(
+            Array.isArray(savedWishlist)
+                ? savedWishlist
+                : []
+        );
+    }, []);
+
+    /*
+     * Category icon.
+     */
     const getCategoryIcon = (name) => {
         const value = String(name || '').toLowerCase();
 
-        if (value.includes('development') && !value.includes('personal')) {
+        if (
+            value.includes('development') &&
+            !value.includes('personal')
+        ) {
             return <FaCode />;
         }
 
@@ -104,10 +145,16 @@ const Home = () => {
         return <FaBookOpen />;
     };
 
+    /*
+     * Category CSS class.
+     */
     const getCategoryClass = (name) => {
         const value = String(name || '').toLowerCase();
 
-        if (value.includes('development') && !value.includes('personal')) {
+        if (
+            value.includes('development') &&
+            !value.includes('personal')
+        ) {
             return 'development';
         }
 
@@ -157,11 +204,16 @@ const Home = () => {
         return 'more';
     };
 
+    /*
+     * Fetch categories.
+     */
     const fetchCategories = async () => {
         setLoadingCategories(true);
 
         try {
-            const response = await api.get('/categories/list.php');
+            const response = await api.get(
+                '/categories/list.php'
+            );
 
             if (response.data?.status) {
                 const data =
@@ -170,19 +222,28 @@ const Home = () => {
                     [];
 
                 setCategories(
-                    Array.isArray(data) ? data : []
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
             } else {
                 setCategories([]);
             }
         } catch (error) {
-            console.error('Category Fetch Error:', error);
+            console.error(
+                'Category Fetch Error:',
+                error
+            );
+
             setCategories([]);
         } finally {
             setLoadingCategories(false);
         }
     };
 
+    /*
+     * Fetch subcategories.
+     */
     const fetchSubcategories = async () => {
         setLoadingSubcategories(true);
 
@@ -198,7 +259,9 @@ const Home = () => {
                     [];
 
                 setSubcategories(
-                    Array.isArray(data) ? data : []
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
             } else {
                 setSubcategories([]);
@@ -215,6 +278,9 @@ const Home = () => {
         }
     };
 
+    /*
+     * Fetch courses.
+     */
     const fetchCourses = async () => {
         setLoadingCourses(true);
         setError('');
@@ -231,10 +297,13 @@ const Home = () => {
                     [];
 
                 setCourses(
-                    Array.isArray(data) ? data : []
+                    Array.isArray(data)
+                        ? data
+                        : []
                 );
             } else {
                 setCourses([]);
+
                 setError(
                     response.data?.message ||
                     'Unable to load courses'
@@ -257,6 +326,9 @@ const Home = () => {
         }
     };
 
+    /*
+     * Fetch reviews.
+     */
     const fetchReviews = async () => {
         setLoadingReviews(true);
 
@@ -271,11 +343,11 @@ const Home = () => {
                     response.data?.data ||
                     [];
 
-                const reviewList = Array.isArray(data)
-                    ? data
-                    : [];
-
-                setReviews(reviewList);
+                setReviews(
+                    Array.isArray(data)
+                        ? data
+                        : []
+                );
             } else {
                 setReviews([]);
             }
@@ -290,25 +362,20 @@ const Home = () => {
             setLoadingReviews(false);
         }
     };
+
+    /*
+     * Initial API calls.
+     */
     useEffect(() => {
         fetchCategories();
         fetchSubcategories();
         fetchCourses();
+        fetchReviews();
     }, []);
 
-    useEffect(() => {
-        if (loadingCourses) {
-            return;
-        }
-
-        if (courses.length > 0) {
-            fetchReviews(courses);
-        } else {
-            setReviews([]);
-            setLoadingReviews(false);
-        }
-    }, [loadingCourses, courses]);
-
+    /*
+     * Normalize course data.
+     */
     const normalizedCourses = useMemo(() => {
         return courses
             .map((course) => {
@@ -339,16 +406,17 @@ const Home = () => {
                     course.discount_price || 0
                 );
 
-                const finalPrice =
+                const hasValidDiscount =
                     discountAmount > 0 &&
-                        discountAmount < originalPrice
-                        ? originalPrice -
-                        discountAmount
+                    discountAmount < originalPrice;
+
+                const finalPrice =
+                    hasValidDiscount
+                        ? originalPrice - discountAmount
                         : originalPrice;
 
                 const actualDiscount =
-                    discountAmount > 0 &&
-                        discountAmount < originalPrice
+                    hasValidDiscount
                         ? discountAmount
                         : 0;
 
@@ -372,19 +440,14 @@ const Home = () => {
                         String(teacherImage).trim();
 
                     if (
-                        !teacherImage.startsWith(
-                            'http://'
-                        ) &&
-                        !teacherImage.startsWith(
-                            'https://'
-                        )
+                        !teacherImage.startsWith('http://') &&
+                        !teacherImage.startsWith('https://')
                     ) {
                         teacherImage =
-                            `http://localhost${teacherImage.startsWith(
-                                '/'
-                            )
-                                ? ''
-                                : '/'
+                            `http://localhost${
+                                teacherImage.startsWith('/')
+                                    ? ''
+                                    : '/'
                             }${teacherImage}`;
                     }
                 }
@@ -401,19 +464,14 @@ const Home = () => {
                         String(courseImage).trim();
 
                     if (
-                        !courseImage.startsWith(
-                            'http://'
-                        ) &&
-                        !courseImage.startsWith(
-                            'https://'
-                        )
+                        !courseImage.startsWith('http://') &&
+                        !courseImage.startsWith('https://')
                     ) {
                         courseImage =
-                            `http://localhost${courseImage.startsWith(
-                                '/'
-                            )
-                                ? ''
-                                : '/'
+                            `http://localhost${
+                                courseImage.startsWith('/')
+                                    ? ''
+                                    : '/'
                             }${courseImage}`;
                     }
                 }
@@ -424,7 +482,8 @@ const Home = () => {
                         enrollmentCount,
                     normalizedReviewCount:
                         reviewCount,
-                    normalizedRating: rating,
+                    normalizedRating:
+                        rating,
                     normalizedOriginalPrice:
                         originalPrice,
                     normalizedDiscountAmount:
@@ -446,6 +505,9 @@ const Home = () => {
             );
     }, [courses]);
 
+    /*
+     * Course category ID.
+     */
     const getCourseCategoryId = (course) => {
         return Number(
             course.category_id ??
@@ -454,6 +516,9 @@ const Home = () => {
         );
     };
 
+    /*
+     * Course subcategory ID.
+     */
     const getCourseSubcategoryId = (course) => {
         return Number(
             course.subcategory_id ??
@@ -464,6 +529,9 @@ const Home = () => {
         );
     };
 
+    /*
+     * Filter courses.
+     */
     const filteredCourses = useMemo(() => {
         let result = [...normalizedCourses];
 
@@ -503,6 +571,9 @@ const Home = () => {
         selectedTab
     ]);
 
+    /*
+     * Best seller courses.
+     */
     const bestSellerCourses = useMemo(() => {
         return [...normalizedCourses].sort(
             (a, b) =>
@@ -511,6 +582,9 @@ const Home = () => {
         );
     }, [normalizedCourses]);
 
+    /*
+     * New courses.
+     */
     const newCourses = useMemo(() => {
         return [...normalizedCourses]
             .sort((a, b) => {
@@ -527,6 +601,9 @@ const Home = () => {
             .slice(0, 4);
     }, [normalizedCourses]);
 
+    /*
+     * Displayed courses.
+     */
     const displayedCourses = useMemo(() => {
         if (
             selectedCategory === null &&
@@ -545,6 +622,9 @@ const Home = () => {
         filteredCourses
     ]);
 
+    /*
+     * Subcategories for category.
+     */
     const getSubcategoriesForCategory = (
         categoryId
     ) => {
@@ -555,6 +635,9 @@ const Home = () => {
         );
     };
 
+    /*
+     * Category click.
+     */
     const handleCategoryClick = (categoryId) => {
         setSelectedCategory(Number(categoryId));
         setSelectedSubcategory(null);
@@ -565,9 +648,7 @@ const Home = () => {
 
         setTimeout(() => {
             document
-                .querySelector(
-                    '.home-courses-section'
-                )
+                .querySelector('.home-courses-section')
                 ?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -575,9 +656,10 @@ const Home = () => {
         }, 100);
     };
 
-    const handleSubcategoryClick = (
-        subcategoryId
-    ) => {
+    /*
+     * Subcategory click.
+     */
+    const handleSubcategoryClick = (subcategoryId) => {
         const id = Number(subcategoryId);
 
         const selectedSub =
@@ -590,9 +672,7 @@ const Home = () => {
 
         if (selectedSub?.category_id) {
             setSelectedCategory(
-                Number(
-                    selectedSub.category_id
-                )
+                Number(selectedSub.category_id)
             );
         }
 
@@ -602,9 +682,7 @@ const Home = () => {
 
         setTimeout(() => {
             document
-                .querySelector(
-                    '.home-courses-section'
-                )
+                .querySelector('.home-courses-section')
                 ?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -612,8 +690,12 @@ const Home = () => {
         }, 100);
     };
 
+    /*
+     * Course category tab click.
+     */
     const handleTabClick = (categoryId) => {
         setSelectedTab(Number(categoryId));
+
         setSelectedCategory(null);
         setSelectedSubcategory(null);
 
@@ -625,6 +707,9 @@ const Home = () => {
         }
     };
 
+    /*
+     * Clear course filter.
+     */
     const clearCategoryFilter = () => {
         setSelectedCategory(null);
         setSelectedSubcategory(null);
@@ -638,19 +723,27 @@ const Home = () => {
         }
     };
 
+    /*
+     * Course URL.
+     */
     const getCourseUrl = (course) => {
         return course.slug
             ? `/courses/${course.slug}`
             : `/courses/${course.id}`;
     };
 
+    /*
+     * Format price.
+     */
     const formatPrice = (price) => {
         return `₹${Number(
             price || 0
         ).toLocaleString('en-IN')}`;
     };
 
-
+    /*
+     * Student image.
+     */
     const getStudentImage = (avatar) => {
         if (!avatar) {
             return null;
@@ -667,6 +760,10 @@ const Home = () => {
 
         return `http://localhost/php-lms-project/backend/uploads/avatars/${image}`;
     };
+
+    /*
+     * Enrollment text.
+     */
     const getEnrollmentText = (count) => {
         const value = Number(count || 0);
 
@@ -681,10 +778,12 @@ const Home = () => {
         return `${value}+ Enrolled`;
     };
 
+    /*
+     * Course badge.
+     */
     const getCourseBadge = (course) => {
         if (
-            bestSellerCourses[0]?.id ===
-            course.id
+            bestSellerCourses[0]?.id === course.id
         ) {
             return {
                 text: 'Bestseller',
@@ -693,8 +792,7 @@ const Home = () => {
         }
 
         if (
-            newCourses[0]?.id ===
-            course.id
+            newCourses[0]?.id === course.id
         ) {
             return {
                 text: 'New',
@@ -708,10 +806,12 @@ const Home = () => {
         };
     };
 
+    /*
+     * Image fallback.
+     */
     const handleImageError = (event) => {
         if (
-            event.currentTarget.dataset
-                .fallback
+            event.currentTarget.dataset.fallback
         ) {
             return;
         }
@@ -723,6 +823,9 @@ const Home = () => {
             '/images/courses/default-course.jpg';
     };
 
+    /*
+     * Review avatar.
+     */
     const getReviewAvatar = (review) => {
         let avatar =
             review.student_avatar ||
@@ -743,20 +846,142 @@ const Home = () => {
             return avatar;
         }
 
-        return `http://localhost${avatar.startsWith('/') ? '' : '/'
-            }${avatar}`;
+        return `http://localhost${
+            avatar.startsWith('/')
+                ? ''
+                : '/'
+        }${avatar}`;
     };
 
+    /*
+     * Check cart.
+     */
+    const isCourseInCart = (courseId) => {
+        return cartItems.some(
+            (item) =>
+                Number(item.id) ===
+                Number(courseId)
+        );
+    };
+
+    /*
+     * Check wishlist.
+     */
+    const isCourseInWishlist = (courseId) => {
+        return wishlistItems.some(
+            (item) =>
+                Number(item.id) ===
+                Number(courseId)
+        );
+    };
+
+    /*
+     * Add course to cart.
+     */
+    const handleAddToCart = (course) => {
+        if (isCourseInCart(course.id)) {
+            return;
+        }
+
+        const newCartItem = {
+            id: course.id,
+            title: course.title,
+            price:
+                course.normalizedFinalPrice,
+            originalPrice:
+                course.normalizedOriginalPrice,
+            image:
+                course.normalizedCourseImage,
+            teacher:
+                course.normalizedTeacherName
+        };
+
+        const updatedCart = [
+            ...cartItems,
+            newCartItem
+        ];
+
+        setCartItems(updatedCart);
+
+        localStorage.setItem(
+            'lmsCart',
+            JSON.stringify(updatedCart)
+        );
+    };
+
+    /*
+     * Wishlist toggle.
+     */
+    const handleWishlist = (course) => {
+        let updatedWishlist;
+
+        if (
+            isCourseInWishlist(course.id)
+        ) {
+            updatedWishlist =
+                wishlistItems.filter(
+                    (item) =>
+                        Number(item.id) !==
+                        Number(course.id)
+                );
+        } else {
+            updatedWishlist = [
+                ...wishlistItems,
+                {
+                    id: course.id,
+                    title: course.title,
+                    price:
+                        course.normalizedFinalPrice,
+                    originalPrice:
+                        course.normalizedOriginalPrice,
+                    image:
+                        course.normalizedCourseImage,
+                    teacher:
+                        course.normalizedTeacherName
+                }
+            ];
+        }
+
+        setWishlistItems(updatedWishlist);
+
+        localStorage.setItem(
+            'lmsWishlist',
+            JSON.stringify(updatedWishlist)
+        );
+    };
+
+    /*
+     * Enroll now.
+     */
+    const handleEnrollNow = (course) => {
+        window.location.href =
+            getCourseUrl(course);
+    };
+
+    /*
+     * Render course card.
+     */
     const renderCourseCard = (
         course,
-        type = 'slider'
+        type = 'slider',
+        index = 0,
+        total = 0
     ) => {
         const badge =
             getCourseBadge(course);
 
         const hasDiscount =
-            course.normalizedDiscountAmount >
-            0;
+            course.normalizedDiscountAmount > 0;
+
+        const inCart =
+            isCourseInCart(course.id);
+
+        const inWishlist =
+            isCourseInWishlist(course.id);
+
+        const shouldOpenLeft =
+            type === 'slider' &&
+            index >= total - 2;
 
         return (
             <div
@@ -766,37 +991,71 @@ const Home = () => {
                         : 'home-course-card'
                 }
                 key={`${type}-${course.id}`}
+                onMouseEnter={() =>
+                    setHoveredCourse(
+                        course.id
+                    )
+                }
+                onMouseLeave={() =>
+                    setHoveredCourse(null)
+                }
             >
-                <Link
-                    to={getCourseUrl(course)}
+                <div
                     className={
                         type === 'new'
                             ? 'home-new-course-image'
                             : 'home-course-image'
                     }
                 >
-                    <img
-                        src={
-                            course.normalizedCourseImage ||
-                            '/images/courses/default-course.jpg'
-                        }
-                        alt={
-                            course.title ||
-                            'Course'
-                        }
-                        onError={
-                            handleImageError
-                        }
-                    />
-
-                    <span
-                        className={`home-course-enrolled ${badge.type}`}
+                    <Link
+                        to={getCourseUrl(course)}
+                        className="home-course-image-link"
                     >
-                        {getEnrollmentText(
-                            course.normalizedEnrollmentCount
+                        <img
+                            src={
+                                course.normalizedCourseImage ||
+                                '/images/courses/default-course.jpg'
+                            }
+                            alt={
+                                course.title ||
+                                'Course'
+                            }
+                            onError={
+                                handleImageError
+                            }
+                        />
+
+                        <span
+                            className={`home-course-enrolled ${badge.type}`}
+                        >
+                            {getEnrollmentText(
+                                course.normalizedEnrollmentCount
+                            )}
+                        </span>
+                    </Link>
+
+                    <button
+                        type="button"
+                        className={`home-course-wishlist-button ${
+                            inWishlist
+                                ? 'active'
+                                : ''
+                        }`}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            handleWishlist(course);
+                        }}
+                        aria-label="Add to wishlist"
+                    >
+                        {inWishlist ? (
+                            <FaHeart />
+                        ) : (
+                            <FaRegHeart />
                         )}
-                    </span>
-                </Link>
+                    </button>
+                </div>
 
                 <div
                     className={
@@ -827,9 +1086,7 @@ const Home = () => {
                                     course.normalizedTeacherName
                                 }
                                 className="home-instructor-avatar"
-                                onError={(
-                                    event
-                                ) => {
+                                onError={(event) => {
                                     event.currentTarget.style.display =
                                         'none';
 
@@ -838,7 +1095,9 @@ const Home = () => {
                                             .currentTarget
                                             .nextElementSibling
                                     ) {
-                                        event.currentTarget.nextElementSibling.style.display =
+                                        event
+                                            .currentTarget
+                                            .nextElementSibling.style.display =
                                             'flex';
                                     }
                                 }}
@@ -867,10 +1126,10 @@ const Home = () => {
                     <div className="home-course-rating">
                         <strong>
                             {course.normalizedRating >
-                                0
+                            0
                                 ? course.normalizedRating.toFixed(
-                                    1
-                                )
+                                      1
+                                  )
                                 : '0.0'}
                         </strong>
 
@@ -920,6 +1179,169 @@ const Home = () => {
                         </span>
                     </div>
                 </div>
+
+                {hoveredCourse ===
+                    course.id && (
+                    <div
+                        className={`home-course-hover-card ${
+                            shouldOpenLeft
+                                ? 'open-left'
+                                : ''
+                        }`}
+                        onMouseEnter={() =>
+                            setHoveredCourse(
+                                course.id
+                            )
+                        }
+                        onMouseLeave={() =>
+                            setHoveredCourse(null)
+                        }
+                    >
+                        <div className="home-course-hover-arrow"></div>
+
+                        <Link
+                            to={getCourseUrl(course)}
+                            className="home-course-hover-title"
+                        >
+                            {course.title ||
+                                'Untitled Course'}
+                        </Link>
+
+                        <p className="home-course-hover-instructor">
+                            {
+                                course.normalizedTeacherName
+                            }
+                        </p>
+
+                        <div className="home-course-hover-meta">
+                            <strong>
+                                {course.normalizedRating >
+                                0
+                                    ? course.normalizedRating.toFixed(
+                                          1
+                                      )
+                                    : '0.0'}
+                            </strong>
+
+                            <span className="home-hover-stars">
+                                ★★★★★
+                            </span>
+
+                            <span>
+                                (
+                                {
+                                    course.normalizedReviewCount
+                                }
+                                )
+                            </span>
+                        </div>
+
+                        <div className="home-course-hover-students">
+                            <FaUsers />
+
+                            <span>
+                                {getEnrollmentText(
+                                    course.normalizedEnrollmentCount
+                                )}
+                            </span>
+                        </div>
+
+                        <ul className="home-course-hover-features">
+                            <li>
+                                <FaCheck />
+                                Lifetime access
+                            </li>
+
+                            <li>
+                                <FaCheck />
+                                Learn at your own pace
+                            </li>
+
+                            <li>
+                                <FaCheck />
+                                Certificate on completion
+                            </li>
+                        </ul>
+
+                        <div className="home-course-hover-price">
+                            <strong>
+                                {formatPrice(
+                                    course.normalizedFinalPrice
+                                )}
+                            </strong>
+
+                            {hasDiscount && (
+                                <del>
+                                    {formatPrice(
+                                        course.normalizedOriginalPrice
+                                    )}
+                                </del>
+                            )}
+                        </div>
+
+                        <div className="home-course-hover-actions">
+                            <button
+                                type="button"
+                                className="home-course-enroll-button"
+                                onClick={() =>
+                                    handleEnrollNow(
+                                        course
+                                    )
+                                }
+                            >
+                                Enroll Now
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`home-course-cart-button ${
+                                    inCart
+                                        ? 'added'
+                                        : ''
+                                }`}
+                                onClick={() =>
+                                    handleAddToCart(
+                                        course
+                                    )
+                                }
+                            >
+                                {inCart ? (
+                                    <>
+                                        <FaCheck />
+                                        Added to Cart
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaShoppingCart />
+                                        Add to Cart
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        <button
+                            type="button"
+                            className={`home-course-hover-wishlist ${
+                                inWishlist
+                                    ? 'active'
+                                    : ''
+                            }`}
+                            onClick={() =>
+                                handleWishlist(course)
+                            }
+                        >
+                            {inWishlist ? (
+                                <FaHeart />
+                            ) : (
+                                <FaRegHeart />
+                            )}
+
+                            {inWishlist
+                                ? 'Remove from Wishlist'
+                                : 'Add to Wishlist'}
+                        </button>
+                    </div>
+                )}
             </div>
         );
     };
@@ -934,9 +1356,9 @@ const Home = () => {
                 key={review.id}
             >
                 <div className="home-review-header">
-                    {review.student_avatar ? (
+                    {avatar ? (
                         <img
-                            src={getStudentImage(review.student_avatar)}
+                            src={avatar}
                             alt={
                                 review.student_name ||
                                 'Student'
@@ -947,10 +1369,12 @@ const Home = () => {
                                     'none';
 
                                 if (
-                                    event.currentTarget
+                                    event
+                                        .currentTarget
                                         .nextElementSibling
                                 ) {
-                                    event.currentTarget
+                                    event
+                                        .currentTarget
                                         .nextElementSibling.style.display =
                                         'flex';
                                 }
@@ -961,7 +1385,7 @@ const Home = () => {
                     <span
                         className="home-review-avatar home-review-avatar-fallback"
                         style={{
-                            display: review.student_avatar
+                            display: avatar
                                 ? 'none'
                                 : 'flex'
                         }}
@@ -983,25 +1407,29 @@ const Home = () => {
                 </div>
 
                 <div className="home-review-rating">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                            key={star}
-                            className={
-                                star <=
+                    {[1, 2, 3, 4, 5].map(
+                        (star) => (
+                            <span
+                                key={star}
+                                className={
+                                    star <=
                                     Number(
-                                        review.rating || 0
+                                        review.rating ||
+                                            0
                                     )
-                                    ? 'filled'
-                                    : ''
-                            }
-                        >
-                            ★
-                        </span>
-                    ))}
+                                        ? 'filled'
+                                        : ''
+                                }
+                            >
+                                ★
+                            </span>
+                        )
+                    )}
 
                     <strong>
                         {Number(
-                            review.rating || 0
+                            review.rating ||
+                                0
                         ).toFixed(1)}
                     </strong>
                 </div>
@@ -1014,15 +1442,15 @@ const Home = () => {
                 <div className="home-review-date">
                     {review.created_at
                         ? new Date(
-                            review.created_at
-                        ).toLocaleDateString(
-                            'en-IN',
-                            {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                            }
-                        )
+                              review.created_at
+                          ).toLocaleDateString(
+                              'en-IN',
+                              {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric'
+                              }
+                          )
                         : ''}
                 </div>
             </div>
@@ -1038,9 +1466,9 @@ const Home = () => {
                 total +
                 Number(
                     course.total_students ??
-                    course.enrollment_count ??
-                    course.enrolled_count ??
-                    0
+                        course.enrollment_count ??
+                        course.enrolled_count ??
+                        0
                 ),
             0
         );
@@ -1059,8 +1487,13 @@ const Home = () => {
             .filter(Boolean)
     ).size;
 
+    /*
+     * Course slider.
+     */
     const slideCourses = (direction) => {
-        if (!courseSliderRef.current) {
+        if (
+            !courseSliderRef.current
+        ) {
             return;
         }
 
@@ -1091,8 +1524,13 @@ const Home = () => {
         });
     };
 
+    /*
+     * Review slider.
+     */
     const slideReviews = (direction) => {
-        if (!reviewSliderRef.current) {
+        if (
+            !reviewSliderRef.current
+        ) {
             return;
         }
 
@@ -1177,7 +1615,8 @@ const Home = () => {
                                 className="home-category-button"
                                 onClick={() =>
                                     setShowCategoryMenu(
-                                        (prev) => !prev
+                                        (prev) =>
+                                            !prev
                                     )
                                 }
                             >
@@ -1205,13 +1644,13 @@ const Home = () => {
                             {showCategoryMenu && (
                                 <div className="home-category-dropdown">
                                     {loadingCategories ? (
-                                        <div className="p-3 text-muted">
+                                        <div className="home-dropdown-message">
                                             Loading
                                             categories...
                                         </div>
                                     ) : visibleCategories.length ===
-                                        0 ? (
-                                        <div className="p-3 text-muted">
+                                      0 ? (
+                                        <div className="home-dropdown-message">
                                             No categories
                                             available
                                         </div>
@@ -1246,7 +1685,7 @@ const Home = () => {
                                                                 )
                                                             }
                                                         >
-                                                            <span>
+                                                            <span className="home-dropdown-icon">
                                                                 {getCategoryIcon(
                                                                     category.name
                                                                 )}
@@ -1265,72 +1704,73 @@ const Home = () => {
                                                             Number(
                                                                 category.id
                                                             ) && (
-                                                                <div
-                                                                    className="home-subcategory-dropdown"
-                                                                    onMouseEnter={() =>
-                                                                        setHoveredCategory(
-                                                                            Number(
-                                                                                category.id
-                                                                            )
+                                                            <div
+                                                                className="home-subcategory-dropdown"
+                                                                onMouseEnter={() =>
+                                                                    setHoveredCategory(
+                                                                        Number(
+                                                                            category.id
                                                                         )
+                                                                    )
+                                                                }
+                                                            >
+                                                                <div className="home-subcategory-title">
+                                                                    {
+                                                                        category.name
                                                                     }
-                                                                >
-                                                                    <div className="home-subcategory-title">
-                                                                        {
-                                                                            category.name
-                                                                        }
-                                                                    </div>
+                                                                </div>
 
-                                                                    {loadingSubcategories ? (
-                                                                        <div className="home-subcategory-empty">
-                                                                            Loading...
-                                                                        </div>
-                                                                    ) : categorySubs.length ===
-                                                                        0 ? (
-                                                                        <div className="home-subcategory-empty">
-                                                                            No
-                                                                            subcategories
-                                                                        </div>
-                                                                    ) : (
-                                                                        categorySubs.map(
-                                                                            (
-                                                                                subcategory
-                                                                            ) => (
-                                                                                <button
-                                                                                    type="button"
-                                                                                    key={
-                                                                                        subcategory.id
-                                                                                    }
-                                                                                    className={`home-subcategory-item ${Number(
+                                                                {loadingSubcategories ? (
+                                                                    <div className="home-subcategory-empty">
+                                                                        Loading...
+                                                                    </div>
+                                                                ) : categorySubs.length ===
+                                                                  0 ? (
+                                                                    <div className="home-subcategory-empty">
+                                                                        No
+                                                                        subcategories
+                                                                    </div>
+                                                                ) : (
+                                                                    categorySubs.map(
+                                                                        (
+                                                                            subcategory
+                                                                        ) => (
+                                                                            <button
+                                                                                type="button"
+                                                                                key={
+                                                                                    subcategory.id
+                                                                                }
+                                                                                className={`home-subcategory-item ${
+                                                                                    Number(
                                                                                         selectedSubcategory
                                                                                     ) ===
-                                                                                        Number(
-                                                                                            subcategory.id
-                                                                                        )
+                                                                                    Number(
+                                                                                        subcategory.id
+                                                                                    )
                                                                                         ? 'active'
                                                                                         : ''
-                                                                                        }`}
-                                                                                    onClick={() =>
-                                                                                        handleSubcategoryClick(
-                                                                                            subcategory.id
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    {
-                                                                                        subcategory.name
-                                                                                    }
+                                                                                }`}
+                                                                                onClick={() =>
+                                                                                    handleSubcategoryClick(
+                                                                                        subcategory.id
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    subcategory.name
+                                                                                }
 
-                                                                                    <FaChevronRight
-                                                                                        size={
-                                                                                            10
-                                                                                        }
-                                                                                    />
-                                                                                </button>
-                                                                            )
+                                                                                <FaChevronRight
+                                                                                    size={
+                                                                                        10
+                                                                                    }
+                                                                                />
+                                                                            </button>
                                                                         )
-                                                                    )}
-                                                                </div>
-                                                            )}
+                                                                    )
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 );
                                             }
@@ -1377,19 +1817,16 @@ const Home = () => {
 
             <main>
                 <section className="lms-main-hero">
-
                     <img
-                        src="src\assets\images\2176.jpg"
-                        alt="Students learning online"
+                        src="src/assets/images/2176.jpg"
                         className="lms-main-hero-bg"
+                        alt=""
                     />
 
                     <div className="lms-main-hero-shade"></div>
 
                     <div className="lms-main-hero-container">
-
                         <div className="lms-main-hero-left">
-
                             <span className="lms-main-hero-tag">
                                 Learn • Grow • Succeed
                             </span>
@@ -1397,17 +1834,21 @@ const Home = () => {
                             <h1 className="lms-main-hero-title">
                                 Learn new skills.
                                 <br />
-                                <span>Advance</span> your career.
+                                <span>
+                                    Advance
+                                </span>{' '}
+                                your career.
                             </h1>
 
                             <p className="lms-main-hero-description">
-                                Explore courses from expert instructors.
-                                Learn at your own pace and build the skills
-                                you need for your future.
+                                Explore courses from
+                                expert instructors.
+                                Learn at your own pace
+                                and build the skills you
+                                need for your future.
                             </p>
 
                             <div className="lms-main-hero-buttons">
-
                                 <Link
                                     to="/courses"
                                     className="lms-main-hero-primary"
@@ -1422,51 +1863,45 @@ const Home = () => {
                                     <FaPlay size={11} />
                                     Watch Video
                                 </button>
-
                             </div>
 
                             <div className="lms-main-hero-benefits">
-
                                 <div className="lms-main-hero-benefit">
-
                                     <span className="lms-main-hero-benefit-icon">
                                         <FaUsers />
                                     </span>
 
                                     <div>
                                         <strong>
-                                            Expert Instructors
+                                            Expert
+                                            Instructors
                                         </strong>
 
                                         <small>
-                                            Industry experts
+                                            Industry
+                                            experts
                                         </small>
                                     </div>
-
                                 </div>
 
-
                                 <div className="lms-main-hero-benefit">
-
                                     <span className="lms-main-hero-benefit-icon">
                                         <FaBookOpen />
                                     </span>
 
                                     <div>
                                         <strong>
-                                            Lifetime Access
+                                            Lifetime
+                                            Access
                                         </strong>
 
                                         <small>
                                             Learn anytime
                                         </small>
                                     </div>
-
                                 </div>
 
-
                                 <div className="lms-main-hero-benefit">
-
                                     <span className="lms-main-hero-benefit-icon">
                                         <FaGraduationCap />
                                     </span>
@@ -1480,18 +1915,12 @@ const Home = () => {
                                             On completion
                                         </small>
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
 
-
                         <div className="lms-main-hero-right">
-
                             <div className="lms-main-hero-stat-card">
-
                                 <div className="lms-main-hero-stat-icon">
                                     <FaUsers />
                                 </div>
@@ -1505,12 +1934,9 @@ const Home = () => {
                                         Enrollments
                                     </span>
                                 </div>
-
                             </div>
 
-
                             <div className="lms-main-hero-stat-card">
-
                                 <div className="lms-main-hero-stat-icon">
                                     <FaBookOpen />
                                 </div>
@@ -1524,12 +1950,9 @@ const Home = () => {
                                         Courses
                                     </span>
                                 </div>
-
                             </div>
 
-
                             <div className="lms-main-hero-stat-card">
-
                                 <div className="lms-main-hero-stat-icon">
                                     <FaGraduationCap />
                                 </div>
@@ -1543,26 +1966,22 @@ const Home = () => {
                                         Instructors
                                     </span>
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </section>
 
                 <section className="home-category-icons">
                     <div className="home-container">
                         <div className="home-category-list">
                             {loadingCategories ? (
-                                <div className="text-muted">
+                                <div className="home-loading-text">
                                     Loading
                                     categories...
                                 </div>
                             ) : visibleCategories.length ===
-                                0 ? (
-                                <div className="text-muted">
+                              0 ? (
+                                <div className="home-loading-text">
                                     No categories
                                     available
                                 </div>
@@ -1574,15 +1993,16 @@ const Home = () => {
                                             key={
                                                 category.id
                                             }
-                                            className={`home-category-card ${Number(
-                                                selectedCategory
-                                            ) ===
+                                            className={`home-category-card ${
+                                                Number(
+                                                    selectedCategory
+                                                ) ===
                                                 Number(
                                                     category.id
                                                 )
-                                                ? 'selected'
-                                                : ''
-                                                }`}
+                                                    ? 'selected'
+                                                    : ''
+                                            }`}
                                             onClick={() =>
                                                 handleCategoryClick(
                                                     category.id
@@ -1620,9 +2040,9 @@ const Home = () => {
                                 className={
                                     selectedTab ===
                                         null &&
-                                        selectedCategory ===
+                                    selectedCategory ===
                                         null &&
-                                        selectedSubcategory ===
+                                    selectedSubcategory ===
                                         null
                                         ? 'home-course-tab active'
                                         : 'home-course-tab'
@@ -1647,9 +2067,9 @@ const Home = () => {
                                                 Number(
                                                     selectedTab
                                                 ) ===
-                                                    Number(
-                                                        category.id
-                                                    )
+                                                Number(
+                                                    category.id
+                                                )
                                                     ? 'home-course-tab active'
                                                     : 'home-course-tab'
                                             }
@@ -1693,17 +2113,22 @@ const Home = () => {
                                         courses...
                                     </div>
                                 ) : displayedCourses.length ===
-                                    0 ? (
+                                  0 ? (
                                     <div className="home-course-empty">
                                         {error ||
                                             'No courses available.'}
                                     </div>
                                 ) : (
                                     displayedCourses.map(
-                                        (course) =>
+                                        (
+                                            course,
+                                            index
+                                        ) =>
                                             renderCourseCard(
                                                 course,
-                                                'slider'
+                                                'slider',
+                                                index,
+                                                displayedCourses.length
                                             )
                                     )
                                 )}
@@ -1751,7 +2176,7 @@ const Home = () => {
                                 Loading...
                             </div>
                         ) : newCourses.length ===
-                            0 ? (
+                          0 ? (
                             <div className="home-course-empty">
                                 No new courses
                                 available.
@@ -1759,10 +2184,15 @@ const Home = () => {
                         ) : (
                             <div className="home-new-courses-grid">
                                 {newCourses.map(
-                                    (course) =>
+                                    (
+                                        course,
+                                        index
+                                    ) =>
                                         renderCourseCard(
                                             course,
-                                            'new'
+                                            'new',
+                                            index,
+                                            newCourses.length
                                         )
                                 )}
                             </div>
@@ -1774,7 +2204,8 @@ const Home = () => {
                     <div className="home-container">
                         <div className="home-section-heading">
                             <h2>
-                                What Our Students Say
+                                What Our Students
+                                Say
                             </h2>
 
                             <p>
@@ -1789,7 +2220,7 @@ const Home = () => {
                                 Loading reviews...
                             </div>
                         ) : reviews.length ===
-                            0 ? (
+                          0 ? (
                             <div className="home-review-empty">
                                 <FaBookOpen />
 

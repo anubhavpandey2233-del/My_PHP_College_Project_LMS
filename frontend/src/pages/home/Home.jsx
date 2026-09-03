@@ -44,6 +44,7 @@ const Home = () => {
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
     const [selectedTab, setSelectedTab] = useState(null);
     const [hoveredCategory, setHoveredCategory] = useState(null);
+
     const [hoveredCourse, setHoveredCourse] = useState(null);
 
     const [cartItems, setCartItems] = useState([]);
@@ -878,36 +879,55 @@ const Home = () => {
     /*
      * Add course to cart.
      */
-    const handleAddToCart = (course) => {
-        if (isCourseInCart(course.id)) {
-            return;
+   const handleAddToCart = async (course) => {
+
+    if (isCourseInCart(course.id)) {
+        return;
+    }
+
+    try {
+
+        const response = await api.post(
+            '/cart/add.php',
+            {
+                course_id: course.id
+            }
+        );
+
+        if (response.data?.status) {
+
+            const newCartItem = {
+                id: course.id,
+                title: course.title,
+                price: course.normalizedFinalPrice,
+                originalPrice: course.normalizedOriginalPrice,
+                image: course.normalizedCourseImage,
+                teacher: course.normalizedTeacherName
+            };
+
+            const updatedCart = [
+                ...cartItems,
+                newCartItem
+            ];
+
+            setCartItems(updatedCart);
+
+            localStorage.setItem(
+                'lmsCart',
+                JSON.stringify(updatedCart)
+            );
+
         }
 
-        const newCartItem = {
-            id: course.id,
-            title: course.title,
-            price:
-                course.normalizedFinalPrice,
-            originalPrice:
-                course.normalizedOriginalPrice,
-            image:
-                course.normalizedCourseImage,
-            teacher:
-                course.normalizedTeacherName
-        };
+    } catch (error) {
 
-        const updatedCart = [
-            ...cartItems,
-            newCartItem
-        ];
-
-        setCartItems(updatedCart);
-
-        localStorage.setItem(
-            'lmsCart',
-            JSON.stringify(updatedCart)
+        console.error(
+            'Add To Cart Error:',
+            error
         );
-    };
+
+    }
+};
 
     /*
      * Wishlist toggle.
@@ -980,8 +1000,14 @@ const Home = () => {
             isCourseInWishlist(course.id);
 
         const shouldOpenLeft =
-            type === 'slider' &&
-            index >= total - 2;
+    (type === 'slider' && index >= total - 2) ||
+    (type === 'new' && index === total - 1);
+
+        /*
+         * Unique hover key for each section.
+         */
+        const hoverKey =
+            `${type}-${course.id}`;
 
         return (
             <div
@@ -990,11 +1016,9 @@ const Home = () => {
                         ? 'home-new-course-card'
                         : 'home-course-card'
                 }
-                key={`${type}-${course.id}`}
+                key={hoverKey}
                 onMouseEnter={() =>
-                    setHoveredCourse(
-                        course.id
-                    )
+                    setHoveredCourse(hoverKey)
                 }
                 onMouseLeave={() =>
                     setHoveredCourse(null)
@@ -1181,7 +1205,7 @@ const Home = () => {
                 </div>
 
                 {hoveredCourse ===
-                    course.id && (
+                    hoverKey && (
                     <div
                         className={`home-course-hover-card ${
                             shouldOpenLeft
@@ -1190,7 +1214,7 @@ const Home = () => {
                         }`}
                         onMouseEnter={() =>
                             setHoveredCourse(
-                                course.id
+                                hoverKey
                             )
                         }
                         onMouseLeave={() =>

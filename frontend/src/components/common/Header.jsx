@@ -81,6 +81,8 @@ const Header = () => {
 
     const [unreadCount, setUnreadCount] =
         useState(0);
+    const [cartCount, setCartCount] =
+        useState(0);
 
     const [showNotifications, setShowNotifications] =
         useState(false);
@@ -151,6 +153,49 @@ const Header = () => {
         }
     };
 
+    const fetchCartCount = async () => {
+
+        if (!isStudent) {
+
+            setCartCount(0);
+
+            return;
+        }
+
+        try {
+
+            const response =
+                await api.get(
+                    '/cart/count.php'
+                );
+
+            if (response.data?.status) {
+
+                const count =
+                    Number(
+                        response.data?.data?.count || 0
+                    );
+
+                setCartCount(count);
+
+            } else {
+
+                setCartCount(0);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Cart Count Error:',
+                error
+            );
+
+            setCartCount(0);
+
+        }
+    };
+
     const markAsRead = async (
         notificationId
     ) => {
@@ -174,9 +219,9 @@ const Header = () => {
                             Number(
                                 notification.id
                             ) ===
-                            Number(
-                                notificationId
-                            )
+                                Number(
+                                    notificationId
+                                )
                                 ? {
                                     ...notification,
                                     is_read: 1
@@ -252,9 +297,9 @@ const Header = () => {
 
             if (
                 notification.type ===
-                    'contact_message' ||
+                'contact_message' ||
                 notification.type ===
-                    'contact'
+                'contact'
             ) {
 
                 navigate(
@@ -338,6 +383,22 @@ const Header = () => {
         };
 
     }, []);
+
+
+    useEffect(() => {
+
+        if (isStudent) {
+
+            fetchCartCount();
+
+        } else {
+
+            setCartCount(0);
+
+        }
+
+    }, [isStudent]);
+
 
     const handleLogout = async () => {
 
@@ -459,13 +520,25 @@ const Header = () => {
 
                             <Link
                                 to="/cart"
-                                className="lms-header-icon"
+                                className="lms-header-icon lms-cart-button"
                                 title="Cart"
                             >
 
                                 <MdShoppingCart
                                     size={23}
                                 />
+
+                                {isStudent && cartCount > 0 && (
+
+                                    <span className="lms-cart-badge">
+
+                                        {cartCount > 99
+                                            ? '99+'
+                                            : cartCount}
+
+                                    </span>
+
+                                )}
 
                             </Link>
 
@@ -674,11 +747,10 @@ const Header = () => {
                                                                 key={
                                                                     notification.id
                                                                 }
-                                                                className={`lms-notification-item ${
-                                                                    isUnread
-                                                                        ? 'unread'
-                                                                        : ''
-                                                                }`}
+                                                                className={`lms-notification-item ${isUnread
+                                                                    ? 'unread'
+                                                                    : ''
+                                                                    }`}
                                                                 onClick={() =>
                                                                     handleSingleNotificationClick(
                                                                         notification

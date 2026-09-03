@@ -24,6 +24,7 @@ import Home from './pages/home/Home';
 
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Cart from './pages/cart/Cart';
 
 
 // =====================================
@@ -132,7 +133,10 @@ function App() {
               path="/"
               element={<Home />}
             />
-
+<Route
+    path="/cart"
+    element={<Cart />}
+/>
 
             {/* =================================
                 AUTH

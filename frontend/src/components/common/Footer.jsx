@@ -16,6 +16,8 @@ import {
   FaGithub
 } from 'react-icons/fa';
 
+import './Footer.css';
+
 const Footer = () => {
   return (
     <footer className="lms-footer">

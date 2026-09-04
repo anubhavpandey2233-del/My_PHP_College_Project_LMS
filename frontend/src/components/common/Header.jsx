@@ -58,7 +58,6 @@ const Header = () => {
     const isHomePage =
         location.pathname === '/';
 
-    // Home button should appear on every page except Home
     const showHomeButton =
         !isHomePage;
 
@@ -81,7 +80,11 @@ const Header = () => {
 
     const [unreadCount, setUnreadCount] =
         useState(0);
+
     const [cartCount, setCartCount] =
+        useState(0);
+
+    const [wishlistCount, setWishlistCount] =
         useState(0);
 
     const [showNotifications, setShowNotifications] =
@@ -107,9 +110,10 @@ const Header = () => {
 
             setLoadingNotifications(true);
 
-            const response = await api.get(
-                '/notifications/list.php'
-            );
+            const response =
+                await api.get(
+                    '/notifications/list.php'
+                );
 
             if (response.data?.status) {
 
@@ -192,6 +196,49 @@ const Header = () => {
             );
 
             setCartCount(0);
+
+        }
+    };
+
+    const fetchWishlistCount = async () => {
+
+        if (!isStudent) {
+
+            setWishlistCount(0);
+
+            return;
+        }
+
+        try {
+
+            const response =
+                await api.get(
+                    '/wishlist/count.php'
+                );
+
+            if (response.data?.status) {
+
+                const count =
+                    Number(
+                        response.data?.data?.count || 0
+                    );
+
+                setWishlistCount(count);
+
+            } else {
+
+                setWishlistCount(0);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Wishlist Count Error:',
+                error
+            );
+
+            setWishlistCount(0);
 
         }
     };
@@ -384,7 +431,6 @@ const Header = () => {
 
     }, []);
 
-
     useEffect(() => {
 
         if (isStudent) {
@@ -399,10 +445,26 @@ const Header = () => {
 
     }, [isStudent]);
 
+    useEffect(() => {
+
+        if (isStudent) {
+
+            fetchWishlistCount();
+
+        } else {
+
+            setWishlistCount(0);
+
+        }
+
+    }, [isStudent]);
 
     const handleLogout = async () => {
 
         await logout();
+
+        setCartCount(0);
+        setWishlistCount(0);
 
         navigate(
             '/',
@@ -473,7 +535,6 @@ const Header = () => {
 
                     </Link>
 
-
                     {/* SEARCH */}
 
                     <div className="lms-search-box">
@@ -489,19 +550,17 @@ const Header = () => {
 
                     </div>
 
-
                     {/* RIGHT SIDE */}
 
                     <div className="lms-header-actions">
 
-
                         {/* WISHLIST */}
 
-                        {isAuthenticated && (
+                        {isStudent && (
 
                             <Link
                                 to="/wishlist"
-                                className="lms-header-icon"
+                                className="lms-header-icon lms-wishlist-button"
                                 title="Wishlist"
                             >
 
@@ -509,14 +568,25 @@ const Header = () => {
                                     size={23}
                                 />
 
+                                {wishlistCount > 0 && (
+
+                                    <span className="lms-wishlist-badge">
+
+                                        {wishlistCount > 99
+                                            ? '99+'
+                                            : wishlistCount}
+
+                                    </span>
+
+                                )}
+
                             </Link>
 
                         )}
 
-
                         {/* CART */}
 
-                        {isAuthenticated && (
+                        {isStudent && (
 
                             <Link
                                 to="/cart"
@@ -528,7 +598,7 @@ const Header = () => {
                                     size={23}
                                 />
 
-                                {isStudent && cartCount > 0 && (
+                                {cartCount > 0 && (
 
                                     <span className="lms-cart-badge">
 
@@ -543,7 +613,6 @@ const Header = () => {
                             </Link>
 
                         )}
-
 
                         {/* USER */}
 
@@ -588,7 +657,6 @@ const Header = () => {
 
                                 ) : null}
 
-
                                 <MdAccountCircle
                                     size={29}
                                     className="lms-user-avatar-fallback"
@@ -598,7 +666,6 @@ const Header = () => {
                                             : 'block'
                                     }}
                                 />
-
 
                                 <span>
                                     {user?.name ||
@@ -617,7 +684,6 @@ const Header = () => {
                             </Link>
 
                         )}
-
 
                         {/* HOME */}
 
@@ -639,7 +705,6 @@ const Header = () => {
                             </button>
 
                         )}
-
 
                         {/* ADMIN NOTIFICATION */}
 
@@ -679,7 +744,6 @@ const Header = () => {
 
                                 </button>
 
-
                                 {showNotifications && (
 
                                     <div className="lms-notification-dropdown">
@@ -707,7 +771,6 @@ const Header = () => {
                                             )}
 
                                         </div>
-
 
                                         <div className="lms-notification-list">
 
@@ -747,10 +810,11 @@ const Header = () => {
                                                                 key={
                                                                     notification.id
                                                                 }
-                                                                className={`lms-notification-item ${isUnread
-                                                                    ? 'unread'
-                                                                    : ''
-                                                                    }`}
+                                                                className={`lms-notification-item ${
+                                                                    isUnread
+                                                                        ? 'unread'
+                                                                        : ''
+                                                                }`}
                                                                 onClick={() =>
                                                                     handleSingleNotificationClick(
                                                                         notification
@@ -815,7 +879,6 @@ const Header = () => {
 
                         )}
 
-
                         {/* THEME */}
 
                         <button
@@ -847,7 +910,6 @@ const Header = () => {
 
                         </button>
 
-
                         {/* CONTACT */}
 
                         <Link
@@ -867,7 +929,6 @@ const Header = () => {
                             </span>
 
                         </Link>
-
 
                         {/* LOGOUT */}
 

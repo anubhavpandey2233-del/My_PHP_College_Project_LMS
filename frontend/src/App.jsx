@@ -25,6 +25,8 @@ import Home from './pages/home/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Cart from './pages/cart/Cart';
+import Wishlist from './pages/Wishlist/Wishlist';
+import CartEnroll from './pages/cart/CartEnroll';
 
 
 // =====================================
@@ -133,10 +135,20 @@ function App() {
               path="/"
               element={<Home />}
             />
-<Route
-    path="/cart"
-    element={<Cart />}
-/>
+            <Route
+              path="/cart"
+              element={<Cart />}
+            />
+
+            <Route
+              path="/wishlist"
+              element={<Wishlist />}
+            />
+            <Route
+              path="/cart/enroll"
+              element={<CartEnroll />}
+            />
+
 
             {/* =================================
                 AUTH

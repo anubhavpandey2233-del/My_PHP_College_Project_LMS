@@ -1444,11 +1444,6 @@ img.home-instructor-avatar {
     margin: 0;
     font-size: 12px;
 }
-
-/* =========================
-   RESPONSIVE
-========================= */
-
 @media (max-width: 1100px) {
     .home-category-list {
         grid-template-columns: repeat(5, 1fr);
@@ -1644,9 +1639,6 @@ img.home-instructor-avatar {
     }
 }
 
-/* =========================
-   MOBILE HOVER ANIMATION
-========================= */
 
 @keyframes courseHoverMobileIn {
     from {

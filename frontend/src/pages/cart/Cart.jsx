@@ -318,17 +318,8 @@ const decreaseQuantity = (
     };
 
     const handleEnrollAll = () => {
-
-        if (!cart.length) {
-            return;
-        }
-
-        console.log(
-            'Enroll All:',
-            cart
-        );
-
-    };
+    navigate('/cart/enroll');
+};
 
     const totalAmount =
         cart.reduce(

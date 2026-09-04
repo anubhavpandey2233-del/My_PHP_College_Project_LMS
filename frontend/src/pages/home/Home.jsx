@@ -445,10 +445,9 @@ const Home = () => {
                         !teacherImage.startsWith('https://')
                     ) {
                         teacherImage =
-                            `http://localhost${
-                                teacherImage.startsWith('/')
-                                    ? ''
-                                    : '/'
+                            `http://localhost${teacherImage.startsWith('/')
+                                ? ''
+                                : '/'
                             }${teacherImage}`;
                     }
                 }
@@ -469,10 +468,9 @@ const Home = () => {
                         !courseImage.startsWith('https://')
                     ) {
                         courseImage =
-                            `http://localhost${
-                                courseImage.startsWith('/')
-                                    ? ''
-                                    : '/'
+                            `http://localhost${courseImage.startsWith('/')
+                                ? ''
+                                : '/'
                             }${courseImage}`;
                     }
                 }
@@ -827,32 +825,19 @@ const Home = () => {
     /*
      * Review avatar.
      */
-    const getReviewAvatar = (review) => {
-        let avatar =
-            review.student_avatar ||
-            review.user_avatar ||
-            review.avatar ||
-            null;
+   const getReviewAvatar = (review) => {
+    const image =
+        review.student_avatar ||
+        review.user_avatar ||
+        review.avatar ||
+        null;
 
-        if (!avatar) {
-            return null;
-        }
+    if (!image) {
+        return null;
+    }
 
-        avatar = String(avatar).trim();
-
-        if (
-            avatar.startsWith('http://') ||
-            avatar.startsWith('https://')
-        ) {
-            return avatar;
-        }
-
-        return `http://localhost${
-            avatar.startsWith('/')
-                ? ''
-                : '/'
-        }${avatar}`;
-    };
+    return `http://localhost/php-lms-project/backend/uploads/avatars/${image}`;
+};
 
     /*
      * Check cart.
@@ -860,7 +845,7 @@ const Home = () => {
     const isCourseInCart = (courseId) => {
         return cartItems.some(
             (item) =>
-                Number(item.id) ===
+                Number(item.course_id) ===
                 Number(courseId)
         );
     };
@@ -879,95 +864,104 @@ const Home = () => {
     /*
      * Add course to cart.
      */
-   const handleAddToCart = async (course) => {
-
-    if (isCourseInCart(course.id)) {
-        return;
-    }
-
-    try {
-
-        const response = await api.post(
-            '/cart/add.php',
-            {
-                course_id: course.id
-            }
-        );
-
-        if (response.data?.status) {
-
-            const newCartItem = {
-                id: course.id,
-                title: course.title,
-                price: course.normalizedFinalPrice,
-                originalPrice: course.normalizedOriginalPrice,
-                image: course.normalizedCourseImage,
-                teacher: course.normalizedTeacherName
-            };
-
-            const updatedCart = [
-                ...cartItems,
-                newCartItem
-            ];
-
-            setCartItems(updatedCart);
-
-            localStorage.setItem(
-                'lmsCart',
-                JSON.stringify(updatedCart)
-            );
-
+    const handleAddToCart = async (course) => {
+        if (isCourseInCart(course.id)) {
+            return;
         }
 
-    } catch (error) {
+        try {
+            const response = await api.post(
+                '/cart/add.php',
+                {
+                    course_id: course.id
+                }
+            );
 
-        console.error(
-            'Add To Cart Error:',
-            error
-        );
+            if (response.data?.status) {
+                alert('Item added successfully');
 
-    }
-};
+                try {
+                    await fetchCart();
+                } catch (error) {
+                    console.error(
+                        'Fetch Cart Error:',
+                        error
+                    );
+                }
+            } else {
+                alert(
+                    response.data?.message ||
+                    'Failed to add item'
+                );
+            }
+        } catch (error) {
+            console.error(
+                'Add To Cart Error:',
+                error
+            );
+
+            alert(
+                error.response?.data?.message ||
+                'Failed to add item'
+            );
+        }
+    };
 
     /*
      * Wishlist toggle.
      */
-    const handleWishlist = (course) => {
-        let updatedWishlist;
+    const handleWishlist = async (course) => {
+        const courseId = Number(course.id);
 
-        if (
-            isCourseInWishlist(course.id)
-        ) {
-            updatedWishlist =
-                wishlistItems.filter(
-                    (item) =>
-                        Number(item.id) !==
-                        Number(course.id)
+        try {
+            if (isCourseInWishlist(courseId)) {
+                const response = await api.post(
+                    '/wishlist/remove.php',
+                    {
+                        course_id: courseId
+                    }
                 );
-        } else {
-            updatedWishlist = [
-                ...wishlistItems,
-                {
-                    id: course.id,
-                    title: course.title,
-                    price:
-                        course.normalizedFinalPrice,
-                    originalPrice:
-                        course.normalizedOriginalPrice,
-                    image:
-                        course.normalizedCourseImage,
-                    teacher:
-                        course.normalizedTeacherName
+
+                if (response.data?.status) {
+                    setWishlistItems((prev) =>
+                        prev.filter(
+                            (item) =>
+                                Number(item.id) !== courseId
+                        )
+                    );
                 }
-            ];
+            } else {
+                const response = await api.post(
+                    '/wishlist/add.php',
+                    {
+                        course_id: courseId
+                    }
+                );
+
+                if (response.data?.status) {
+                    setWishlistItems((prev) => [
+                        ...prev,
+                        {
+                            id: course.id,
+                            title: course.title,
+                            price:
+                                course.normalizedFinalPrice,
+                            originalPrice:
+                                course.normalizedOriginalPrice,
+                            image:
+                                course.normalizedCourseImage,
+                            teacher:
+                                course.normalizedTeacherName
+                        }
+                    ]);
+                }
+            }
+        } catch (error) {
+            console.error(
+                'Wishlist Error:',
+                error
+            );
         }
-
-        setWishlistItems(updatedWishlist);
-
-        localStorage.setItem(
-            'lmsWishlist',
-            JSON.stringify(updatedWishlist)
-        );
     };
 
     /*
@@ -1000,8 +994,8 @@ const Home = () => {
             isCourseInWishlist(course.id);
 
         const shouldOpenLeft =
-    (type === 'slider' && index >= total - 2) ||
-    (type === 'new' && index === total - 1);
+            (type === 'slider' && index >= total - 2) ||
+            (type === 'new' && index === total - 1);
 
         /*
          * Unique hover key for each section.
@@ -1060,11 +1054,10 @@ const Home = () => {
 
                     <button
                         type="button"
-                        className={`home-course-wishlist-button ${
-                            inWishlist
-                                ? 'active'
-                                : ''
-                        }`}
+                        className={`home-course-wishlist-button ${inWishlist
+                            ? 'active'
+                            : ''
+                            }`}
                         onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
@@ -1150,10 +1143,10 @@ const Home = () => {
                     <div className="home-course-rating">
                         <strong>
                             {course.normalizedRating >
-                            0
+                                0
                                 ? course.normalizedRating.toFixed(
-                                      1
-                                  )
+                                    1
+                                )
                                 : '0.0'}
                         </strong>
 
@@ -1206,166 +1199,163 @@ const Home = () => {
 
                 {hoveredCourse ===
                     hoverKey && (
-                    <div
-                        className={`home-course-hover-card ${
-                            shouldOpenLeft
+                        <div
+                            className={`home-course-hover-card ${shouldOpenLeft
                                 ? 'open-left'
                                 : ''
-                        }`}
-                        onMouseEnter={() =>
-                            setHoveredCourse(
-                                hoverKey
-                            )
-                        }
-                        onMouseLeave={() =>
-                            setHoveredCourse(null)
-                        }
-                    >
-                        <div className="home-course-hover-arrow"></div>
-
-                        <Link
-                            to={getCourseUrl(course)}
-                            className="home-course-hover-title"
-                        >
-                            {course.title ||
-                                'Untitled Course'}
-                        </Link>
-
-                        <p className="home-course-hover-instructor">
-                            {
-                                course.normalizedTeacherName
-                            }
-                        </p>
-
-                        <div className="home-course-hover-meta">
-                            <strong>
-                                {course.normalizedRating >
-                                0
-                                    ? course.normalizedRating.toFixed(
-                                          1
-                                      )
-                                    : '0.0'}
-                            </strong>
-
-                            <span className="home-hover-stars">
-                                ★★★★★
-                            </span>
-
-                            <span>
-                                (
-                                {
-                                    course.normalizedReviewCount
-                                }
+                                }`}
+                            onMouseEnter={() =>
+                                setHoveredCourse(
+                                    hoverKey
                                 )
-                            </span>
-                        </div>
+                            }
+                            onMouseLeave={() =>
+                                setHoveredCourse(null)
+                            }
+                        >
+                            <div className="home-course-hover-arrow"></div>
 
-                        <div className="home-course-hover-students">
-                            <FaUsers />
-
-                            <span>
-                                {getEnrollmentText(
-                                    course.normalizedEnrollmentCount
-                                )}
-                            </span>
-                        </div>
-
-                        <ul className="home-course-hover-features">
-                            <li>
-                                <FaCheck />
-                                Lifetime access
-                            </li>
-
-                            <li>
-                                <FaCheck />
-                                Learn at your own pace
-                            </li>
-
-                            <li>
-                                <FaCheck />
-                                Certificate on completion
-                            </li>
-                        </ul>
-
-                        <div className="home-course-hover-price">
-                            <strong>
-                                {formatPrice(
-                                    course.normalizedFinalPrice
-                                )}
-                            </strong>
-
-                            {hasDiscount && (
-                                <del>
-                                    {formatPrice(
-                                        course.normalizedOriginalPrice
-                                    )}
-                                </del>
-                            )}
-                        </div>
-
-                        <div className="home-course-hover-actions">
-                            <button
-                                type="button"
-                                className="home-course-enroll-button"
-                                onClick={() =>
-                                    handleEnrollNow(
-                                        course
-                                    )
-                                }
+                            <Link
+                                to={getCourseUrl(course)}
+                                className="home-course-hover-title"
                             >
-                                Enroll Now
-                            </button>
+                                {course.title ||
+                                    'Untitled Course'}
+                            </Link>
 
-                            <button
-                                type="button"
-                                className={`home-course-cart-button ${
-                                    inCart
+                            <p className="home-course-hover-instructor">
+                                {
+                                    course.normalizedTeacherName
+                                }
+                            </p>
+
+                            <div className="home-course-hover-meta">
+                                <strong>
+                                    {course.normalizedRating >
+                                        0
+                                        ? course.normalizedRating.toFixed(
+                                            1
+                                        )
+                                        : '0.0'}
+                                </strong>
+
+                                <span className="home-hover-stars">
+                                    ★★★★★
+                                </span>
+
+                                <span>
+                                    (
+                                    {
+                                        course.normalizedReviewCount
+                                    }
+                                    )
+                                </span>
+                            </div>
+
+                            <div className="home-course-hover-students">
+                                <FaUsers />
+
+                                <span>
+                                    {getEnrollmentText(
+                                        course.normalizedEnrollmentCount
+                                    )}
+                                </span>
+                            </div>
+
+                            <ul className="home-course-hover-features">
+                                <li>
+                                    <FaCheck />
+                                    Lifetime access
+                                </li>
+
+                                <li>
+                                    <FaCheck />
+                                    Learn at your own pace
+                                </li>
+
+                                <li>
+                                    <FaCheck />
+                                    Certificate on completion
+                                </li>
+                            </ul>
+
+                            <div className="home-course-hover-price">
+                                <strong>
+                                    {formatPrice(
+                                        course.normalizedFinalPrice
+                                    )}
+                                </strong>
+
+                                {hasDiscount && (
+                                    <del>
+                                        {formatPrice(
+                                            course.normalizedOriginalPrice
+                                        )}
+                                    </del>
+                                )}
+                            </div>
+
+                            <div className="home-course-hover-actions">
+                                <button
+                                    type="button"
+                                    className="home-course-enroll-button"
+                                    onClick={() =>
+                                        handleEnrollNow(
+                                            course
+                                        )
+                                    }
+                                >
+                                    Enroll Now
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`home-course-cart-button ${inCart
                                         ? 'added'
                                         : ''
-                                }`}
-                                onClick={() =>
-                                    handleAddToCart(
-                                        course
-                                    )
-                                }
-                            >
-                                {inCart ? (
-                                    <>
-                                        <FaCheck />
-                                        Added to Cart
-                                    </>
-                                ) : (
-                                    <>
-                                        <FaShoppingCart />
-                                        Add to Cart
-                                    </>
-                                )}
-                            </button>
-                        </div>
+                                        }`}
+                                    onClick={() =>
+                                        handleAddToCart(
+                                            course
+                                        )
+                                    }
+                                >
+                                    {inCart ? (
+                                        <>
+                                            <FaCheck />
+                                            Added to Cart
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaShoppingCart />
+                                            Add to Cart
+                                        </>
+                                    )}
+                                </button>
+                            </div>
 
-                        <button
-                            type="button"
-                            className={`home-course-hover-wishlist ${
-                                inWishlist
+                            <button
+                                type="button"
+                                className={`home-course-hover-wishlist ${inWishlist
                                     ? 'active'
                                     : ''
-                            }`}
-                            onClick={() =>
-                                handleWishlist(course)
-                            }
-                        >
-                            {inWishlist ? (
-                                <FaHeart />
-                            ) : (
-                                <FaRegHeart />
-                            )}
+                                    }`}
+                                onClick={() =>
+                                    handleWishlist(course)
+                                }
+                            >
+                                {inWishlist ? (
+                                    <FaHeart />
+                                ) : (
+                                    <FaRegHeart />
+                                )}
 
-                            {inWishlist
-                                ? 'Remove from Wishlist'
-                                : 'Add to Wishlist'}
-                        </button>
-                    </div>
-                )}
+                                {inWishlist
+                                    ? 'Remove from Wishlist'
+                                    : 'Add to Wishlist'}
+                            </button>
+                        </div>
+                    )}
             </div>
         );
     };
@@ -1437,10 +1427,10 @@ const Home = () => {
                                 key={star}
                                 className={
                                     star <=
-                                    Number(
-                                        review.rating ||
+                                        Number(
+                                            review.rating ||
                                             0
-                                    )
+                                        )
                                         ? 'filled'
                                         : ''
                                 }
@@ -1453,7 +1443,7 @@ const Home = () => {
                     <strong>
                         {Number(
                             review.rating ||
-                                0
+                            0
                         ).toFixed(1)}
                     </strong>
                 </div>
@@ -1466,15 +1456,15 @@ const Home = () => {
                 <div className="home-review-date">
                     {review.created_at
                         ? new Date(
-                              review.created_at
-                          ).toLocaleDateString(
-                              'en-IN',
-                              {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric'
-                              }
-                          )
+                            review.created_at
+                        ).toLocaleDateString(
+                            'en-IN',
+                            {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                            }
+                        )
                         : ''}
                 </div>
             </div>
@@ -1490,9 +1480,9 @@ const Home = () => {
                 total +
                 Number(
                     course.total_students ??
-                        course.enrollment_count ??
-                        course.enrolled_count ??
-                        0
+                    course.enrollment_count ??
+                    course.enrolled_count ??
+                    0
                 ),
             0
         );
@@ -1673,7 +1663,7 @@ const Home = () => {
                                             categories...
                                         </div>
                                     ) : visibleCategories.length ===
-                                      0 ? (
+                                        0 ? (
                                         <div className="home-dropdown-message">
                                             No categories
                                             available
@@ -1728,73 +1718,72 @@ const Home = () => {
                                                             Number(
                                                                 category.id
                                                             ) && (
-                                                            <div
-                                                                className="home-subcategory-dropdown"
-                                                                onMouseEnter={() =>
-                                                                    setHoveredCategory(
-                                                                        Number(
-                                                                            category.id
+                                                                <div
+                                                                    className="home-subcategory-dropdown"
+                                                                    onMouseEnter={() =>
+                                                                        setHoveredCategory(
+                                                                            Number(
+                                                                                category.id
+                                                                            )
                                                                         )
-                                                                    )
-                                                                }
-                                                            >
-                                                                <div className="home-subcategory-title">
-                                                                    {
-                                                                        category.name
                                                                     }
-                                                                </div>
+                                                                >
+                                                                    <div className="home-subcategory-title">
+                                                                        {
+                                                                            category.name
+                                                                        }
+                                                                    </div>
 
-                                                                {loadingSubcategories ? (
-                                                                    <div className="home-subcategory-empty">
-                                                                        Loading...
-                                                                    </div>
-                                                                ) : categorySubs.length ===
-                                                                  0 ? (
-                                                                    <div className="home-subcategory-empty">
-                                                                        No
-                                                                        subcategories
-                                                                    </div>
-                                                                ) : (
-                                                                    categorySubs.map(
-                                                                        (
-                                                                            subcategory
-                                                                        ) => (
-                                                                            <button
-                                                                                type="button"
-                                                                                key={
-                                                                                    subcategory.id
-                                                                                }
-                                                                                className={`home-subcategory-item ${
-                                                                                    Number(
+                                                                    {loadingSubcategories ? (
+                                                                        <div className="home-subcategory-empty">
+                                                                            Loading...
+                                                                        </div>
+                                                                    ) : categorySubs.length ===
+                                                                        0 ? (
+                                                                        <div className="home-subcategory-empty">
+                                                                            No
+                                                                            subcategories
+                                                                        </div>
+                                                                    ) : (
+                                                                        categorySubs.map(
+                                                                            (
+                                                                                subcategory
+                                                                            ) => (
+                                                                                <button
+                                                                                    type="button"
+                                                                                    key={
+                                                                                        subcategory.id
+                                                                                    }
+                                                                                    className={`home-subcategory-item ${Number(
                                                                                         selectedSubcategory
                                                                                     ) ===
-                                                                                    Number(
-                                                                                        subcategory.id
-                                                                                    )
+                                                                                        Number(
+                                                                                            subcategory.id
+                                                                                        )
                                                                                         ? 'active'
                                                                                         : ''
-                                                                                }`}
-                                                                                onClick={() =>
-                                                                                    handleSubcategoryClick(
-                                                                                        subcategory.id
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    subcategory.name
-                                                                                }
-
-                                                                                <FaChevronRight
-                                                                                    size={
-                                                                                        10
+                                                                                        }`}
+                                                                                    onClick={() =>
+                                                                                        handleSubcategoryClick(
+                                                                                            subcategory.id
+                                                                                        )
                                                                                     }
-                                                                                />
-                                                                            </button>
+                                                                                >
+                                                                                    {
+                                                                                        subcategory.name
+                                                                                    }
+
+                                                                                    <FaChevronRight
+                                                                                        size={
+                                                                                            10
+                                                                                        }
+                                                                                    />
+                                                                                </button>
+                                                                            )
                                                                         )
-                                                                    )
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                     </div>
                                                 );
                                             }
@@ -2004,7 +1993,7 @@ const Home = () => {
                                     categories...
                                 </div>
                             ) : visibleCategories.length ===
-                              0 ? (
+                                0 ? (
                                 <div className="home-loading-text">
                                     No categories
                                     available
@@ -2017,16 +2006,15 @@ const Home = () => {
                                             key={
                                                 category.id
                                             }
-                                            className={`home-category-card ${
-                                                Number(
-                                                    selectedCategory
-                                                ) ===
+                                            className={`home-category-card ${Number(
+                                                selectedCategory
+                                            ) ===
                                                 Number(
                                                     category.id
                                                 )
-                                                    ? 'selected'
-                                                    : ''
-                                            }`}
+                                                ? 'selected'
+                                                : ''
+                                                }`}
                                             onClick={() =>
                                                 handleCategoryClick(
                                                     category.id
@@ -2064,9 +2052,9 @@ const Home = () => {
                                 className={
                                     selectedTab ===
                                         null &&
-                                    selectedCategory ===
+                                        selectedCategory ===
                                         null &&
-                                    selectedSubcategory ===
+                                        selectedSubcategory ===
                                         null
                                         ? 'home-course-tab active'
                                         : 'home-course-tab'
@@ -2091,9 +2079,9 @@ const Home = () => {
                                                 Number(
                                                     selectedTab
                                                 ) ===
-                                                Number(
-                                                    category.id
-                                                )
+                                                    Number(
+                                                        category.id
+                                                    )
                                                     ? 'home-course-tab active'
                                                     : 'home-course-tab'
                                             }
@@ -2137,7 +2125,7 @@ const Home = () => {
                                         courses...
                                     </div>
                                 ) : displayedCourses.length ===
-                                  0 ? (
+                                    0 ? (
                                     <div className="home-course-empty">
                                         {error ||
                                             'No courses available.'}
@@ -2200,7 +2188,7 @@ const Home = () => {
                                 Loading...
                             </div>
                         ) : newCourses.length ===
-                          0 ? (
+                            0 ? (
                             <div className="home-course-empty">
                                 No new courses
                                 available.
@@ -2244,7 +2232,7 @@ const Home = () => {
                                 Loading reviews...
                             </div>
                         ) : reviews.length ===
-                          0 ? (
+                            0 ? (
                             <div className="home-review-empty">
                                 <FaBookOpen />
 

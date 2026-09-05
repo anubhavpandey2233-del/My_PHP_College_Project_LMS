@@ -825,19 +825,19 @@ const Home = () => {
     /*
      * Review avatar.
      */
-   const getReviewAvatar = (review) => {
-    const image =
-        review.student_avatar ||
-        review.user_avatar ||
-        review.avatar ||
-        null;
+    const getReviewAvatar = (review) => {
+        const image =
+            review.student_avatar ||
+            review.user_avatar ||
+            review.avatar ||
+            null;
 
-    if (!image) {
-        return null;
-    }
+        if (!image) {
+            return null;
+        }
 
-    return `http://localhost/php-lms-project/backend/uploads/avatars/${image}`;
-};
+        return `http://localhost/php-lms-project/backend/uploads/avatars/${image}`;
+    };
 
     /*
      * Check cart.

@@ -27,6 +27,7 @@ import Register from './pages/auth/Register';
 import Cart from './pages/cart/Cart';
 import Wishlist from './pages/Wishlist/Wishlist';
 import CartEnroll from './pages/cart/CartEnroll';
+import About from './pages/about/About';
 
 
 // =====================================
@@ -148,8 +149,7 @@ function App() {
               path="/cart/enroll"
               element={<CartEnroll />}
             />
-
-
+            <Route path="/about-us" element={<About />} />
             {/* =================================
                 AUTH
             ================================= */}

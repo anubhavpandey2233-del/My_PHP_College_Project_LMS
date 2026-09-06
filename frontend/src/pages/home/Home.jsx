@@ -62,6 +62,8 @@ const Home = () => {
     const courseSliderRef = useRef(null);
     const reviewSliderRef = useRef(null);
 
+    const [totalStudents, setTotalStudents] = useState(0);
+
     /*
      * Load cart and wishlist from localStorage.
      */
@@ -363,16 +365,46 @@ const Home = () => {
             setLoadingReviews(false);
         }
     };
+const fetchTotalStudents = async () => {
+    try {
 
-    /*
+        const response = await api.get(
+            '/enrollments/count.php'
+        );
+
+        if (response.data?.status) {
+
+            setTotalStudents(
+                Number(
+                    response.data?.data?.total_enrollments ?? 0
+                )
+            );
+
+        } else {
+
+            setTotalStudents(0);
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Enrollment Count Error:',
+            error
+        );
+
+        setTotalStudents(0);
+
+    }
+};    /*
      * Initial API calls.
      */
-    useEffect(() => {
-        fetchCategories();
-        fetchSubcategories();
-        fetchCourses();
-        fetchReviews();
-    }, []);
+  useEffect(() => {
+    fetchSubcategories();
+    fetchCourses();
+    fetchReviews();
+    fetchTotalStudents();
+}, []);
 
     /*
      * Normalize course data.
@@ -1474,18 +1506,18 @@ const Home = () => {
     const visibleCategories =
         categories.slice(0, 9);
 
-    const totalStudents =
-        normalizedCourses.reduce(
-            (total, course) =>
-                total +
-                Number(
-                    course.total_students ??
-                    course.enrollment_count ??
-                    course.enrolled_count ??
-                    0
-                ),
-            0
-        );
+    // const totalStudents =
+    //     normalizedCourses.reduce(
+    //         (total, course) =>
+    //             total +
+    //             Number(
+    //                 course.total_students ??
+    //                 course.enrollment_count ??
+    //                 course.enrolled_count ??
+    //                 0
+    //             ),
+    //         0
+    //     );
 
     const totalCourses =
         normalizedCourses.length;
@@ -2063,7 +2095,7 @@ const Home = () => {
                                     clearCategoryFilter
                                 }
                             >
-                                Best Sellers
+                               All
                             </button>
 
                             {categories

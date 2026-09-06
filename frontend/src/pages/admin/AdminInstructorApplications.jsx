@@ -76,54 +76,44 @@ const AdminInstructorApplications = () => {
     // APPROVE / REJECT
     // ==========================================
 
-    const updateApplicationStatus = async (
-        applicationId,
-        status
-    ) => {
+    const updateApplicationStatus = async (applicationId, status) => {
+        console.log('Sending Application ID:', applicationId);
+        console.log('Sending Status:', status);
 
         try {
-
             setActionLoading(applicationId);
 
-            const response = await api.post(
-                '/instructor/update-status.php',
-                {
-                    application_id: applicationId,
-                    status: status
-                }
-            );
+            const response = await api.post('/instructor/update-status.php', {
+                application_id: Number(applicationId),
+                status: status
+            });
+
+            console.log('Update Status Response:', response.data);
 
             if (response.data?.status) {
-
                 setApplications((prev) =>
-                    prev.map(
-                        (application) =>
-                            Number(application.id) ===
-                            Number(applicationId)
-                                ? {
-                                    ...application,
-                                    status: status
-                                }
-                                : application
+                    prev.map((application) =>
+                        Number(application.id) === Number(applicationId)
+                            ? { ...application, status: status }
+                            : application
                     )
                 );
-
+            } else {
+                alert(response.data?.message || 'Unable to update application status');
             }
-
         } catch (error) {
+            console.error('Update Application Error:', error);
+            console.error('Backend Response:', error.response?.data);
 
-            console.error(
-                'Update Application Error:',
-                error
+            alert(
+                error.response?.data?.message ||
+                'Unable to update application status'
             );
-
         } finally {
-
             setActionLoading(null);
-
         }
-
     };
+
 
 
     // ==========================================
@@ -362,13 +352,15 @@ const AdminInstructorApplications = () => {
                                                     className={`
                                                         badge
                                                         ${getStatusClass(
-                                                            application.status
-                                                        )}
+                                                        application.status
+                                                    )}
                                                     `}
                                                 >
+
                                                     {String(
                                                         application.status
                                                     ).toUpperCase()}
+
                                                 </span>
 
                                             </div>
@@ -469,12 +461,11 @@ const AdminInstructorApplications = () => {
                                                             gap-2
                                                         "
                                                         disabled={isProcessing}
-                                                        onClick={() =>
-                                                            updateApplicationStatus(
-                                                                application.id,
-                                                                'approved'
-                                                            )
-                                                        }
+                                                        onClick={() => {
+                                                            console.log('Application:', application);
+                                                            console.log('Application ID:', application.id);
+                                                            updateApplicationStatus(application.id, 'approved');
+                                                        }}
                                                     >
 
                                                         <MdCheckCircle
@@ -498,8 +489,9 @@ const AdminInstructorApplications = () => {
                                                             gap-2
                                                         "
                                                         disabled={isProcessing}
-                                                        onClick={() =>
+                                                        onClick={(event) =>
                                                             updateApplicationStatus(
+                                                                event,
                                                                 application.id,
                                                                 'rejected'
                                                             )
@@ -510,7 +502,9 @@ const AdminInstructorApplications = () => {
                                                             size={19}
                                                         />
 
-                                                        Reject
+                                                        {isProcessing
+                                                            ? 'Processing...'
+                                                            : 'Reject'}
 
                                                     </button>
 

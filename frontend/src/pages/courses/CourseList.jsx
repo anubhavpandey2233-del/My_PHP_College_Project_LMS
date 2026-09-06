@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -15,134 +16,168 @@ const CourseList = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [filters, setFilters] = useState({
-        search: '',
-        category_id: '',
-        level: '',
-        page: 1
-    });
+    const getFiltersFromUrl = () => {
+        const params = new URLSearchParams(location.search);
+
+        return {
+            search: params.get('search') || '',
+            category_id: params.get('category_id') || '',
+            level: params.get('level') || '',
+            page: Math.max(
+                1,
+                Number(params.get('page')) || 1
+            )
+        };
+    };
+
+    const [filters, setFilters] = useState(
+        getFiltersFromUrl()
+    );
+
+    const [courseSearch, setCourseSearch] = useState(
+        getFiltersFromUrl().search
+    );
 
     useEffect(() => {
         api.get('/categories/list.php')
             .then(res => {
                 if (res.data?.status) {
-                    setCategories(res.data.data || []);
+                    setCategories(
+                        res.data.data || []
+                    );
                 } else {
                     setCategories([]);
                 }
             })
             .catch(error => {
-                console.error('Category error:', error);
+                console.error(
+                    'Category error:',
+                    error
+                );
+
                 setCategories([]);
             });
     }, []);
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
+        const nextFilters = getFiltersFromUrl();
 
-        const search = params.get('search') || '';
-        const category_id = params.get('category_id') || '';
-        const level = params.get('level') || '';
-        const page = Math.max(
-            1,
-            Number(params.get('page')) || 1
-        );
-
-        setFilters({
-            search,
-            category_id,
-            level,
-            page
-        });
+        setFilters(nextFilters);
+        setCourseSearch(nextFilters.search);
     }, [location.search]);
 
     useEffect(() => {
-        setLoading(true);
+        const fetchCourses = async () => {
+            setLoading(true);
 
-        const params = new URLSearchParams();
+            try {
+                const params = new URLSearchParams();
 
-        if (filters.search.trim() !== '') {
-            params.set(
-                'search',
-                filters.search.trim()
-            );
-        }
+                if (filters.search.trim() !== '') {
+                    params.set(
+                        'search',
+                        filters.search.trim()
+                    );
+                }
 
-        if (filters.category_id !== '') {
-            params.set(
-                'category_id',
-                filters.category_id
-            );
-        }
+                if (filters.category_id !== '') {
+                    params.set(
+                        'category_id',
+                        filters.category_id
+                    );
+                }
 
-        if (filters.level !== '') {
-            params.set(
-                'level',
-                filters.level
-            );
-        }
+                if (filters.level !== '') {
+                    params.set(
+                        'level',
+                        filters.level
+                    );
+                }
 
-        params.set(
-            'page',
-            String(filters.page)
-        );
-
-        api.get(
-            `/courses/list.php?${params.toString()}`
-        )
-            .then(res => {
-                console.log(
-                    'COURSES API:',
-                    res.data
+                params.set(
+                    'page',
+                    String(filters.page)
                 );
 
-                if (res.data?.status) {
+                const requestUrl =
+                    `/courses/list.php?${params.toString()}`;
+
+                console.log(
+                    'COURSES REQUEST:',
+                    requestUrl
+                );
+
+                const response = await api.get(
+                    requestUrl
+                );
+
+                console.log(
+                    'COURSES RESPONSE:',
+                    response.data
+                );
+
+                if (response.data?.status) {
                     setCourses(
-                        res.data?.data?.courses || []
+                        response.data?.data?.courses || []
                     );
                 } else {
                     setCourses([]);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error(
                     'Courses error:',
                     error
                 );
 
                 setCourses([]);
-            })
-            .finally(() => {
+            } finally {
                 setLoading(false);
-            });
-    }, [filters]);
+            }
+        };
+
+        fetchCourses();
+    }, [
+        filters.search,
+        filters.category_id,
+        filters.level,
+        filters.page
+    ]);
 
     const updateUrl = (
-        search,
-        category_id,
-        level,
+        search = '',
+        category_id = '',
+        level = '',
         page = 1
     ) => {
         const params = new URLSearchParams();
 
-        if (search.trim() !== '') {
+        const cleanSearch =
+            String(search || '').trim();
+
+        const cleanCategory =
+            String(category_id || '');
+
+        const cleanLevel =
+            String(level || '');
+
+        if (cleanSearch !== '') {
             params.set(
                 'search',
-                search.trim()
+                cleanSearch
             );
         }
 
-        if (category_id !== '') {
+        if (cleanCategory !== '') {
             params.set(
                 'category_id',
-                category_id
+                cleanCategory
             );
         }
 
-        if (level !== '') {
+        if (cleanLevel !== '') {
             params.set(
                 'level',
-                level
+                cleanLevel
             );
         }
 
@@ -151,12 +186,8 @@ const CourseList = () => {
             String(page)
         );
 
-        const query = params.toString();
-
         navigate(
-            query
-                ? `/courses?${query}`
-                : '/courses',
+            `/courses?${params.toString()}`,
             {
                 replace: true
             }
@@ -165,6 +196,8 @@ const CourseList = () => {
 
     const handleSearchChange = (e) => {
         const value = e.target.value;
+
+        setCourseSearch(value);
 
         updateUrl(
             value,
@@ -197,8 +230,10 @@ const CourseList = () => {
     };
 
     const resetFilters = () => {
+        setCourseSearch('');
+
         navigate(
-            '/courses',
+            '/courses?page=1',
             {
                 replace: true
             }
@@ -293,6 +328,7 @@ const CourseList = () => {
                             }
                         >
                             <FaArrowLeft />
+
                             <span>
                                 Back
                             </span>
@@ -302,7 +338,6 @@ const CourseList = () => {
                             className="course-list-title"
                             onClick={resetFilters}
                         >
-                            All Courses
                         </h2>
 
                     </div>
@@ -315,9 +350,7 @@ const CourseList = () => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Search courses..."
-                                value={
-                                    filters.search
-                                }
+                                value={courseSearch}
                                 onChange={
                                     handleSearchChange
                                 }
@@ -336,6 +369,7 @@ const CourseList = () => {
                                     handleCategoryChange
                                 }
                             >
+
                                 <option value="">
                                     All Categories
                                 </option>
@@ -372,6 +406,7 @@ const CourseList = () => {
                                     handleLevelChange
                                 }
                             >
+
                                 <option value="">
                                     All Levels
                                 </option>
@@ -425,12 +460,12 @@ const CourseList = () => {
                                         discount > 0
                                             ? Math.max(
                                                 0,
-                                                price -
-                                                discount
+                                                price - discount
                                             )
                                             : price;
 
                                     return (
+
                                         <div
                                             className="course-list-col"
                                             key={
@@ -443,6 +478,7 @@ const CourseList = () => {
                                                 <div className="course-list-image">
 
                                                     {thumbnailUrl && (
+
                                                         <img
                                                             src={
                                                                 thumbnailUrl
@@ -459,6 +495,7 @@ const CourseList = () => {
                                                                     )
                                                             }
                                                         />
+
                                                     )}
 
                                                     <div
@@ -545,8 +582,7 @@ const CourseList = () => {
                                                                         ₹
                                                                         {
                                                                             discount
-                                                                        }
-                                                                        {' '}
+                                                                        }{' '}
                                                                         OFF
                                                                     </span>
 
@@ -610,3 +646,4 @@ const CourseList = () => {
 };
 
 export default CourseList;
+

@@ -22,15 +22,19 @@ if ($search !== '') {
 
     $where[] = "
         (
-            COALESCE(c.title, '') LIKE ?
-            OR COALESCE(c.short_description, '') LIKE ?
-            OR COALESCE(c.description, '') LIKE ?
-            OR COALESCE(c.slug, '') LIKE ?
+            c.title LIKE ?
+            OR c.short_description LIKE ?
+            OR c.description LIKE ?
+            OR c.slug LIKE ?
+            OR cat.name LIKE ?
+            OR sub.name LIKE ?
         )
     ";
 
     $searchValue = '%' . $search . '%';
 
+    $params[] = $searchValue;
+    $params[] = $searchValue;
     $params[] = $searchValue;
     $params[] = $searchValue;
     $params[] = $searchValue;
@@ -58,8 +62,15 @@ if ($teacherId !== '') {
 $whereSql = implode(' AND ', $where);
 
 $countSql = "
-    SELECT COUNT(*)
+    SELECT COUNT(DISTINCT c.id)
     FROM courses c
+
+    JOIN categories cat
+        ON c.category_id = cat.id
+
+    LEFT JOIN subcategories sub
+        ON c.subcategory_id = sub.id
+
     WHERE $whereSql
 ";
 

@@ -1,19 +1,11 @@
-import {
-    useEffect,
-    useRef,
-    useState
-} from 'react';
-
-import {
-    Link,
-    useLocation,
-    useNavigate
-} from 'react-router-dom';
-
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import './Header.css';
-
+import {
+    MdSchool
+} from 'react-icons/md';
 import {
     MdDarkMode,
     MdLightMode,
@@ -27,36 +19,27 @@ import {
     MdClose,
     MdSearch
 } from 'react-icons/md';
-
 import api from '../../services/api';
 
 const Header = () => {
-
-    const {
-        user,
-        logout,
-        isAuthenticated
-    } = useAuth();
-
-    const {
-        theme,
-        toggleTheme
-    } = useTheme();
-
+    const { user, logout, isAuthenticated } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const userRole =
-        String(user?.role || '').toLowerCase().trim();
+    const userRole = String(user?.role || '').toLowerCase().trim();
 
     const isAdmin =
-        isAuthenticated && userRole === 'admin';
+        isAuthenticated &&
+        userRole === 'admin';
 
     const isTeacher =
-        isAuthenticated && userRole === 'teacher';
+        isAuthenticated &&
+        userRole === 'teacher';
 
     const isStudent =
-        isAuthenticated && userRole === 'student';
+        isAuthenticated &&
+        userRole === 'student';
 
     const isHomePage =
         location.pathname === '/';
@@ -73,34 +56,18 @@ const Header = () => {
                     ? '/student/dashboard'
                     : '/';
 
-    const avatar =
-        user?.avatar
-            ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
-            : null;
+    const avatar = user?.avatar
+        ? `http://localhost/php-lms-project/backend/uploads/avatars/${user.avatar}`
+        : null;
 
-    const [notifications, setNotifications] =
-        useState([]);
-
-    const [unreadCount, setUnreadCount] =
-        useState(0);
-
-    const [cartCount, setCartCount] =
-        useState(0);
-
-    const [wishlistCount, setWishlistCount] =
-        useState(0);
-
-    const [showNotifications, setShowNotifications] =
-        useState(false);
-
-    const [loadingNotifications, setLoadingNotifications] =
-        useState(false);
-
-    const [showMobileMenu, setShowMobileMenu] =
-        useState(false);
-
-    const [search, setSearch] =
-        useState('');
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [cartCount, setCartCount] = useState(0);
+    const [wishlistCount, setWishlistCount] = useState(0);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [loadingNotifications, setLoadingNotifications] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [search, setSearch] = useState('');
 
     const desktopNotificationRef =
         useRef(null);
@@ -109,51 +76,51 @@ const Header = () => {
         useRef(null);
 
     const fetchNotifications = async () => {
-
-        if (!isAdmin) {
-
+        if (!(isAdmin || isTeacher)) {
             setNotifications([]);
             setUnreadCount(0);
-
             return;
         }
 
+        setLoadingNotifications(true);
+
         try {
-
-            setLoadingNotifications(true);
-
             const response =
                 await api.get(
                     '/notifications/list.php'
                 );
 
             if (response.data?.status) {
-
                 const notificationData =
-                    response.data?.data?.notifications || [];
+                    response.data?.data;
 
-                const count =
-                    Number(
-                        response.data?.data?.unread_count || 0
-                    );
+                const notificationList =
+                    Array.isArray(notificationData)
+                        ? notificationData
+                        : Array.isArray(
+                            notificationData?.notifications
+                        )
+                            ? notificationData.notifications
+                            : [];
 
                 setNotifications(
-                    notificationData
+                    notificationList
                 );
 
-                setUnreadCount(
-                    count
-                );
+                const unread =
+                    notificationList.filter(
+                        (notification) =>
+                            Number(
+                                notification.is_read
+                            ) === 0
+                    ).length;
 
+                setUnreadCount(unread);
             } else {
-
                 setNotifications([]);
                 setUnreadCount(0);
-
             }
-
         } catch (error) {
-
             console.error(
                 'Notification Error:',
                 error
@@ -161,150 +128,104 @@ const Header = () => {
 
             setNotifications([]);
             setUnreadCount(0);
-
         } finally {
-
             setLoadingNotifications(false);
-
         }
     };
 
     const handleSearch = () => {
-
         const value =
             search.trim();
 
         setShowMobileMenu(false);
         setShowNotifications(false);
 
-        if (!value) {
-
-            navigate('/courses');
-
-            return;
-        }
-
         navigate(
-            `/courses?search=${encodeURIComponent(value)}`
+            value
+                ? `/courses?search=${encodeURIComponent(value)}&page=1`
+                : '/courses?page=1'
         );
     };
 
-    const handleSearchKeyDown = (event) => {
-
+    const handleSearchKeyDown = (
+        event
+    ) => {
         if (event.key === 'Enter') {
-
             event.preventDefault();
-
             handleSearch();
         }
     };
 
-    useEffect(() => {
-
-        const params =
-            new URLSearchParams(
-                location.search
-            );
-
-        const searchValue =
-            params.get('search') || '';
-
-        setSearch(searchValue);
-
-    }, [location.search]);
-
     const fetchCartCount = async () => {
-
         if (!isStudent) {
-
             setCartCount(0);
-
             return;
         }
 
         try {
-
             const response =
                 await api.get(
                     '/cart/count.php'
                 );
 
             if (response.data?.status) {
-
                 const count =
                     Number(
-                        response.data?.data?.count || 0
+                        response.data?.data?.count ||
+                        0
                     );
 
                 setCartCount(count);
-
             } else {
-
                 setCartCount(0);
-
             }
-
         } catch (error) {
-
             console.error(
                 'Cart Count Error:',
                 error
             );
 
             setCartCount(0);
-
         }
     };
 
     const fetchWishlistCount = async () => {
-
         if (!isStudent) {
-
             setWishlistCount(0);
-
             return;
         }
 
         try {
-
             const response =
                 await api.get(
                     '/wishlist/count.php'
                 );
 
             if (response.data?.status) {
-
                 const count =
                     Number(
-                        response.data?.data?.count || 0
+                        response.data?.data?.count ||
+                        0
                     );
 
                 setWishlistCount(count);
-
             } else {
-
                 setWishlistCount(0);
-
             }
-
         } catch (error) {
-
             console.error(
                 'Wishlist Count Error:',
                 error
             );
 
             setWishlistCount(0);
-
         }
     };
 
     const markAsRead = async (
         notificationId
     ) => {
-
         try {
-
             const response =
                 await api.post(
                     '/notifications/mark-read.php',
@@ -315,38 +236,37 @@ const Header = () => {
                 );
 
             if (response.data?.status) {
-
-                setNotifications((prev) =>
-                    prev.map(
-                        (notification) =>
-                            Number(
-                                notification.id
-                            ) ===
+                setNotifications(
+                    (prev) =>
+                        prev.map(
+                            (notification) =>
                                 Number(
-                                    notificationId
-                                )
-                                ? {
-                                    ...notification,
-                                    is_read: 1
-                                }
-                                : notification
-                    )
+                                    notification.id
+                                ) ===
+                                    Number(
+                                        notificationId
+                                    )
+                                    ? {
+                                        ...notification,
+                                        is_read: 1
+                                    }
+                                    : notification
+                        )
                 );
 
-                setUnreadCount((prev) =>
-                    Math.max(
-                        0,
-                        prev - 1
-                    )
+                setUnreadCount(
+                    (prev) =>
+                        Math.max(
+                            0,
+                            prev - 1
+                        )
                 );
 
                 return true;
             }
 
             return false;
-
         } catch (error) {
-
             console.error(
                 'Mark Notification Read Error:',
                 error
@@ -358,7 +278,6 @@ const Header = () => {
 
     const handleNotificationClick =
         async () => {
-
             const willOpen =
                 !showNotifications;
 
@@ -367,21 +286,17 @@ const Header = () => {
             );
 
             if (willOpen) {
-
                 await fetchNotifications();
-
             }
         };
 
     const handleSingleNotificationClick =
         async (notification) => {
-
             if (
                 Number(
                     notification.is_read
                 ) === 0
             ) {
-
                 await markAsRead(
                     notification.id
                 );
@@ -391,11 +306,9 @@ const Header = () => {
             setShowMobileMenu(false);
 
             if (notification.link) {
-
                 navigate(
                     notification.link
                 );
-
                 return;
             }
 
@@ -405,7 +318,6 @@ const Header = () => {
                 notification.type ===
                 'contact'
             ) {
-
                 navigate(
                     '/admin/contact-messages'
                 );
@@ -413,50 +325,33 @@ const Header = () => {
         };
 
     useEffect(() => {
-
-        if (isAdmin) {
-
+        if (isAdmin || isTeacher) {
             fetchNotifications();
-
         } else {
-
             setNotifications([]);
             setUnreadCount(0);
             setShowNotifications(false);
-
         }
-
-    }, [isAdmin]);
+    }, [isAdmin, isTeacher]);
 
     useEffect(() => {
-
-        if (!isAdmin) {
+        if (!(isAdmin || isTeacher)) {
             return;
         }
 
         const interval =
-            setInterval(
-                () => {
-                    fetchNotifications();
-                },
-                30000
-            );
+            setInterval(() => {
+                fetchNotifications();
+            }, 30000);
 
         return () => {
-
-            clearInterval(
-                interval
-            );
-
+            clearInterval(interval);
         };
-
-    }, [isAdmin]);
+    }, [isAdmin, isTeacher]);
 
     useEffect(() => {
-
         const handleClickOutside =
             (event) => {
-
                 const desktopElement =
                     desktopNotificationRef.current;
 
@@ -479,11 +374,9 @@ const Header = () => {
                     !clickedInsideDesktop &&
                     !clickedInsideMobile
                 ) {
-
                     setShowNotifications(
                         false
                     );
-
                 }
             };
 
@@ -493,46 +386,30 @@ const Header = () => {
         );
 
         return () => {
-
             document.removeEventListener(
                 'mousedown',
                 handleClickOutside
             );
-
         };
-
     }, []);
 
     useEffect(() => {
-
         if (isStudent) {
-
             fetchCartCount();
-
         } else {
-
             setCartCount(0);
-
         }
-
     }, [isStudent]);
 
     useEffect(() => {
-
         if (isStudent) {
-
             fetchWishlistCount();
-
         } else {
-
             setWishlistCount(0);
-
         }
-
     }, [isStudent]);
 
     const handleLogout = async () => {
-
         setShowMobileMenu(false);
         setShowNotifications(false);
 
@@ -551,7 +428,6 @@ const Header = () => {
 
     const formatNotificationTime =
         (date) => {
-
             if (!date) {
                 return '';
             }
@@ -564,7 +440,6 @@ const Header = () => {
                     notificationDate.getTime()
                 )
             ) {
-
                 return date;
             }
 
@@ -572,7 +447,6 @@ const Header = () => {
         };
 
     const handleHomeClick = () => {
-
         setShowNotifications(false);
         setShowMobileMenu(false);
 
@@ -580,44 +454,41 @@ const Header = () => {
     };
 
     const closeMobileMenu = () => {
-
         setShowMobileMenu(false);
         setShowNotifications(false);
     };
 
     return (
-
         <header className="lms-header">
 
             <div className="lms-header-main">
 
                 <div className="lms-header-inner">
 
-                    {/* LOGO */}
-
                     <Link
                         to="/"
                         className="lms-logo"
-                        onClick={closeMobileMenu}
+                        onClick={
+                            closeMobileMenu
+                        }
                     >
-
                         <span className="lms-logo-icon">
-                            🎓
+                            <MdSchool size={32} />
                         </span>
 
                         <span>
                             LMS
                         </span>
-
                     </Link>
-
-                    {/* SEARCH */}
 
                     <div className="lms-search-box">
 
                         <MdSearch
                             className="lms-search-icon"
                             size={28}
+                            onClick={
+                                handleSearch
+                            }
                         />
 
                         <input
@@ -637,74 +508,67 @@ const Header = () => {
 
                     </div>
 
-                    {/* DESKTOP ACTIONS */}
-
                     <div className="lms-header-actions">
 
                         {isStudent && (
-
                             <Link
                                 to="/wishlist"
                                 className="lms-header-icon lms-wishlist-button"
                                 title="Wishlist"
                             >
+                                <MdFavorite
+                                    size={23}
+                                />
 
-                                <MdFavorite size={23} />
-
-                                {wishlistCount > 0 && (
-
-                                    <span className="lms-wishlist-badge">
-
-                                        {wishlistCount > 99
-                                            ? '99+'
-                                            : wishlistCount}
-
-                                    </span>
-
-                                )}
-
+                                {wishlistCount >
+                                    0 && (
+                                        <span className="lms-wishlist-badge">
+                                            {
+                                                wishlistCount >
+                                                    99
+                                                    ? '99+'
+                                                    : wishlistCount
+                                            }
+                                        </span>
+                                    )}
                             </Link>
-
                         )}
 
                         {isStudent && (
-
                             <Link
                                 to="/cart"
                                 className="lms-header-icon lms-cart-button"
                                 title="Cart"
                             >
+                                <MdShoppingCart
+                                    size={23}
+                                />
 
-                                <MdShoppingCart size={23} />
-
-                                {cartCount > 0 && (
-
-                                    <span className="lms-cart-badge">
-
-                                        {cartCount > 99
-                                            ? '99+'
-                                            : cartCount}
-
-                                    </span>
-
-                                )}
-
+                                {cartCount >
+                                    0 && (
+                                        <span className="lms-cart-badge">
+                                            {
+                                                cartCount >
+                                                    99
+                                                    ? '99+'
+                                                    : cartCount
+                                            }
+                                        </span>
+                                    )}
                             </Link>
-
                         )}
 
                         {isAuthenticated ? (
-
                             <Link
                                 to={accountPath}
                                 className="lms-user-button"
                                 onClick={() =>
-                                    setShowNotifications(false)
+                                    setShowNotifications(
+                                        false
+                                    )
                                 }
                             >
-
                                 {avatar ? (
-
                                     <img
                                         src={avatar}
                                         alt={
@@ -712,35 +576,35 @@ const Header = () => {
                                             'Profile'
                                         }
                                         className="lms-user-avatar"
-                                        onError={(event) => {
-
+                                        onError={(
+                                            event
+                                        ) => {
                                             event.currentTarget.style.display =
                                                 'none';
 
                                             if (
-                                                event.currentTarget
+                                                event
+                                                    .currentTarget
                                                     .nextElementSibling
                                             ) {
-
-                                                event.currentTarget
+                                                event
+                                                    .currentTarget
                                                     .nextElementSibling
                                                     .style.display =
                                                     'block';
-
                                             }
-
                                         }}
                                     />
-
                                 ) : null}
 
                                 <MdAccountCircle
                                     size={29}
                                     className="lms-user-avatar-fallback"
                                     style={{
-                                        display: avatar
-                                            ? 'none'
-                                            : 'block'
+                                        display:
+                                            avatar
+                                                ? 'none'
+                                                : 'block'
                                     }}
                                 />
 
@@ -748,22 +612,17 @@ const Header = () => {
                                     {user?.name ||
                                         'Account'}
                                 </span>
-
                             </Link>
-
                         ) : (
-
                             <Link
                                 to="/login"
                                 className="lms-login-button"
                             >
                                 Login
                             </Link>
-
                         )}
 
                         {showHomeButton && (
-
                             <button
                                 type="button"
                                 className="lms-header-icon"
@@ -772,22 +631,17 @@ const Header = () => {
                                 }
                                 title="Home"
                             >
-
-                                <MdHome size={23} />
-
+                                <MdHome
+                                    size={23}
+                                />
                             </button>
-
                         )}
 
-                        {isAdmin && (
-
+                        {(isAdmin || isTeacher) && (
                             <div
                                 className="lms-notification-wrapper"
-                                ref={
-                                    desktopNotificationRef
-                                }
+                                ref={desktopNotificationRef}
                             >
-
                                 <button
                                     type="button"
                                     className="lms-header-icon"
@@ -796,33 +650,29 @@ const Header = () => {
                                     }
                                     title="Notifications"
                                 >
-
                                     <MdNotifications
                                         size={23}
                                     />
 
-                                    {unreadCount > 0 && (
-
-                                        <span className="lms-notification-badge">
-
-                                            {unreadCount > 99
-                                                ? '99+'
-                                                : unreadCount}
-
-                                        </span>
-
-                                    )}
-
+                                    {unreadCount >
+                                        0 && (
+                                            <span className="lms-notification-badge">
+                                                {
+                                                    unreadCount >
+                                                        99
+                                                        ? '99+'
+                                                        : unreadCount
+                                                }
+                                            </span>
+                                        )}
                                 </button>
 
                                 {showNotifications && (
-
                                     <div className="lms-notification-dropdown">
 
                                         <div className="lms-notification-header">
 
                                             <div>
-
                                                 <MdNotifications
                                                     size={21}
                                                 />
@@ -830,29 +680,28 @@ const Header = () => {
                                                 <strong>
                                                     Notifications
                                                 </strong>
-
                                             </div>
 
-                                            {unreadCount > 0 && (
-
-                                                <span>
-                                                    {unreadCount} new
-                                                </span>
-
-                                            )}
+                                            {unreadCount >
+                                                0 && (
+                                                    <span>
+                                                        {
+                                                            unreadCount
+                                                        }{' '}
+                                                        new
+                                                    </span>
+                                                )}
 
                                         </div>
 
                                         <div className="lms-notification-list">
 
                                             {loadingNotifications ? (
-
                                                 <div className="lms-notification-empty">
                                                     Loading notifications...
                                                 </div>
-
-                                            ) : notifications.length === 0 ? (
-
+                                            ) : notifications.length ===
+                                                0 ? (
                                                 <div className="lms-notification-empty">
 
                                                     <MdNotifications
@@ -864,41 +713,37 @@ const Header = () => {
                                                     </div>
 
                                                 </div>
-
                                             ) : (
-
                                                 notifications.map(
-                                                    (notification) => {
-
+                                                    (
+                                                        notification
+                                                    ) => {
                                                         const isUnread =
                                                             Number(
                                                                 notification.is_read
-                                                            ) === 0;
+                                                            ) ===
+                                                            0;
 
                                                         return (
-
                                                             <div
                                                                 key={
                                                                     notification.id
                                                                 }
-                                                                className={`lms-notification-item ${
-                                                                    isUnread
-                                                                        ? 'unread'
-                                                                        : ''
-                                                                }`}
+                                                                className={`lms-notification-item ${isUnread
+                                                                    ? 'unread'
+                                                                    : ''
+                                                                    }`}
                                                                 onClick={() =>
                                                                     handleSingleNotificationClick(
                                                                         notification
                                                                     )
                                                                 }
                                                             >
-
                                                                 <MdNotifications
                                                                     size={21}
                                                                 />
 
                                                                 <div>
-
                                                                     <strong>
                                                                         {
                                                                             notification.title
@@ -912,41 +757,29 @@ const Header = () => {
                                                                     </p>
 
                                                                     {notification.created_at && (
-
                                                                         <small>
-                                                                            {
-                                                                                formatNotificationTime(
-                                                                                    notification.created_at
-                                                                                )
-                                                                            }
+                                                                            {formatNotificationTime(
+                                                                                notification.created_at
+                                                                            )}
                                                                         </small>
-
                                                                     )}
-
                                                                 </div>
 
                                                                 {isUnread && (
-
                                                                     <span className="notification-dot" />
-
                                                                 )}
-
                                                             </div>
-
                                                         );
                                                     }
                                                 )
-
                                             )}
 
                                         </div>
 
                                     </div>
-
                                 )}
 
                             </div>
-
                         )}
 
                         <button
@@ -961,37 +794,36 @@ const Header = () => {
                                     : 'Light Mode'
                             }
                         >
-
                             {theme === 'light' ? (
-
-                                <MdDarkMode size={22} />
-
+                                <MdDarkMode
+                                    size={22}
+                                />
                             ) : (
-
-                                <MdLightMode size={22} />
-
+                                <MdLightMode
+                                    size={22}
+                                />
                             )}
-
                         </button>
 
                         <Link
                             to="/contact-us"
                             className="lms-contact-button"
                             onClick={() =>
-                                setShowNotifications(false)
+                                setShowNotifications(
+                                    false
+                                )
                             }
                         >
-
-                            <MdEmail size={18} />
+                            <MdEmail
+                                size={18}
+                            />
 
                             <span>
                                 Contact Us
                             </span>
-
                         </Link>
 
                         {isAuthenticated && (
-
                             <button
                                 type="button"
                                 className="lms-logout-button"
@@ -1001,18 +833,14 @@ const Header = () => {
                             >
                                 Logout
                             </button>
-
                         )}
 
                     </div>
-
-                    {/* MOBILE MENU BUTTON */}
 
                     <button
                         type="button"
                         className="lms-mobile-menu-button"
                         onClick={() => {
-
                             setShowMobileMenu(
                                 !showMobileMenu
                             );
@@ -1020,25 +848,23 @@ const Header = () => {
                             setShowNotifications(
                                 false
                             );
-
                         }}
                         aria-label="Toggle menu"
                     >
-
                         {showMobileMenu ? (
-                            <MdClose size={28} />
+                            <MdClose
+                                size={28}
+                            />
                         ) : (
-                            <MdMenu size={28} />
+                            <MdMenu
+                                size={28}
+                            />
                         )}
-
                     </button>
 
                 </div>
 
-                {/* MOBILE MENU */}
-
                 {showMobileMenu && (
-
                     <div className="lms-mobile-menu">
 
                         <div className="lms-mobile-menu-inner">
@@ -1056,9 +882,9 @@ const Header = () => {
                                     }
                                     aria-label="Close menu"
                                 >
-
-                                    <MdClose size={22} />
-
+                                    <MdClose
+                                        size={22}
+                                    />
                                 </button>
 
                             </div>
@@ -1066,7 +892,6 @@ const Header = () => {
                             <div className="lms-mobile-menu-list">
 
                                 {isStudent && (
-
                                     <Link
                                         to="/wishlist"
                                         className="lms-mobile-menu-item"
@@ -1074,37 +899,31 @@ const Header = () => {
                                             closeMobileMenu
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon wishlist-icon">
-
                                             <MdFavorite
                                                 size={21}
                                             />
-
                                         </span>
 
                                         <span className="lms-mobile-menu-text">
                                             Wishlist
                                         </span>
 
-                                        {wishlistCount > 0 && (
-
-                                            <span className="lms-mobile-badge wishlist">
-
-                                                {wishlistCount > 99
-                                                    ? '99+'
-                                                    : wishlistCount}
-
-                                            </span>
-
-                                        )}
-
+                                        {wishlistCount >
+                                            0 && (
+                                                <span className="lms-mobile-badge wishlist">
+                                                    {
+                                                        wishlistCount >
+                                                            99
+                                                            ? '99+'
+                                                            : wishlistCount
+                                                    }
+                                                </span>
+                                            )}
                                     </Link>
-
                                 )}
 
                                 {isStudent && (
-
                                     <Link
                                         to="/cart"
                                         className="lms-mobile-menu-item"
@@ -1112,37 +931,31 @@ const Header = () => {
                                             closeMobileMenu
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon cart-icon">
-
                                             <MdShoppingCart
                                                 size={21}
                                             />
-
                                         </span>
 
                                         <span className="lms-mobile-menu-text">
                                             Cart
                                         </span>
 
-                                        {cartCount > 0 && (
-
-                                            <span className="lms-mobile-badge cart">
-
-                                                {cartCount > 99
-                                                    ? '99+'
-                                                    : cartCount}
-
-                                            </span>
-
-                                        )}
-
+                                        {cartCount >
+                                            0 && (
+                                                <span className="lms-mobile-badge cart">
+                                                    {
+                                                        cartCount >
+                                                            99
+                                                            ? '99+'
+                                                            : cartCount
+                                                    }
+                                                </span>
+                                            )}
                                     </Link>
-
                                 )}
 
                                 {isAuthenticated ? (
-
                                     <Link
                                         to={accountPath}
                                         className="lms-mobile-menu-item"
@@ -1150,59 +963,54 @@ const Header = () => {
                                             closeMobileMenu
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon account-icon">
 
                                             {avatar ? (
-
                                                 <img
-                                                    src={avatar}
+                                                    src={
+                                                        avatar
+                                                    }
                                                     alt="Profile"
                                                     className="lms-mobile-avatar"
-                                                    onError={(event) => {
-
+                                                    onError={(
+                                                        event
+                                                    ) => {
                                                         event.currentTarget.style.display =
                                                             'none';
 
                                                         if (
-                                                            event.currentTarget
+                                                            event
+                                                                .currentTarget
                                                                 .nextElementSibling
                                                         ) {
-
-                                                            event.currentTarget
+                                                            event
+                                                                .currentTarget
                                                                 .nextElementSibling
                                                                 .style.display =
                                                                 'block';
-
                                                         }
-
                                                     }}
                                                 />
-
                                             ) : null}
 
                                             <MdAccountCircle
                                                 size={22}
                                                 style={{
-                                                    display: avatar
-                                                        ? 'none'
-                                                        : 'block'
+                                                    display:
+                                                        avatar
+                                                            ? 'none'
+                                                            : 'block'
                                                 }}
                                             />
 
                                         </span>
 
                                         <span className="lms-mobile-menu-text">
-
                                             {user?.name ||
                                                 'Account'}
-
                                         </span>
-
                                     </Link>
-
                                 ) : (
-
                                     <Link
                                         to="/login"
                                         className="lms-mobile-menu-item"
@@ -1210,25 +1018,19 @@ const Header = () => {
                                             closeMobileMenu
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon account-icon">
-
                                             <MdAccountCircle
                                                 size={22}
                                             />
-
                                         </span>
 
                                         <span className="lms-mobile-menu-text">
                                             Login
                                         </span>
-
                                     </Link>
-
                                 )}
 
                                 {showHomeButton && (
-
                                     <button
                                         type="button"
                                         className="lms-mobile-menu-item"
@@ -1236,32 +1038,23 @@ const Header = () => {
                                             handleHomeClick
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon home-icon">
-
                                             <MdHome
                                                 size={22}
                                             />
-
                                         </span>
 
                                         <span className="lms-mobile-menu-text">
                                             Home
                                         </span>
-
                                     </button>
-
                                 )}
 
-                                {isAdmin && (
-
+                                {(isAdmin || isTeacher) && (
                                     <div
                                         className="lms-mobile-notification-section"
-                                        ref={
-                                            mobileNotificationRef
-                                        }
+                                        ref={mobileNotificationRef}
                                     >
-
                                         <button
                                             type="button"
                                             className="lms-mobile-menu-item"
@@ -1269,51 +1062,44 @@ const Header = () => {
                                                 handleNotificationClick
                                             }
                                         >
-
                                             <span className="lms-mobile-menu-icon notification-icon">
-
                                                 <MdNotifications
                                                     size={22}
                                                 />
-
                                             </span>
 
                                             <span className="lms-mobile-menu-text">
                                                 Notifications
                                             </span>
 
-                                            {unreadCount > 0 && (
-
-                                                <span className="lms-mobile-badge notification">
-
-                                                    {unreadCount > 99
-                                                        ? '99+'
-                                                        : unreadCount}
-
-                                                </span>
-
-                                            )}
+                                            {unreadCount >
+                                                0 && (
+                                                    <span className="lms-mobile-badge notification">
+                                                        {
+                                                            unreadCount >
+                                                                99
+                                                                ? '99+'
+                                                                : unreadCount
+                                                        }
+                                                    </span>
+                                                )}
 
                                             <span
-                                                className={`lms-mobile-notification-arrow ${
-                                                    showNotifications
-                                                        ? 'open'
-                                                        : ''
-                                                }`}
+                                                className={`lms-mobile-notification-arrow ${showNotifications
+                                                    ? 'open'
+                                                    : ''
+                                                    }`}
                                             >
                                                 ›
                                             </span>
-
                                         </button>
 
                                         {showNotifications && (
-
                                             <div className="lms-mobile-notification-dropdown">
 
                                                 <div className="lms-notification-header">
 
                                                     <div>
-
                                                         <MdNotifications
                                                             size={21}
                                                         />
@@ -1321,29 +1107,28 @@ const Header = () => {
                                                         <strong>
                                                             Notifications
                                                         </strong>
-
                                                     </div>
 
-                                                    {unreadCount > 0 && (
-
-                                                        <span>
-                                                            {unreadCount} new
-                                                        </span>
-
-                                                    )}
+                                                    {unreadCount >
+                                                        0 && (
+                                                            <span>
+                                                                {
+                                                                    unreadCount
+                                                                }{' '}
+                                                                new
+                                                            </span>
+                                                        )}
 
                                                 </div>
 
                                                 <div className="lms-notification-list">
 
                                                     {loadingNotifications ? (
-
                                                         <div className="lms-notification-empty">
                                                             Loading notifications...
                                                         </div>
-
-                                                    ) : notifications.length === 0 ? (
-
+                                                    ) : notifications.length ===
+                                                        0 ? (
                                                         <div className="lms-notification-empty">
 
                                                             <MdNotifications
@@ -1355,35 +1140,32 @@ const Header = () => {
                                                             </div>
 
                                                         </div>
-
                                                     ) : (
-
                                                         notifications.map(
-                                                            (notification) => {
-
+                                                            (
+                                                                notification
+                                                            ) => {
                                                                 const isUnread =
                                                                     Number(
                                                                         notification.is_read
-                                                                    ) === 0;
+                                                                    ) ===
+                                                                    0;
 
                                                                 return (
-
                                                                     <div
                                                                         key={
                                                                             notification.id
                                                                         }
-                                                                        className={`lms-notification-item ${
-                                                                            isUnread
-                                                                                ? 'unread'
-                                                                                : ''
-                                                                        }`}
+                                                                        className={`lms-notification-item ${isUnread
+                                                                            ? 'unread'
+                                                                            : ''
+                                                                            }`}
                                                                         onClick={() =>
                                                                             handleSingleNotificationClick(
                                                                                 notification
                                                                             )
                                                                         }
                                                                     >
-
                                                                         <MdNotifications
                                                                             size={21}
                                                                         />
@@ -1403,78 +1185,63 @@ const Header = () => {
                                                                             </p>
 
                                                                             {notification.created_at && (
-
                                                                                 <small>
-                                                                                    {
-                                                                                        formatNotificationTime(
-                                                                                            notification.created_at
-                                                                                        )
-                                                                                    }
+                                                                                    {formatNotificationTime(
+                                                                                        notification.created_at
+                                                                                    )}
                                                                                 </small>
-
                                                                             )}
 
                                                                         </div>
 
                                                                         {isUnread && (
-
                                                                             <span className="notification-dot" />
-
                                                                         )}
 
                                                                     </div>
-
                                                                 );
                                                             }
                                                         )
-
                                                     )}
 
                                                 </div>
 
                                             </div>
-
                                         )}
 
                                     </div>
-
                                 )}
 
                                 <button
                                     type="button"
                                     className="lms-mobile-menu-item"
                                     onClick={() => {
-
                                         toggleTheme();
-                                        setShowMobileMenu(false);
-
+                                        setShowMobileMenu(
+                                            false
+                                        );
                                     }}
                                 >
-
                                     <span className="lms-mobile-menu-icon theme-icon">
 
-                                        {theme === 'light' ? (
-
+                                        {theme ===
+                                            'light' ? (
                                             <MdDarkMode
                                                 size={22}
                                             />
-
                                         ) : (
-
                                             <MdLightMode
                                                 size={22}
                                             />
-
                                         )}
 
                                     </span>
 
                                     <span className="lms-mobile-menu-text">
-
-                                        {theme === 'light'
+                                        {theme ===
+                                            'light'
                                             ? 'Dark Mode'
                                             : 'Light Mode'}
-
                                     </span>
 
                                 </button>
@@ -1486,23 +1253,18 @@ const Header = () => {
                                         closeMobileMenu
                                     }
                                 >
-
                                     <span className="lms-mobile-menu-icon contact-icon">
-
                                         <MdEmail
                                             size={22}
                                         />
-
                                     </span>
 
                                     <span className="lms-mobile-menu-text">
                                         Contact Us
                                     </span>
-
                                 </Link>
 
                                 {isAuthenticated && (
-
                                     <button
                                         type="button"
                                         className="lms-mobile-menu-item lms-mobile-logout"
@@ -1510,7 +1272,6 @@ const Header = () => {
                                             handleLogout
                                         }
                                     >
-
                                         <span className="lms-mobile-menu-icon logout-icon">
                                             ↪
                                         </span>
@@ -1518,9 +1279,7 @@ const Header = () => {
                                         <span className="lms-mobile-menu-text">
                                             Logout
                                         </span>
-
                                     </button>
-
                                 )}
 
                             </div>
@@ -1528,13 +1287,11 @@ const Header = () => {
                         </div>
 
                     </div>
-
                 )}
 
             </div>
 
         </header>
-
     );
 };
 

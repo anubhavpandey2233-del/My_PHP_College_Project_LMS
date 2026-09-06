@@ -1,0 +1,853 @@
+.admin-enrollments-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    color: var(--theme-text);
+}
+
+.admin-enrollments-header {
+    width: 100%;
+    min-width: 0;
+}
+
+.admin-enrollments-header h2 {
+    color: var(--theme-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.admin-enrollments-header p {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.admin-enrollments-total {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.admin-enrollments-card {
+    width: 100%;
+    max-width: 100%;
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border) !important;
+    overflow: hidden;
+}
+
+.admin-enrollments-card .card-body {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+}
+
+.admin-enrollments-card-header {
+    width: 100%;
+    gap: 15px;
+}
+
+.admin-enrollments-card-header h5 {
+    color: var(--theme-text);
+    font-weight: 600;
+}
+
+.admin-enrollments-refresh {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.admin-enrollments-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.admin-enrollments-table {
+    width: 100%;
+    min-width: 1000px;
+    margin-bottom: 0;
+    color: var(--theme-text);
+    vertical-align: middle;
+}
+
+.admin-enrollments-table th {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 13px 11px;
+}
+
+.admin-enrollments-table td {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    padding: 13px 11px;
+}
+
+.admin-enrollments-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.admin-enrollments-table tbody tr:hover td {
+    background: var(--theme-bg) !important;
+}
+
+
+/* =========================
+   STUDENT
+========================= */
+
+.admin-enrollment-student {
+    min-width: 210px;
+}
+
+.admin-enrollment-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    object-fit: cover;
+    flex: 0 0 42px;
+}
+
+.admin-enrollment-avatar-placeholder {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    flex: 0 0 42px;
+    background: var(--theme-bg) !important;
+    color: var(--theme-text);
+}
+
+.admin-enrollment-student-info {
+    min-width: 0;
+    max-width: 190px;
+}
+
+.admin-enrollment-student-name {
+    color: var(--theme-text) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-enrollment-student-email {
+    display: block;
+    max-width: 190px;
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================
+   COURSE
+========================= */
+
+.admin-enrollment-course {
+    min-width: 180px;
+    max-width: 250px;
+    color: var(--theme-text) !important;
+    line-height: 1.4;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.admin-enrollment-progress-cell {
+    min-width: 150px;
+    width: 160px;
+}
+
+.admin-enrollment-progress {
+    width: 100%;
+    height: 7px !important;
+    background: var(--theme-border) !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-enrollment-progress .progress-bar {
+    height: 100%;
+    background-color: #0d6efd;
+    border-radius: 10px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.admin-enrollment-status {
+    display: inline-flex !important;
+    align-items: center;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+}
+
+.admin-enrollment-status .badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    padding: 5px 8px !important;
+    white-space: nowrap !important;
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+.admin-enrollment-date {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   CERTIFICATE
+========================= */
+
+.admin-enrollment-certificate {
+    display: flex;
+    align-items: center;
+    min-width: max-content;
+}
+
+.admin-enrollment-certificate .btn {
+    white-space: nowrap;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.admin-enrollments-empty {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+
+/* =========================
+   BOOTSTRAP OVERRIDE
+========================= */
+
+.admin-enrollments-page .bg-light {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+}
+
+.admin-enrollments-page .text-secondary {
+    color: var(--theme-text) !important;
+    opacity: 0.6;
+}
+
+.admin-enrollments-page .text-muted {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+
+/* =========================================================
+   1200px - 1399px
+========================================================= */
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+
+    .admin-enrollments-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .admin-enrollments-table th,
+    .admin-enrollments-table td {
+        padding: 9px 7px;
+        font-size: 12px;
+    }
+
+    .admin-enrollments-table th:nth-child(1),
+    .admin-enrollments-table td:nth-child(1) {
+        width: 4%;
+    }
+
+    .admin-enrollments-table th:nth-child(2),
+    .admin-enrollments-table td:nth-child(2) {
+        width: 20%;
+    }
+
+    .admin-enrollments-table th:nth-child(3),
+    .admin-enrollments-table td:nth-child(3) {
+        width: 20%;
+    }
+
+    .admin-enrollments-table th:nth-child(4),
+    .admin-enrollments-table td:nth-child(4) {
+        width: 15%;
+    }
+
+    .admin-enrollments-table th:nth-child(5),
+    .admin-enrollments-table td:nth-child(5) {
+        width: 10%;
+    }
+
+    .admin-enrollments-table th:nth-child(6),
+    .admin-enrollments-table td:nth-child(6) {
+        width: 11%;
+    }
+
+    .admin-enrollments-table th:nth-child(7),
+    .admin-enrollments-table td:nth-child(7) {
+        width: 20%;
+    }
+
+    .admin-enrollment-student {
+        min-width: 0;
+    }
+
+    .admin-enrollment-student-info {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-enrollment-student-email {
+        max-width: 100%;
+    }
+
+    .admin-enrollment-course {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-enrollment-progress-cell {
+        min-width: 0;
+        width: auto;
+    }
+
+    .admin-enrollment-progress {
+        width: 100%;
+    }
+
+    .admin-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .admin-enrollment-status .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        padding: 4px 6px !important;
+        font-size: 10px;
+    }
+
+    .admin-enrollment-certificate {
+        min-width: 0;
+    }
+
+    .admin-enrollment-certificate .btn {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+
+/* =========================================================
+   BELOW 1199px - CARD VIEW
+========================================================= */
+
+@media (max-width: 1199px) {
+
+    .admin-enrollments-table-wrapper {
+        overflow: visible;
+    }
+
+    .admin-enrollments-table {
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0 14px;
+    }
+
+    .admin-enrollments-table thead {
+        display: none;
+    }
+
+    .admin-enrollments-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-enrollments-table tbody tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--theme-border);
+        border-radius: 8px;
+        background: var(--theme-surface) !important;
+    }
+
+    .admin-enrollments-table tbody tr:hover {
+        background: var(--theme-surface) !important;
+    }
+
+    .admin-enrollments-table tbody tr:hover td {
+        background: transparent !important;
+    }
+
+    .admin-enrollments-table td {
+        display: grid;
+        grid-template-columns: 130px minmax(0, 1fr);
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        padding: 10px 0;
+        border: 0;
+        border-bottom: 1px solid var(--theme-border);
+        background: transparent !important;
+    }
+
+    .admin-enrollments-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .admin-enrollments-table td::before {
+        content: attr(data-label);
+        grid-column: 1;
+        color: var(--theme-text);
+        opacity: 0.65;
+        font-weight: 600;
+        font-size: 13px;
+        padding-right: 12px;
+    }
+
+
+    /* =========================
+       STUDENT
+    ========================= */
+
+    .admin-enrollment-student {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-enrollment-student-info {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-enrollment-student-email {
+        max-width: 100%;
+    }
+
+
+    /* =========================
+       COURSE
+    ========================= */
+
+    .admin-enrollment-course {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+
+    /* =========================
+       PROGRESS
+    ========================= */
+
+    .admin-enrollment-progress-cell {
+        display: grid !important;
+        grid-template-columns: 130px minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        column-gap: 10px;
+        align-items: center !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .admin-enrollment-progress-cell::before {
+        grid-column: 1 !important;
+        grid-row: 1 / 3 !important;
+        align-self: center !important;
+        padding-right: 0 !important;
+    }
+
+    .admin-enrollment-progress-cell > div:first-of-type {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 0 6px 0 !important;
+    }
+
+    .admin-enrollment-progress-cell > div:first-of-type small:first-child {
+        display: none !important;
+    }
+
+    .admin-enrollment-progress-cell > div:first-of-type small:last-child {
+        color: var(--theme-text) !important;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .admin-enrollment-progress-cell > div:last-child {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+
+    .admin-enrollment-progress-cell .admin-enrollment-progress {
+        display: block !important;
+        width: 100% !important;
+        height: 7px !important;
+        margin: 0 !important;
+    }
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .admin-enrollments-table td[data-label="Status"] {
+        display: grid !important;
+        grid-template-columns: 130px max-content !important;
+        column-gap: 10px !important;
+        align-items: center !important;
+        justify-content: start !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"]::before {
+        grid-column: 1 !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .admin-enrollment-status {
+        grid-column: 2 !important;
+        display: inline-flex !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        justify-self: start !important;
+        align-items: center !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .admin-enrollment-status .badge {
+        display: inline-flex !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+    }
+
+
+    /* =========================
+       DATE
+    ========================= */
+
+    .admin-enrollment-date {
+        white-space: nowrap;
+    }
+
+
+    /* =========================
+       CERTIFICATE
+    ========================= */
+
+    .admin-enrollment-certificate {
+        display: flex;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .admin-enrollment-certificate .btn {
+        white-space: normal;
+    }
+}
+
+
+/* =========================================================
+   BELOW 991px
+========================================================= */
+
+@media (max-width: 991px) {
+
+    .admin-enrollments-header {
+        gap: 15px;
+    }
+
+    .admin-enrollments-header h2 {
+        font-size: 25px;
+    }
+
+    .admin-enrollments-card .card-body {
+        padding: 1.25rem !important;
+    }
+}
+
+
+/* =========================================================
+   BELOW 767px
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .admin-enrollments-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        margin-bottom: 20px !important;
+    }
+
+    .admin-enrollments-header h2 {
+        font-size: 23px;
+    }
+
+    .admin-enrollments-header p {
+        font-size: 14px;
+    }
+
+    .admin-enrollments-total {
+        font-size: 13px !important;
+    }
+
+    .admin-enrollments-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .admin-enrollments-card-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        margin-bottom: 18px !important;
+    }
+
+    .admin-enrollments-refresh {
+        width: 100%;
+    }
+
+    .admin-enrollments-table {
+        border-spacing: 0 10px;
+    }
+
+    .admin-enrollments-table tbody tr {
+        padding: 9px 12px;
+        margin-bottom: 10px;
+    }
+
+    .admin-enrollments-table td {
+        grid-template-columns: 105px minmax(0, 1fr);
+        padding: 9px 0;
+        font-size: 14px;
+    }
+
+    .admin-enrollments-table td::before {
+        font-size: 12px;
+    }
+
+    .admin-enrollment-progress-cell {
+        grid-template-columns: 105px minmax(0, 1fr) !important;
+    }
+
+
+    /* STATUS */
+
+    .admin-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 105px max-content !important;
+        column-gap: 10px !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .admin-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+    }
+}
+
+
+/* =========================================================
+   BELOW 575px
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .admin-enrollments-header h2 {
+        font-size: 21px;
+    }
+
+    .admin-enrollments-header p {
+        font-size: 13px;
+    }
+
+    .admin-enrollments-card .card-body {
+        padding: 0.9rem !important;
+    }
+
+    .admin-enrollments-table td {
+        grid-template-columns: 90px minmax(0, 1fr);
+        font-size: 13px;
+    }
+
+    .admin-enrollments-table td::before {
+        font-size: 11px;
+    }
+
+    .admin-enrollment-progress-cell {
+        grid-template-columns: 90px minmax(0, 1fr) !important;
+    }
+
+    .admin-enrollment-avatar {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        flex-basis: 38px;
+    }
+
+    .admin-enrollment-avatar-placeholder {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        flex-basis: 38px;
+    }
+
+    .admin-enrollment-student-name {
+        font-size: 13px;
+    }
+
+    .admin-enrollment-student-email {
+        font-size: 11px;
+    }
+
+    .admin-enrollment-certificate {
+        width: 100%;
+    }
+
+    .admin-enrollment-certificate .btn {
+        width: 100%;
+        font-size: 12px;
+    }
+
+
+    /* STATUS */
+
+    .admin-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 90px max-content !important;
+        column-gap: 10px !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .admin-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+    }
+}
+
+
+/* =========================================================
+   BELOW 400px
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .admin-enrollments-card .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .admin-enrollments-header h2 {
+        font-size: 20px;
+    }
+
+    .admin-enrollments-table tbody tr {
+        padding: 8px 10px;
+    }
+
+    .admin-enrollments-table td {
+        grid-template-columns: 82px minmax(0, 1fr);
+        font-size: 12px;
+    }
+
+    .admin-enrollments-table td::before {
+        font-size: 10px;
+    }
+
+    .admin-enrollment-progress-cell {
+        grid-template-columns: 82px minmax(0, 1fr) !important;
+    }
+
+
+    /* STATUS */
+
+    .admin-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 82px max-content !important;
+        column-gap: 8px !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .admin-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .admin-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+
+    .admin-enrollment-certificate .btn {
+        font-size: 11px;
+        padding: 5px 6px;
+    }
+}

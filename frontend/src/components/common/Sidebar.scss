@@ -1,0 +1,138 @@
+.sidebar-wrapper {
+    width: 250px;
+    min-width: 250px;
+    min-height: calc(100vh - 56px);
+    background: #212529;
+    color: #fff;
+    position: relative;
+    z-index: 1000;
+}
+
+.sidebar-inner {
+    width: 100%;
+    padding: 1rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.sidebar-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-link.active {
+    color: #fff;
+    background: #0d6efd;
+}
+
+.sidebar-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+.sidebar-mobile-toggle,
+.sidebar-mobile-close,
+.sidebar-mobile-overlay {
+    display: none;
+}
+
+@media (max-width: 767px) {
+
+    .sidebar-mobile-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 68px;
+        left: 12px;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        border: none;
+        border-radius: 6px;
+        background: #212529;
+        color: #fff;
+        font-size: 23px;
+        z-index: 1100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .sidebar-wrapper {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        bottom: 0;
+        width: 250px;
+        min-width: 250px;
+        height: calc(100vh - 56px);
+        min-height: 0;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 1200;
+    }
+
+    .sidebar-wrapper.sidebar-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-mobile-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 15px;
+        z-index: 2;
+    }
+
+    .sidebar-inner {
+        padding-top: 3.5rem;
+    }
+
+    .sidebar-mobile-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 1150;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .sidebar-mobile-toggle {
+        top: 64px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .sidebar-wrapper {
+        width: 235px;
+        min-width: 235px;
+    }
+
+}

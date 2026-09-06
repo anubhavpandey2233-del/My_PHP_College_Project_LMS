@@ -1,406 +1,612 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import Loading from '../../components/common/Loading';
+import { FaArrowLeft } from 'react-icons/fa';
+import './CourseList.scss';
 
 const CourseList = () => {
-const [courses, setCourses] = useState([]);
-const [categories, setCategories] = useState([]);
-const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-const [filters, setFilters] = useState({
-search: '',
-category_id: '',
-level: '',
-page: 1
-});
+    const [courses, setCourses] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-api.get('/categories/list.php')
-.then(res => {
-if (res.data.status) {
-setCategories(res.data.data || []);
-}
-})
-.catch(error => {
-console.error('Category error:', error);
-setCategories([]);
-});
-}, []);
+    const [filters, setFilters] = useState({
+        search: '',
+        category_id: '',
+        level: '',
+        page: 1
+    });
 
-useEffect(() => {
-setLoading(true);
-
-const params = new URLSearchParams(filters).toString();
-
-api.get(`/courses/list.php?${params}`)
-  .then(res => {
-    console.log('COURSES API:', res.data);
-
-    if (res.data.status) {
-      setCourses(res.data.data?.courses || []);
-    } else {
-      setCourses([]);
-    }
-  })
-  .catch(error => {
-    console.error('Courses error:', error);
-    setCourses([]);
-  })
-  .finally(() => {
-    setLoading(false);
-  });
-
-}, [filters]);
-
-const getThumbnailUrl = (thumbnail) => {
-if (!thumbnail) {
-return null;
-}
-
-const value = String(thumbnail).trim();
-
-if (!value) {
-  return null;
-}
-
-if (
-  value.startsWith('http://') ||
-  value.startsWith('https://')
-) {
-  return value;
-}
-
-if (value.startsWith('/uploads/courses/')) {
-  return `http://localhost/php-lms-project/backend${value}`;
-}
-
-if (value.startsWith('uploads/courses/')) {
-  return `http://localhost/php-lms-project/backend/${value}`;
-}
-
-if (value.startsWith('/php-lms-project/backend/uploads/courses/')) {
-  return `http://localhost${value}`;
-}
-
-return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
-
-};
-
-const handleImageError = (e, course) => {
-console.error(
-'Thumbnail load failed:',
-course.thumbnail
-);
-
-e.currentTarget.style.display = 'none';
-
-const fallback =
-  e.currentTarget.parentElement.querySelector(
-    '.thumbnail-fallback'
-  );
-
-if (fallback) {
-  fallback.style.display = 'flex';
-}
-
-};
-
-return (
-<div className="d-flex flex-column min-vh-100">
-
-  <Header />
-
-  <div className="container my-5 flex-grow-1">
-
-  
-<h2
-  className="mb-4"
-  style={{ cursor: 'pointer' }}
-  onClick={() =>
-    setFilters({
-      search: '',
-      category_id: '',
-      level: '',
-      page: 1
-    })
-  }
->
-  All Courses
-</h2>
-
-
-
-    <div className="row mb-4 g-3">
-
-      <div className="col-md-4">
-
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search courses..."
-          value={filters.search}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              search: e.target.value,
-              page: 1
+    useEffect(() => {
+        api.get('/categories/list.php')
+            .then(res => {
+                if (res.data?.status) {
+                    setCategories(res.data.data || []);
+                } else {
+                    setCategories([]);
+                }
             })
-          }
-        />
+            .catch(error => {
+                console.error('Category error:', error);
+                setCategories([]);
+            });
+    }, []);
 
-      </div>
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
 
-      <div className="col-md-3">
+        const search = params.get('search') || '';
+        const category_id = params.get('category_id') || '';
+        const level = params.get('level') || '';
+        const page = Math.max(
+            1,
+            Number(params.get('page')) || 1
+        );
 
-        <select
-          className="form-select"
-          value={filters.category_id}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              category_id: e.target.value,
-              page: 1
+        setFilters({
+            search,
+            category_id,
+            level,
+            page
+        });
+    }, [location.search]);
+
+    useEffect(() => {
+        setLoading(true);
+
+        const params = new URLSearchParams();
+
+        if (filters.search.trim() !== '') {
+            params.set(
+                'search',
+                filters.search.trim()
+            );
+        }
+
+        if (filters.category_id !== '') {
+            params.set(
+                'category_id',
+                filters.category_id
+            );
+        }
+
+        if (filters.level !== '') {
+            params.set(
+                'level',
+                filters.level
+            );
+        }
+
+        params.set(
+            'page',
+            String(filters.page)
+        );
+
+        api.get(
+            `/courses/list.php?${params.toString()}`
+        )
+            .then(res => {
+                console.log(
+                    'COURSES API:',
+                    res.data
+                );
+
+                if (res.data?.status) {
+                    setCourses(
+                        res.data?.data?.courses || []
+                    );
+                } else {
+                    setCourses([]);
+                }
             })
-          }
-        >
+            .catch(error => {
+                console.error(
+                    'Courses error:',
+                    error
+                );
 
-          <option value="">
-            All Categories
-          </option>
-
-          {categories.map(category => (
-            <option
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-
-        </select>
-
-      </div>
-
-      <div className="col-md-3">
-
-        <select
-          className="form-select"
-          value={filters.level}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              level: e.target.value,
-              page: 1
+                setCourses([]);
             })
-          }
-        >
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [filters]);
 
-          <option value="">
-            All Levels
-          </option>
+    const updateUrl = (
+        search,
+        category_id,
+        level,
+        page = 1
+    ) => {
+        const params = new URLSearchParams();
 
-          <option value="beginner">
-            Beginner
-          </option>
+        if (search.trim() !== '') {
+            params.set(
+                'search',
+                search.trim()
+            );
+        }
 
-          <option value="intermediate">
-            Intermediate
-          </option>
+        if (category_id !== '') {
+            params.set(
+                'category_id',
+                category_id
+            );
+        }
 
-          <option value="advanced">
-            Advanced
-          </option>
+        if (level !== '') {
+            params.set(
+                'level',
+                level
+            );
+        }
 
-        </select>
+        params.set(
+            'page',
+            String(page)
+        );
 
-      </div>
+        const query = params.toString();
 
-    </div>
+        navigate(
+            query
+                ? `/courses?${query}`
+                : '/courses',
+            {
+                replace: true
+            }
+        );
+    };
 
-    {loading ? (
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
 
-      <Loading />
+        updateUrl(
+            value,
+            filters.category_id,
+            filters.level,
+            1
+        );
+    };
 
-    ) : (
+    const handleCategoryChange = (e) => {
+        const value = e.target.value;
 
-      <div className="row g-4">
+        updateUrl(
+            filters.search,
+            value,
+            filters.level,
+            1
+        );
+    };
 
-        {courses.map(course => {
+    const handleLevelChange = (e) => {
+        const value = e.target.value;
 
-          const thumbnailUrl =
-            getThumbnailUrl(course.thumbnail);
+        updateUrl(
+            filters.search,
+            filters.category_id,
+            value,
+            1
+        );
+    };
 
-          const price = Number(course.price) || 0;
+    const resetFilters = () => {
+        navigate(
+            '/courses',
+            {
+                replace: true
+            }
+        );
+    };
 
-          const discount =
-            Number(course.discount_price) || 0;
+    const getThumbnailUrl = (thumbnail) => {
+        if (!thumbnail) {
+            return null;
+        }
 
-          const finalPrice =
-            discount > 0
-              ? Math.max(0, price - discount)
-              : price;
+        const value =
+            String(thumbnail).trim();
 
-          return (
+        if (!value) {
+            return null;
+        }
 
-            <div
-              className="col-md-4"
-              key={course.id}
-            >
+        if (
+            value.startsWith('http://') ||
+            value.startsWith('https://')
+        ) {
+            return value;
+        }
 
-              <div className="card h-100 shadow-sm overflow-hidden">
+        if (
+            value.startsWith(
+                '/uploads/courses/'
+            )
+        ) {
+            return `http://localhost/php-lms-project/backend${value}`;
+        }
 
-                <div
-                  className="position-relative bg-light"
-                  style={{
-                    height: '200px',
-                    overflow: 'hidden'
-                  }}
-                >
+        if (
+            value.startsWith(
+                'uploads/courses/'
+            )
+        ) {
+            return `http://localhost/php-lms-project/backend/${value}`;
+        }
 
-                  {thumbnailUrl && (
+        if (
+            value.startsWith(
+                '/php-lms-project/backend/uploads/courses/'
+            )
+        ) {
+            return `http://localhost${value}`;
+        }
 
-                    <img
-                      src={thumbnailUrl}
-                      alt={course.title || 'Course'}
-                      className="w-100 h-100"
-                      style={{
-                        objectFit: 'cover',
-                        display: 'block'
-                      }}
-                      onError={(e) =>
-                        handleImageError(e, course)
-                      }
-                    />
+        return `http://localhost/php-lms-project/backend/uploads/courses/${value}`;
+    };
 
-                  )}
+    const handleImageError = (
+        e,
+        course
+    ) => {
+        console.error(
+            'Thumbnail load failed:',
+            course.thumbnail
+        );
 
-                  <div
-                    className="thumbnail-fallback w-100 h-100 bg-secondary align-items-center justify-content-center"
-                    style={{
-                      display: thumbnailUrl
-                        ? 'none'
-                        : 'flex'
-                    }}
-                  >
+        e.currentTarget.style.display =
+            'none';
 
-                    <div className="text-center px-3">
+        const fallback =
+            e.currentTarget.parentElement?.querySelector(
+                '.course-thumbnail-fallback'
+            );
 
-                      <div
-                        className="text-white fw-bold"
-                        style={{
-                          fontSize: '18px'
-                        }}
-                      >
-                        {course.title || 'Course'}
-                      </div>
+        if (fallback) {
+            fallback.style.display =
+                'flex';
+        }
+    };
 
-                      <small className="text-white-50">
-                        Course Thumbnail
-                      </small>
+    return (
+        <div className="d-flex flex-column min-vh-100">
+
+            <Header />
+
+            <main className="course-list-page flex-grow-1">
+
+                <div className="course-list-container">
+
+                    <div className="course-list-header">
+
+                        <button
+                            type="button"
+                            className="course-back-btn"
+                            onClick={() =>
+                                navigate(-1)
+                            }
+                        >
+                            <FaArrowLeft />
+                            <span>
+                                Back
+                            </span>
+                        </button>
+
+                        <h2
+                            className="course-list-title"
+                            onClick={resetFilters}
+                        >
+                            All Courses
+                        </h2>
 
                     </div>
 
-                  </div>
+                    <div className="course-filters">
 
-                </div>
+                        <div className="course-search-box">
 
-                <div className="card-body d-flex flex-column">
-
-                  <span className="badge bg-primary mb-2 align-self-start">
-                    {course.level || 'Beginner'}
-                  </span>
-
-                  <h5 className="card-title">
-                    {course.title}
-                  </h5>
-
-                  <p className="card-text text-muted small flex-grow-1">
-
-                    {course.short_description
-                      ? course.short_description.length > 80
-                        ? `${course.short_description.substring(0, 80)}...`
-                        : course.short_description
-                      : 'Learn this course and improve your skills.'
-                    }
-
-                  </p>
-
-                  <div className="d-flex justify-content-between align-items-center mt-2">
-
-                    <div>
-
-                      {discount > 0 ? (
-
-                        <div className="d-flex align-items-center flex-wrap gap-2">
-
-                          <span className="text-danger fw-bold fs-5">
-                            ₹{finalPrice}
-                          </span>
-
-                          <small className="text-muted text-decoration-line-through">
-                            ₹{price}
-                          </small>
-
-                          <span className="badge bg-success">
-                            ₹{discount} OFF
-                          </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search courses..."
+                                value={
+                                    filters.search
+                                }
+                                onChange={
+                                    handleSearchChange
+                                }
+                            />
 
                         </div>
 
-                      ) : (
+                        <div className="course-category-box">
 
-                        <span className="fw-bold fs-5">
-                          ₹{price}
-                        </span>
+                            <select
+                                className="form-select"
+                                value={
+                                    filters.category_id
+                                }
+                                onChange={
+                                    handleCategoryChange
+                                }
+                            >
+                                <option value="">
+                                    All Categories
+                                </option>
 
-                      )}
+                                {categories.map(
+                                    category => (
+                                        <option
+                                            key={
+                                                category.id
+                                            }
+                                            value={
+                                                category.id
+                                            }
+                                        >
+                                            {
+                                                category.name
+                                            }
+                                        </option>
+                                    )
+                                )}
+
+                            </select>
+
+                        </div>
+
+                        <div className="course-level-box">
+
+                            <select
+                                className="form-select"
+                                value={
+                                    filters.level
+                                }
+                                onChange={
+                                    handleLevelChange
+                                }
+                            >
+                                <option value="">
+                                    All Levels
+                                </option>
+
+                                <option value="beginner">
+                                    Beginner
+                                </option>
+
+                                <option value="intermediate">
+                                    Intermediate
+                                </option>
+
+                                <option value="advanced">
+                                    Advanced
+                                </option>
+
+                            </select>
+
+                        </div>
 
                     </div>
 
-                    <Link
-                      to={`/courses/${course.slug}`}
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      View
-                    </Link>
+                    {loading ? (
 
-                  </div>
+                        <Loading />
+
+                    ) : (
+
+                        <div className="course-list-grid">
+
+                            {courses.map(
+                                course => {
+
+                                    const thumbnailUrl =
+                                        getThumbnailUrl(
+                                            course.thumbnail_url ||
+                                            course.thumbnail
+                                        );
+
+                                    const price =
+                                        Number(
+                                            course.price
+                                        ) || 0;
+
+                                    const discount =
+                                        Number(
+                                            course.discount_price
+                                        ) || 0;
+
+                                    const finalPrice =
+                                        discount > 0
+                                            ? Math.max(
+                                                0,
+                                                price -
+                                                discount
+                                            )
+                                            : price;
+
+                                    return (
+                                        <div
+                                            className="course-list-col"
+                                            key={
+                                                course.id
+                                            }
+                                        >
+
+                                            <div className="card course-list-card shadow-sm">
+
+                                                <div className="course-list-image">
+
+                                                    {thumbnailUrl && (
+                                                        <img
+                                                            src={
+                                                                thumbnailUrl
+                                                            }
+                                                            alt={
+                                                                course.title ||
+                                                                'Course'
+                                                            }
+                                                            onError={
+                                                                e =>
+                                                                    handleImageError(
+                                                                        e,
+                                                                        course
+                                                                    )
+                                                            }
+                                                        />
+                                                    )}
+
+                                                    <div
+                                                        className="course-thumbnail-fallback"
+                                                        style={{
+                                                            display:
+                                                                thumbnailUrl
+                                                                    ? 'none'
+                                                                    : 'flex'
+                                                        }}
+                                                    >
+
+                                                        <div className="text-center px-3">
+
+                                                            <div className="course-fallback-title">
+                                                                {
+                                                                    course.title ||
+                                                                    'Course'
+                                                                }
+                                                            </div>
+
+                                                            <small className="text-white-50">
+                                                                Course Thumbnail
+                                                            </small>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div className="card-body course-list-card-body">
+
+                                                    <span className="badge bg-primary course-level-badge">
+                                                        {
+                                                            course.level ||
+                                                            'Beginner'
+                                                        }
+                                                    </span>
+
+                                                    <h5 className="course-card-title">
+                                                        {
+                                                            course.title ||
+                                                            'Untitled Course'
+                                                        }
+                                                    </h5>
+
+                                                    <p className="course-card-description">
+                                                        {
+                                                            course.short_description
+                                                                ? course.short_description.length > 80
+                                                                    ? `${course.short_description.substring(
+                                                                        0,
+                                                                        80
+                                                                    )}...`
+                                                                    : course.short_description
+                                                                : 'Learn this course and improve your skills.'
+                                                        }
+                                                    </p>
+
+                                                    <div className="course-card-bottom">
+
+                                                        <div className="course-price">
+
+                                                            {discount > 0 ? (
+
+                                                                <div className="course-discount-price">
+
+                                                                    <span className="course-final-price">
+                                                                        ₹
+                                                                        {
+                                                                            finalPrice
+                                                                        }
+                                                                    </span>
+
+                                                                    <small className="course-old-price">
+                                                                        ₹
+                                                                        {
+                                                                            price
+                                                                        }
+                                                                    </small>
+
+                                                                    <span className="badge bg-success course-off-badge">
+                                                                        ₹
+                                                                        {
+                                                                            discount
+                                                                        }
+                                                                        {' '}
+                                                                        OFF
+                                                                    </span>
+
+                                                                </div>
+
+                                                            ) : (
+
+                                                                <span className="course-final-price">
+                                                                    ₹
+                                                                    {
+                                                                        price
+                                                                    }
+                                                                </span>
+
+                                                            )}
+
+                                                        </div>
+
+                                                        <Link
+                                                            to={`/courses/${course.slug}`}
+                                                            className="btn btn-sm btn-outline-primary course-view-btn"
+                                                        >
+                                                            View
+                                                        </Link>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    );
+                                }
+                            )}
+
+                            {courses.length === 0 && (
+
+                                <div className="course-no-results">
+
+                                    <div className="alert alert-info mb-0">
+                                        No courses found.
+                                    </div>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    )}
 
                 </div>
 
-              </div>
+            </main>
 
-            </div>
+            <Footer />
 
-          );
-        })}
-
-        {courses.length === 0 && (
-
-          <div className="col-12">
-
-            <div className="alert alert-info">
-              No courses found.
-            </div>
-
-          </div>
-
-        )}
-
-      </div>
-
-    )}
-
-  </div>
-
-  <Footer />
-
-</div>
-
-);
+        </div>
+    );
 };
 
 export default CourseList;

@@ -1,0 +1,747 @@
+.teacher-enrollments-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    color: var(--theme-text);
+}
+
+.teacher-enrollments-header {
+    width: 100%;
+    min-width: 0;
+}
+
+.teacher-enrollments-header h2 {
+    color: var(--theme-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.teacher-enrollments-header p {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.teacher-enrollments-total {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.teacher-enrollments-error {
+    width: 100%;
+}
+
+.teacher-enrollments-card {
+    width: 100%;
+    max-width: 100%;
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border) !important;
+    overflow: hidden;
+}
+
+.teacher-enrollments-card .card-body {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+}
+
+.teacher-enrollments-card-header {
+    width: 100%;
+    gap: 15px;
+}
+
+.teacher-enrollments-card-header h5 {
+    color: var(--theme-text);
+    font-weight: 600;
+}
+
+.teacher-enrollments-refresh {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.teacher-enrollments-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.teacher-enrollments-table {
+    width: 100%;
+    min-width: 1100px;
+    margin-bottom: 0;
+    color: var(--theme-text);
+    vertical-align: middle;
+}
+
+.teacher-enrollments-table th {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 13px 11px;
+}
+
+.teacher-enrollments-table td {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    padding: 13px 11px;
+}
+
+.teacher-enrollments-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.teacher-enrollments-table tbody tr:hover td {
+    background: var(--theme-bg) !important;
+}
+
+.teacher-enrollment-student {
+    min-width: 210px;
+}
+
+.teacher-enrollment-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    object-fit: cover;
+    flex: 0 0 42px;
+}
+
+.teacher-enrollment-avatar-placeholder {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    flex: 0 0 42px;
+    background: var(--theme-bg) !important;
+    color: var(--theme-text);
+}
+
+.teacher-enrollment-student-info {
+    min-width: 0;
+    max-width: 190px;
+}
+
+.teacher-enrollment-student-name {
+    color: var(--theme-text) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.teacher-enrollment-student-email {
+    display: block;
+    max-width: 190px;
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.teacher-enrollment-course {
+    min-width: 180px;
+    max-width: 250px;
+    color: var(--theme-text) !important;
+    line-height: 1.4;
+}
+
+.teacher-enrollment-progress-cell {
+    min-width: 150px;
+    width: 160px;
+}
+
+.teacher-enrollment-progress {
+    width: 100%;
+    height: 7px !important;
+    background: var(--theme-border) !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.teacher-enrollment-progress .progress-bar {
+    height: 100%;
+    background-color: #0d6efd;
+    border-radius: 10px;
+}
+
+.teacher-enrollment-status {
+    display: inline-flex !important;
+    align-items: center;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+}
+
+.teacher-enrollment-status .badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    padding: 5px 8px !important;
+    white-space: nowrap !important;
+}
+
+.teacher-enrollment-date {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+    white-space: nowrap;
+}
+
+.teacher-enrollment-certificate {
+    display: flex;
+    align-items: center;
+    min-width: max-content;
+}
+
+.teacher-enrollment-certificate .btn {
+    white-space: nowrap;
+}
+
+.teacher-enrollments-empty {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.teacher-enrollments-page .bg-light {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+}
+
+.teacher-enrollments-page .text-secondary {
+    color: var(--theme-text) !important;
+    opacity: 0.6;
+}
+
+.teacher-enrollments-page .text-muted {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .teacher-enrollments-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .teacher-enrollments-table th,
+    .teacher-enrollments-table td {
+        padding: 9px 7px;
+        font-size: 12px;
+    }
+
+    .teacher-enrollments-table th:nth-child(1),
+    .teacher-enrollments-table td:nth-child(1) {
+        width: 4%;
+    }
+
+    .teacher-enrollments-table th:nth-child(2),
+    .teacher-enrollments-table td:nth-child(2) {
+        width: 19%;
+    }
+
+    .teacher-enrollments-table th:nth-child(3),
+    .teacher-enrollments-table td:nth-child(3) {
+        width: 19%;
+    }
+
+    .teacher-enrollments-table th:nth-child(4),
+    .teacher-enrollments-table td:nth-child(4) {
+        width: 8%;
+    }
+
+    .teacher-enrollments-table th:nth-child(5),
+    .teacher-enrollments-table td:nth-child(5) {
+        width: 15%;
+    }
+
+    .teacher-enrollments-table th:nth-child(6),
+    .teacher-enrollments-table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .teacher-enrollments-table th:nth-child(7),
+    .teacher-enrollments-table td:nth-child(7) {
+        width: 11%;
+    }
+
+    .teacher-enrollments-table th:nth-child(8),
+    .teacher-enrollments-table td:nth-child(8) {
+        width: 14%;
+    }
+
+    .teacher-enrollment-student {
+        min-width: 0;
+    }
+
+    .teacher-enrollment-student-info {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-student-email {
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-course {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-progress-cell {
+        min-width: 0;
+        width: auto;
+    }
+
+    .teacher-enrollment-progress {
+        width: 100%;
+    }
+
+    .teacher-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .teacher-enrollment-status .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        padding: 4px 6px !important;
+        font-size: 10px;
+    }
+
+    .teacher-enrollment-certificate {
+        min-width: 0;
+    }
+
+    .teacher-enrollment-certificate .btn {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .teacher-enrollments-table-wrapper {
+        overflow: visible;
+    }
+
+    .teacher-enrollments-table {
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0 14px;
+    }
+
+    .teacher-enrollments-table thead {
+        display: none;
+    }
+
+    .teacher-enrollments-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .teacher-enrollments-table tbody tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--theme-border);
+        border-radius: 8px;
+        background: var(--theme-surface) !important;
+    }
+
+    .teacher-enrollments-table tbody tr:hover {
+        background: var(--theme-surface) !important;
+    }
+
+    .teacher-enrollments-table tbody tr:hover td {
+        background: transparent !important;
+    }
+
+    .teacher-enrollments-table td {
+        display: grid;
+        grid-template-columns: 130px minmax(0, 1fr);
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        padding: 10px 0;
+        border: 0;
+        border-bottom: 1px solid var(--theme-border);
+        background: transparent !important;
+    }
+
+    .teacher-enrollments-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .teacher-enrollments-table td::before {
+        content: attr(data-label);
+        grid-column: 1;
+        color: var(--theme-text);
+        opacity: 0.65;
+        font-weight: 600;
+        font-size: 13px;
+        padding-right: 12px;
+    }
+
+    .teacher-enrollment-student {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-student-info {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-student-email {
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-course {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .teacher-enrollment-progress-cell {
+        display: grid !important;
+        grid-template-columns: 130px minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        column-gap: 10px;
+        align-items: center !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .teacher-enrollment-progress-cell::before {
+        grid-column: 1 !important;
+        grid-row: 1 / 3 !important;
+        align-self: center !important;
+        padding-right: 0 !important;
+    }
+
+    .teacher-enrollment-progress-cell > div:first-of-type {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 0 6px 0 !important;
+    }
+
+    .teacher-enrollment-progress-cell > div:first-of-type small:first-child {
+        display: none !important;
+    }
+
+    .teacher-enrollment-progress-cell > div:first-of-type small:last-child {
+        color: var(--theme-text) !important;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .teacher-enrollment-progress-cell > div:last-child {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+
+    .teacher-enrollment-progress-cell .teacher-enrollment-progress {
+        display: block !important;
+        width: 100% !important;
+        height: 7px !important;
+        margin: 0 !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] {
+        display: grid !important;
+        grid-template-columns: 130px max-content !important;
+        column-gap: 10px !important;
+        align-items: center !important;
+        justify-content: start !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"]::before {
+        grid-column: 1 !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .teacher-enrollment-status {
+        grid-column: 2 !important;
+        display: inline-flex !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        justify-self: start !important;
+        align-items: center !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .teacher-enrollment-status .badge {
+        display: inline-flex !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+    }
+
+    .teacher-enrollment-date {
+        white-space: nowrap;
+    }
+
+    .teacher-enrollment-certificate {
+        display: flex;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .teacher-enrollment-certificate .btn {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 991px) {
+    .teacher-enrollments-header {
+        gap: 15px;
+    }
+
+    .teacher-enrollments-header h2 {
+        font-size: 25px;
+    }
+
+    .teacher-enrollments-card .card-body {
+        padding: 1.25rem !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .teacher-enrollments-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        margin-bottom: 20px !important;
+    }
+
+    .teacher-enrollments-header h2 {
+        font-size: 23px;
+    }
+
+    .teacher-enrollments-header p {
+        font-size: 14px;
+    }
+
+    .teacher-enrollments-total {
+        font-size: 13px !important;
+    }
+
+    .teacher-enrollments-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .teacher-enrollments-card-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        margin-bottom: 18px !important;
+    }
+
+    .teacher-enrollments-refresh {
+        width: 100%;
+    }
+
+    .teacher-enrollments-table {
+        border-spacing: 0 10px;
+    }
+
+    .teacher-enrollments-table tbody tr {
+        padding: 9px 12px;
+        margin-bottom: 10px;
+    }
+
+    .teacher-enrollments-table td {
+        grid-template-columns: 105px minmax(0, 1fr);
+        padding: 9px 0;
+        font-size: 14px;
+    }
+
+    .teacher-enrollments-table td::before {
+        font-size: 12px;
+    }
+
+    .teacher-enrollment-progress-cell {
+        grid-template-columns: 105px minmax(0, 1fr) !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 105px max-content !important;
+        column-gap: 10px !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .teacher-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .teacher-enrollments-header h2 {
+        font-size: 21px;
+    }
+
+    .teacher-enrollments-header p {
+        font-size: 13px;
+    }
+
+    .teacher-enrollments-card .card-body {
+        padding: 0.9rem !important;
+    }
+
+    .teacher-enrollments-table td {
+        grid-template-columns: 90px minmax(0, 1fr);
+        font-size: 13px;
+    }
+
+    .teacher-enrollments-table td::before {
+        font-size: 11px;
+    }
+
+    .teacher-enrollment-progress-cell {
+        grid-template-columns: 90px minmax(0, 1fr) !important;
+    }
+
+    .teacher-enrollment-avatar {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        flex-basis: 38px;
+    }
+
+    .teacher-enrollment-avatar-placeholder {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        flex-basis: 38px;
+    }
+
+    .teacher-enrollment-student-name {
+        font-size: 13px;
+    }
+
+    .teacher-enrollment-student-email {
+        font-size: 11px;
+    }
+
+    .teacher-enrollment-certificate {
+        width: 100%;
+    }
+
+    .teacher-enrollment-certificate .btn {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 90px max-content !important;
+        column-gap: 10px !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .teacher-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .teacher-enrollments-card .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .teacher-enrollments-header h2 {
+        font-size: 20px;
+    }
+
+    .teacher-enrollments-table tbody tr {
+        padding: 8px 10px;
+    }
+
+    .teacher-enrollments-table td {
+        grid-template-columns: 82px minmax(0, 1fr);
+        font-size: 12px;
+    }
+
+    .teacher-enrollments-table td::before {
+        font-size: 10px;
+    }
+
+    .teacher-enrollment-progress-cell {
+        grid-template-columns: 82px minmax(0, 1fr) !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] {
+        grid-template-columns: 82px max-content !important;
+        column-gap: 8px !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .teacher-enrollment-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .teacher-enrollments-table td[data-label="Status"] .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+
+    .teacher-enrollment-certificate .btn {
+        font-size: 11px;
+        padding: 5px 6px;
+    }
+}

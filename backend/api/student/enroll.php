@@ -13,6 +13,21 @@ $user = authenticate($pdo);
 
 
 // ==========================================
+// ONLY STUDENT CAN ENROLL
+// ==========================================
+
+if ($user['role'] !== 'student') {
+
+    sendError(
+        "Only students can enroll in courses",
+        null,
+        403
+    );
+
+}
+
+
+// ==========================================
 // GET JSON DATA
 // ==========================================
 

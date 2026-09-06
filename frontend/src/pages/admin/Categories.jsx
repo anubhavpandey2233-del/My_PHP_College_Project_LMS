@@ -1,37 +1,22 @@
-
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Loading from '../../components/common/Loading';
+import './Categories.scss';
 
 const Categories = () => {
 
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-
     const [search, setSearch] = useState('');
-
-    // =====================================
-    // Edit Mode
-    // =====================================
-
     const [editId, setEditId] = useState(null);
-
-    // =====================================
-    // Form
-    // =====================================
 
     const [form, setForm] = useState({
         name: '',
         description: '',
         status: 'active'
     });
-
-
-    // =====================================
-    // Fetch Categories
-    // =====================================
 
     const fetchCategories = () => {
 
@@ -77,17 +62,11 @@ const Categories = () => {
 
     };
 
-
     useEffect(() => {
 
         fetchCategories();
 
     }, []);
-
-
-    // =====================================
-    // Form Change
-    // =====================================
 
     const handleChange = (e) => {
 
@@ -96,41 +75,27 @@ const Categories = () => {
         setForm((prev) => ({
 
             ...prev,
-
             [name]: value
 
         }));
 
     };
 
-
-    // =====================================
-    // Reset Form
-    // =====================================
-
     const resetForm = () => {
 
         setForm({
-
             name: '',
             description: '',
             status: 'active'
-
         });
 
         setEditId(null);
 
     };
 
-
-    // =====================================
-    // Create / Update Category
-    // =====================================
-
     const handleSubmit = async (e) => {
 
         e.preventDefault();
-
 
         if (!form.name.trim()) {
 
@@ -142,15 +107,9 @@ const Categories = () => {
 
         }
 
-
         try {
 
             setSaving(true);
-
-
-            // =================================
-            // UPDATE
-            // =================================
 
             if (editId) {
 
@@ -164,7 +123,6 @@ const Categories = () => {
                     }
                 );
 
-
                 if (res.data.status) {
 
                     alert(
@@ -172,7 +130,6 @@ const Categories = () => {
                     );
 
                     resetForm();
-
                     fetchCategories();
 
                 } else {
@@ -184,20 +141,12 @@ const Categories = () => {
 
                 }
 
-
-            }
-
-            // =================================
-            // CREATE
-            // =================================
-
-            else {
+            } else {
 
                 const res = await api.post(
                     '/categories/create.php',
                     form
                 );
-
 
                 if (res.data.status) {
 
@@ -206,7 +155,6 @@ const Categories = () => {
                     );
 
                     resetForm();
-
                     fetchCategories();
 
                 } else {
@@ -220,7 +168,6 @@ const Categories = () => {
 
             }
 
-
         } catch (error) {
 
             console.error(
@@ -228,15 +175,10 @@ const Categories = () => {
                 error
             );
 
-
             alert(
-
                 error.response?.data?.message ||
-
                 'Failed to save category'
-
             );
-
 
         } finally {
 
@@ -245,11 +187,6 @@ const Categories = () => {
         }
 
     };
-
-
-    // =====================================
-    // Edit Category
-    // =====================================
 
     const handleEdit = (category) => {
 
@@ -267,23 +204,12 @@ const Categories = () => {
 
         });
 
-
-        // Scroll to form
-
         window.scrollTo({
-
             top: 0,
-
             behavior: 'smooth'
-
         });
 
     };
-
-    // =====================================
-    // Delete Category
-    //
-
 
     const handleDeactivate = async (category) => {
 
@@ -337,454 +263,369 @@ const Categories = () => {
 
     };
 
-
     const filteredCategories = categories.filter((category) =>
         category.name
             .toLowerCase()
             .includes(search.toLowerCase())
     );
 
-    // =====================================
-    // Render
-    // =====================================
-
     return (
 
         <DashboardLayout>
 
+            <div className="categories-page">
 
-            {/* =================================
-          Page Header
-      ================================= */}
+                <div className="categories-page-header d-flex justify-content-between align-items-center mb-4">
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div>
 
-                <div>
+                        <h2 className="mb-1">
+                            Categories
+                        </h2>
 
-                    <h2 className="mb-1">
-                        Categories
-                    </h2>
-
-                    <p className="text-muted mb-0">
-                        Manage course categories
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div className="row g-4">
-
-
-                {/* =================================
-            Add / Edit Category
-        ================================= */}
-
-                <div className="col-lg-4">
-
-                    <div className="card shadow-sm border-0">
-
-                        <div className="card-body p-4">
-
-
-                            <h5 className="mb-4">
-
-                                {editId
-                                    ? 'Edit Category'
-                                    : 'Add Category'}
-
-                            </h5>
-
-
-                            <form
-                                onSubmit={handleSubmit}
-                            >
-
-
-                                {/* Name */}
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-
-                                        Category Name
-
-                                    </label>
-
-
-                                    <input
-
-                                        type="text"
-
-                                        name="name"
-
-                                        className="form-control"
-
-                                        placeholder="Enter category name"
-
-                                        value={form.name}
-
-                                        onChange={handleChange}
-
-                                    />
-
-                                </div>
-
-
-                                {/* Description */}
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-
-                                        Description
-
-                                    </label>
-
-
-                                    <textarea
-
-                                        name="description"
-
-                                        className="form-control"
-
-                                        rows="4"
-
-                                        placeholder="Enter category description"
-
-                                        value={form.description}
-
-                                        onChange={handleChange}
-
-                                    />
-
-                                </div>
-
-
-                                {/* Status */}
-
-                                <div className="mb-4">
-
-                                    <label className="form-label">
-
-                                        Status
-
-                                    </label>
-
-
-                                    <select
-
-                                        name="status"
-
-                                        className="form-select"
-
-                                        value={form.status}
-
-                                        onChange={handleChange}
-
-                                    >
-
-                                        <option value="active">
-                                            Active
-                                        </option>
-
-                                        <option value="inactive">
-                                            Inactive
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-
-                                {/* Buttons */}
-
-                                <div className="d-flex gap-2">
-
-
-                                    <button
-
-                                        type="submit"
-
-                                        className="btn btn-primary flex-grow-1"
-
-                                        disabled={saving}
-
-                                    >
-
-                                        {saving
-
-                                            ? 'Saving...'
-
-                                            : editId
-
-                                                ? 'Update Category'
-
-                                                : 'Add Category'}
-
-                                    </button>
-
-
-                                    {editId && (
-
-                                        <button
-
-                                            type="button"
-
-                                            className="btn btn-secondary"
-
-                                            onClick={resetForm}
-
-                                            disabled={saving}
-
-                                        >
-
-                                            Cancel
-
-                                        </button>
-
-                                    )}
-
-
-                                </div>
-
-
-                            </form>
-
-                        </div>
+                        <p className="text-muted mb-0">
+                            Manage course categories
+                        </p>
 
                     </div>
 
                 </div>
 
+                <div className="row g-4 categories-content">
 
-                {/* =================================
-            Category List
-        ================================= */}
+                    <div className="col-lg-4 categories-form-column">
 
-                <div className="col-lg-8">
+                        <div className="card shadow-sm border-0 categories-form-card">
 
-                    <div className="card shadow-sm border-0">
+                            <div className="card-body p-4">
 
-                        <div className="card-body p-4">
+                                <h5 className="mb-4">
 
-
-                            <div className="d-flex justify-content-between align-items-center mb-4">
-
-                                <h5 className="mb-0">
-
-                                    Category List
+                                    {editId
+                                        ? 'Edit Category'
+                                        : 'Add Category'}
 
                                 </h5>
 
+                                <form onSubmit={handleSubmit}>
 
-                                <span className="badge bg-primary">
+                                    <div className="mb-3">
 
-                                    {filteredCategories.length}
+                                        <label className="form-label">
+                                            Category Name
+                                        </label>
 
-                                </span>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            className="form-control"
+                                            placeholder="Enter category name"
+                                            value={form.name}
+                                            onChange={handleChange}
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+                                            Description
+                                        </label>
+
+                                        <textarea
+                                            name="description"
+                                            className="form-control"
+                                            rows="4"
+                                            placeholder="Enter category description"
+                                            value={form.description}
+                                            onChange={handleChange}
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-4">
+
+                                        <label className="form-label">
+                                            Status
+                                        </label>
+
+                                        <select
+                                            name="status"
+                                            className="form-select"
+                                            value={form.status}
+                                            onChange={handleChange}
+                                        >
+
+                                            <option value="active">
+                                                Active
+                                            </option>
+
+                                            <option value="inactive">
+                                                Inactive
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div className="d-flex gap-2 categories-form-buttons">
+
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary flex-grow-1"
+                                            disabled={saving}
+                                        >
+
+                                            {saving
+                                                ? 'Saving...'
+                                                : editId
+                                                    ? 'Update Category'
+                                                    : 'Add Category'}
+
+                                        </button>
+
+                                        {editId && (
+
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary"
+                                                onClick={resetForm}
+                                                disabled={saving}
+                                            >
+                                                Cancel
+                                            </button>
+
+                                        )}
+
+                                    </div>
+
+                                </form>
 
                             </div>
 
-                            <div className="mb-4">
+                        </div>
 
-                                <label className="form-label">
-                                    Search Category
-                                </label>
+                    </div>
 
-                                <div className="input-group">
+                    <div className="col-lg-8 categories-list-column">
 
-                                    <span className="input-group-text">
-                                        <i className="bi bi-search"></i>
+                        <div className="card shadow-sm border-0 categories-list-card">
+
+                            <div className="card-body p-4">
+
+                                <div className="categories-list-header d-flex justify-content-between align-items-center mb-4">
+
+                                    <h5 className="mb-0">
+                                        Category List
+                                    </h5>
+
+                                    <span className="badge bg-primary">
+                                        {filteredCategories.length}
                                     </span>
 
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Search category..."
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                    />
+                                </div>
+
+                                <div className="categories-search mb-4">
+
+                                    <label className="form-label">
+                                        Search Category
+                                    </label>
+
+                                    <div className="input-group">
+
+                                        <span className="input-group-text">
+                                            <i className="bi bi-search"></i>
+                                        </span>
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Search category..."
+                                            value={search}
+                                            onChange={(e) =>
+                                                setSearch(e.target.value)
+                                            }
+                                        />
+
+                                    </div>
 
                                 </div>
 
-                            </div>
+                                {loading ? (
 
-                            {loading ? (
+                                    <Loading />
 
-                                <Loading />
+                                ) : categories.length === 0 ? (
 
-                            ) : categories.length === 0 ? (
+                                    <div className="text-center py-5 text-muted categories-empty">
 
-                                <div className="text-center py-5 text-muted">
+                                        <i className="bi bi-folder2-open fs-1 d-block mb-3"></i>
 
-                                    <i className="bi bi-folder2-open fs-1 d-block mb-3"></i>
+                                        No categories found.
 
-                                    No categories found.
+                                    </div>
 
-                                </div>
+                                ) : filteredCategories.length === 0 ? (
 
-                            ) : filteredCategories.length === 0 ? (
+                                    <div className="text-center py-5 text-muted categories-empty">
 
-                                <div className="text-center py-5 text-muted">
+                                        <i className="bi bi-search fs-1 d-block mb-3"></i>
 
-                                    <i className="bi bi-search fs-1 d-block mb-3"></i>
+                                        No category matches your search.
 
-                                    No category matches your search.
+                                    </div>
 
-                                </div>
+                                ) : (
 
-                            ) : (
+                                    <div className="table-responsive categories-table-wrapper">
 
-                                <div className="table-responsive">
+                                        <table className="table align-middle categories-table">
 
-                                    <table className="table align-middle">
+                                            <thead>
 
+                                                <tr>
 
-                                        <thead>
+                                                    <th>
+                                                        #
+                                                    </th>
 
-                                            <tr>
+                                                    <th>
+                                                        Name
+                                                    </th>
 
-                                                <th>
-                                                    #
-                                                </th>
+                                                    <th>
+                                                        Description
+                                                    </th>
 
-                                                <th>
-                                                    Name
-                                                </th>
+                                                    <th>
+                                                        Status
+                                                    </th>
 
-                                                <th>
-                                                    Description
-                                                </th>
-
-                                                <th>
-                                                    Status
-                                                </th>
-
-                                                <th>
-                                                    Action
-                                                </th>
-
-                                            </tr>
-
-                                        </thead>
-
-
-                                        <tbody>
-
-
-                                            {filteredCategories.map((category, index) => (
-
-                                                <tr
-                                                    key={category.id}
-                                                >
-
-
-                                                    <td>
-                                                        {index + 1}
-                                                    </td>
-
-
-                                                    <td>
-
-                                                        <div className="fw-semibold">
-
-                                                            {category.name}
-
-                                                        </div>
-
-
-                                                        <small className="text-muted">
-
-                                                            {category.slug}
-
-                                                        </small>
-
-                                                    </td>
-
-
-                                                    <td>
-
-                                                        <span className="text-muted">
-
-                                                            {category.description
-                                                                ? category.description
-                                                                : 'No description'}
-
-                                                        </span>
-
-                                                    </td>
-
-
-                                                    <td>
-
-                                                        <span
-
-                                                            className={`badge ${category.status ===
-                                                                'active'
-
-                                                                ? 'bg-success'
-
-                                                                : 'bg-secondary'
-                                                                }`}
-
-                                                        >
-
-                                                            {category.status}
-
-                                                        </span>
-
-                                                    </td>
-
-                                                    <td>
-
-                                                        <div className="d-flex gap-2">
-
-                                                            {/* Edit */}
-
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-outline-primary"
-                                                                onClick={() => handleEdit(category)}
-                                                            >
-                                                                <i className="bi bi-pencil me-1"></i>
-                                                                Edit
-                                                            </button>
-
-
-                                                            {/* Deactivate */}
-
-                                                            {category.status === 'active' && (
-
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-sm btn-outline-danger"
-                                                                    onClick={() => handleDeactivate(category)}
-                                                                >
-                                                                    <i className="bi bi-x-circle me-1"></i>
-                                                                    Deactivate
-                                                                </button>
-
-                                                            )}
-
-                                                        </div>
-
-                                                    </td>
+                                                    <th>
+                                                        Action
+                                                    </th>
 
                                                 </tr>
 
-                                            )
-                                            )}
+                                            </thead>
 
+                                            <tbody>
 
-                                        </tbody>
+                                                {filteredCategories.map(
+                                                    (category, index) => (
 
-                                    </table>
+                                                        <tr
+                                                            key={category.id}
+                                                        >
 
-                                </div>
+                                                            <td>
+                                                                {index + 1}
+                                                            </td>
 
-                            )}
+                                                            <td>
+
+                                                                <div className="fw-semibold categories-name">
+
+                                                                    {category.name}
+
+                                                                </div>
+
+                                                                <small className="text-muted categories-slug">
+
+                                                                    {category.slug}
+
+                                                                </small>
+
+                                                            </td>
+
+                                                            <td>
+
+                                                                <span className="text-muted categories-description">
+
+                                                                    {category.description
+                                                                        ? category.description
+                                                                        : 'No description'}
+
+                                                                </span>
+
+                                                            </td>
+
+                                                            <td>
+
+                                                                <span
+                                                                    className={`badge ${
+                                                                        category.status ===
+                                                                        'active'
+                                                                            ? 'bg-success'
+                                                                            : 'bg-secondary'
+                                                                    }`}
+                                                                >
+
+                                                                    {category.status}
+
+                                                                </span>
+
+                                                            </td>
+
+                                                            <td>
+
+                                                                <div className="d-flex gap-2 categories-actions">
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-primary"
+                                                                        onClick={() =>
+                                                                            handleEdit(
+                                                                                category
+                                                                            )
+                                                                        }
+                                                                    >
+
+                                                                        <i className="bi bi-pencil me-1"></i>
+
+                                                                        Edit
+
+                                                                    </button>
+
+                                                                    {category.status ===
+                                                                        'active' && (
+
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-danger"
+                                                                            onClick={() =>
+                                                                                handleDeactivate(
+                                                                                    category
+                                                                                )
+                                                                            }
+                                                                        >
+
+                                                                            <i className="bi bi-x-circle me-1"></i>
+
+                                                                            Deactivate
+
+                                                                        </button>
+
+                                                                    )}
+
+                                                                </div>
+
+                                                            </td>
+
+                                                        </tr>
+
+                                                    )
+                                                )}
+
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+
+                                )}
+
+                            </div>
 
                         </div>
 
@@ -800,6 +641,4 @@ const Categories = () => {
 
 };
 
-
 export default Categories;
-

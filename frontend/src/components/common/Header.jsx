@@ -22,7 +22,10 @@ import {
     MdHome,
     MdShoppingCart,
     MdFavorite,
-    MdAccountCircle
+    MdAccountCircle,
+    MdMenu,
+    MdClose,
+    MdSearch
 } from 'react-icons/md';
 
 import api from '../../services/api';
@@ -93,7 +96,16 @@ const Header = () => {
     const [loadingNotifications, setLoadingNotifications] =
         useState(false);
 
-    const notificationRef =
+    const [showMobileMenu, setShowMobileMenu] =
+        useState(false);
+
+    const [search, setSearch] =
+        useState('');
+
+    const desktopNotificationRef =
+        useRef(null);
+
+    const mobileNotificationRef =
         useRef(null);
 
     const fetchNotifications = async () => {
@@ -156,6 +168,50 @@ const Header = () => {
 
         }
     };
+
+    const handleSearch = () => {
+
+        const value =
+            search.trim();
+
+        setShowMobileMenu(false);
+        setShowNotifications(false);
+
+        if (!value) {
+
+            navigate('/courses');
+
+            return;
+        }
+
+        navigate(
+            `/courses?search=${encodeURIComponent(value)}`
+        );
+    };
+
+    const handleSearchKeyDown = (event) => {
+
+        if (event.key === 'Enter') {
+
+            event.preventDefault();
+
+            handleSearch();
+        }
+    };
+
+    useEffect(() => {
+
+        const params =
+            new URLSearchParams(
+                location.search
+            );
+
+        const searchValue =
+            params.get('search') || '';
+
+        setSearch(searchValue);
+
+    }, [location.search]);
 
     const fetchCartCount = async () => {
 
@@ -332,6 +388,7 @@ const Header = () => {
             }
 
             setShowNotifications(false);
+            setShowMobileMenu(false);
 
             if (notification.link) {
 
@@ -400,11 +457,27 @@ const Header = () => {
         const handleClickOutside =
             (event) => {
 
-                if (
-                    notificationRef.current &&
-                    !notificationRef.current.contains(
+                const desktopElement =
+                    desktopNotificationRef.current;
+
+                const mobileElement =
+                    mobileNotificationRef.current;
+
+                const clickedInsideDesktop =
+                    desktopElement &&
+                    desktopElement.contains(
                         event.target
-                    )
+                    );
+
+                const clickedInsideMobile =
+                    mobileElement &&
+                    mobileElement.contains(
+                        event.target
+                    );
+
+                if (
+                    !clickedInsideDesktop &&
+                    !clickedInsideMobile
                 ) {
 
                     setShowNotifications(
@@ -412,7 +485,6 @@ const Header = () => {
                     );
 
                 }
-
             };
 
         document.addEventListener(
@@ -461,6 +533,9 @@ const Header = () => {
 
     const handleLogout = async () => {
 
+        setShowMobileMenu(false);
+        setShowNotifications(false);
+
         await logout();
 
         setCartCount(0);
@@ -472,7 +547,6 @@ const Header = () => {
                 replace: true
             }
         );
-
     };
 
     const formatNotificationTime =
@@ -492,19 +566,23 @@ const Header = () => {
             ) {
 
                 return date;
-
             }
 
             return notificationDate.toLocaleString();
-
         };
 
     const handleHomeClick = () => {
 
         setShowNotifications(false);
+        setShowMobileMenu(false);
 
         navigate('/');
+    };
 
+    const closeMobileMenu = () => {
+
+        setShowMobileMenu(false);
+        setShowNotifications(false);
     };
 
     return (
@@ -520,9 +598,7 @@ const Header = () => {
                     <Link
                         to="/"
                         className="lms-logo"
-                        onClick={() =>
-                            setShowNotifications(false)
-                        }
+                        onClick={closeMobileMenu}
                     >
 
                         <span className="lms-logo-icon">
@@ -539,22 +615,31 @@ const Header = () => {
 
                     <div className="lms-search-box">
 
-                        <span className="lms-search-icon">
-                            🔍
-                        </span>
+                        <MdSearch
+                            className="lms-search-icon"
+                            size={28}
+                        />
 
                         <input
                             type="text"
                             placeholder="Search courses..."
+                            value={search}
+                            onChange={(event) =>
+                                setSearch(
+                                    event.target.value
+                                )
+                            }
+                            onKeyDown={
+                                handleSearchKeyDown
+                            }
+                            aria-label="Search courses"
                         />
 
                     </div>
 
-                    {/* RIGHT SIDE */}
+                    {/* DESKTOP ACTIONS */}
 
                     <div className="lms-header-actions">
-
-                        {/* WISHLIST */}
 
                         {isStudent && (
 
@@ -564,9 +649,7 @@ const Header = () => {
                                 title="Wishlist"
                             >
 
-                                <MdFavorite
-                                    size={23}
-                                />
+                                <MdFavorite size={23} />
 
                                 {wishlistCount > 0 && (
 
@@ -584,8 +667,6 @@ const Header = () => {
 
                         )}
 
-                        {/* CART */}
-
                         {isStudent && (
 
                             <Link
@@ -594,9 +675,7 @@ const Header = () => {
                                 title="Cart"
                             >
 
-                                <MdShoppingCart
-                                    size={23}
-                                />
+                                <MdShoppingCart size={23} />
 
                                 {cartCount > 0 && (
 
@@ -613,8 +692,6 @@ const Header = () => {
                             </Link>
 
                         )}
-
-                        {/* USER */}
 
                         {isAuthenticated ? (
 
@@ -685,8 +762,6 @@ const Header = () => {
 
                         )}
 
-                        {/* HOME */}
-
                         {showHomeButton && (
 
                             <button
@@ -698,22 +773,18 @@ const Header = () => {
                                 title="Home"
                             >
 
-                                <MdHome
-                                    size={23}
-                                />
+                                <MdHome size={23} />
 
                             </button>
 
                         )}
-
-                        {/* ADMIN NOTIFICATION */}
 
                         {isAdmin && (
 
                             <div
                                 className="lms-notification-wrapper"
                                 ref={
-                                    notificationRef
+                                    desktopNotificationRef
                                 }
                             >
 
@@ -863,7 +934,6 @@ const Header = () => {
                                                             </div>
 
                                                         );
-
                                                     }
                                                 )
 
@@ -878,8 +948,6 @@ const Header = () => {
                             </div>
 
                         )}
-
-                        {/* THEME */}
 
                         <button
                             type="button"
@@ -896,21 +964,15 @@ const Header = () => {
 
                             {theme === 'light' ? (
 
-                                <MdDarkMode
-                                    size={22}
-                                />
+                                <MdDarkMode size={22} />
 
                             ) : (
 
-                                <MdLightMode
-                                    size={22}
-                                />
+                                <MdLightMode size={22} />
 
                             )}
 
                         </button>
-
-                        {/* CONTACT */}
 
                         <Link
                             to="/contact-us"
@@ -920,17 +982,13 @@ const Header = () => {
                             }
                         >
 
-                            <MdEmail
-                                size={18}
-                            />
+                            <MdEmail size={18} />
 
                             <span>
                                 Contact Us
                             </span>
 
                         </Link>
-
-                        {/* LOGOUT */}
 
                         {isAuthenticated && (
 
@@ -941,23 +999,543 @@ const Header = () => {
                                     handleLogout
                                 }
                             >
-
                                 Logout
-
                             </button>
 
                         )}
 
                     </div>
 
+                    {/* MOBILE MENU BUTTON */}
+
+                    <button
+                        type="button"
+                        className="lms-mobile-menu-button"
+                        onClick={() => {
+
+                            setShowMobileMenu(
+                                !showMobileMenu
+                            );
+
+                            setShowNotifications(
+                                false
+                            );
+
+                        }}
+                        aria-label="Toggle menu"
+                    >
+
+                        {showMobileMenu ? (
+                            <MdClose size={28} />
+                        ) : (
+                            <MdMenu size={28} />
+                        )}
+
+                    </button>
+
                 </div>
+
+                {/* MOBILE MENU */}
+
+                {showMobileMenu && (
+
+                    <div className="lms-mobile-menu">
+
+                        <div className="lms-mobile-menu-inner">
+
+                            <div className="lms-mobile-menu-title">
+
+                                <span>
+                                    Menu
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={
+                                        closeMobileMenu
+                                    }
+                                    aria-label="Close menu"
+                                >
+
+                                    <MdClose size={22} />
+
+                                </button>
+
+                            </div>
+
+                            <div className="lms-mobile-menu-list">
+
+                                {isStudent && (
+
+                                    <Link
+                                        to="/wishlist"
+                                        className="lms-mobile-menu-item"
+                                        onClick={
+                                            closeMobileMenu
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon wishlist-icon">
+
+                                            <MdFavorite
+                                                size={21}
+                                            />
+
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+                                            Wishlist
+                                        </span>
+
+                                        {wishlistCount > 0 && (
+
+                                            <span className="lms-mobile-badge wishlist">
+
+                                                {wishlistCount > 99
+                                                    ? '99+'
+                                                    : wishlistCount}
+
+                                            </span>
+
+                                        )}
+
+                                    </Link>
+
+                                )}
+
+                                {isStudent && (
+
+                                    <Link
+                                        to="/cart"
+                                        className="lms-mobile-menu-item"
+                                        onClick={
+                                            closeMobileMenu
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon cart-icon">
+
+                                            <MdShoppingCart
+                                                size={21}
+                                            />
+
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+                                            Cart
+                                        </span>
+
+                                        {cartCount > 0 && (
+
+                                            <span className="lms-mobile-badge cart">
+
+                                                {cartCount > 99
+                                                    ? '99+'
+                                                    : cartCount}
+
+                                            </span>
+
+                                        )}
+
+                                    </Link>
+
+                                )}
+
+                                {isAuthenticated ? (
+
+                                    <Link
+                                        to={accountPath}
+                                        className="lms-mobile-menu-item"
+                                        onClick={
+                                            closeMobileMenu
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon account-icon">
+
+                                            {avatar ? (
+
+                                                <img
+                                                    src={avatar}
+                                                    alt="Profile"
+                                                    className="lms-mobile-avatar"
+                                                    onError={(event) => {
+
+                                                        event.currentTarget.style.display =
+                                                            'none';
+
+                                                        if (
+                                                            event.currentTarget
+                                                                .nextElementSibling
+                                                        ) {
+
+                                                            event.currentTarget
+                                                                .nextElementSibling
+                                                                .style.display =
+                                                                'block';
+
+                                                        }
+
+                                                    }}
+                                                />
+
+                                            ) : null}
+
+                                            <MdAccountCircle
+                                                size={22}
+                                                style={{
+                                                    display: avatar
+                                                        ? 'none'
+                                                        : 'block'
+                                                }}
+                                            />
+
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+
+                                            {user?.name ||
+                                                'Account'}
+
+                                        </span>
+
+                                    </Link>
+
+                                ) : (
+
+                                    <Link
+                                        to="/login"
+                                        className="lms-mobile-menu-item"
+                                        onClick={
+                                            closeMobileMenu
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon account-icon">
+
+                                            <MdAccountCircle
+                                                size={22}
+                                            />
+
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+                                            Login
+                                        </span>
+
+                                    </Link>
+
+                                )}
+
+                                {showHomeButton && (
+
+                                    <button
+                                        type="button"
+                                        className="lms-mobile-menu-item"
+                                        onClick={
+                                            handleHomeClick
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon home-icon">
+
+                                            <MdHome
+                                                size={22}
+                                            />
+
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+                                            Home
+                                        </span>
+
+                                    </button>
+
+                                )}
+
+                                {isAdmin && (
+
+                                    <div
+                                        className="lms-mobile-notification-section"
+                                        ref={
+                                            mobileNotificationRef
+                                        }
+                                    >
+
+                                        <button
+                                            type="button"
+                                            className="lms-mobile-menu-item"
+                                            onClick={
+                                                handleNotificationClick
+                                            }
+                                        >
+
+                                            <span className="lms-mobile-menu-icon notification-icon">
+
+                                                <MdNotifications
+                                                    size={22}
+                                                />
+
+                                            </span>
+
+                                            <span className="lms-mobile-menu-text">
+                                                Notifications
+                                            </span>
+
+                                            {unreadCount > 0 && (
+
+                                                <span className="lms-mobile-badge notification">
+
+                                                    {unreadCount > 99
+                                                        ? '99+'
+                                                        : unreadCount}
+
+                                                </span>
+
+                                            )}
+
+                                            <span
+                                                className={`lms-mobile-notification-arrow ${
+                                                    showNotifications
+                                                        ? 'open'
+                                                        : ''
+                                                }`}
+                                            >
+                                                ›
+                                            </span>
+
+                                        </button>
+
+                                        {showNotifications && (
+
+                                            <div className="lms-mobile-notification-dropdown">
+
+                                                <div className="lms-notification-header">
+
+                                                    <div>
+
+                                                        <MdNotifications
+                                                            size={21}
+                                                        />
+
+                                                        <strong>
+                                                            Notifications
+                                                        </strong>
+
+                                                    </div>
+
+                                                    {unreadCount > 0 && (
+
+                                                        <span>
+                                                            {unreadCount} new
+                                                        </span>
+
+                                                    )}
+
+                                                </div>
+
+                                                <div className="lms-notification-list">
+
+                                                    {loadingNotifications ? (
+
+                                                        <div className="lms-notification-empty">
+                                                            Loading notifications...
+                                                        </div>
+
+                                                    ) : notifications.length === 0 ? (
+
+                                                        <div className="lms-notification-empty">
+
+                                                            <MdNotifications
+                                                                size={35}
+                                                            />
+
+                                                            <div>
+                                                                No notifications
+                                                            </div>
+
+                                                        </div>
+
+                                                    ) : (
+
+                                                        notifications.map(
+                                                            (notification) => {
+
+                                                                const isUnread =
+                                                                    Number(
+                                                                        notification.is_read
+                                                                    ) === 0;
+
+                                                                return (
+
+                                                                    <div
+                                                                        key={
+                                                                            notification.id
+                                                                        }
+                                                                        className={`lms-notification-item ${
+                                                                            isUnread
+                                                                                ? 'unread'
+                                                                                : ''
+                                                                        }`}
+                                                                        onClick={() =>
+                                                                            handleSingleNotificationClick(
+                                                                                notification
+                                                                            )
+                                                                        }
+                                                                    >
+
+                                                                        <MdNotifications
+                                                                            size={21}
+                                                                        />
+
+                                                                        <div>
+
+                                                                            <strong>
+                                                                                {
+                                                                                    notification.title
+                                                                                }
+                                                                            </strong>
+
+                                                                            <p>
+                                                                                {
+                                                                                    notification.message
+                                                                                }
+                                                                            </p>
+
+                                                                            {notification.created_at && (
+
+                                                                                <small>
+                                                                                    {
+                                                                                        formatNotificationTime(
+                                                                                            notification.created_at
+                                                                                        )
+                                                                                    }
+                                                                                </small>
+
+                                                                            )}
+
+                                                                        </div>
+
+                                                                        {isUnread && (
+
+                                                                            <span className="notification-dot" />
+
+                                                                        )}
+
+                                                                    </div>
+
+                                                                );
+                                                            }
+                                                        )
+
+                                                    )}
+
+                                                </div>
+
+                                            </div>
+
+                                        )}
+
+                                    </div>
+
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="lms-mobile-menu-item"
+                                    onClick={() => {
+
+                                        toggleTheme();
+                                        setShowMobileMenu(false);
+
+                                    }}
+                                >
+
+                                    <span className="lms-mobile-menu-icon theme-icon">
+
+                                        {theme === 'light' ? (
+
+                                            <MdDarkMode
+                                                size={22}
+                                            />
+
+                                        ) : (
+
+                                            <MdLightMode
+                                                size={22}
+                                            />
+
+                                        )}
+
+                                    </span>
+
+                                    <span className="lms-mobile-menu-text">
+
+                                        {theme === 'light'
+                                            ? 'Dark Mode'
+                                            : 'Light Mode'}
+
+                                    </span>
+
+                                </button>
+
+                                <Link
+                                    to="/contact-us"
+                                    className="lms-mobile-menu-item"
+                                    onClick={
+                                        closeMobileMenu
+                                    }
+                                >
+
+                                    <span className="lms-mobile-menu-icon contact-icon">
+
+                                        <MdEmail
+                                            size={22}
+                                        />
+
+                                    </span>
+
+                                    <span className="lms-mobile-menu-text">
+                                        Contact Us
+                                    </span>
+
+                                </Link>
+
+                                {isAuthenticated && (
+
+                                    <button
+                                        type="button"
+                                        className="lms-mobile-menu-item lms-mobile-logout"
+                                        onClick={
+                                            handleLogout
+                                        }
+                                    >
+
+                                        <span className="lms-mobile-menu-icon logout-icon">
+                                            ↪
+                                        </span>
+
+                                        <span className="lms-mobile-menu-text">
+                                            Logout
+                                        </span>
+
+                                    </button>
+
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                )}
 
             </div>
 
         </header>
 
     );
-
 };
 
 export default Header;

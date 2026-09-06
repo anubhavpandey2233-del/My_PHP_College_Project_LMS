@@ -1,0 +1,617 @@
+.subcategories-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    color: var(--theme-text);
+    overflow-x: hidden;
+}
+
+.subcategories-page-header {
+    width: 100%;
+    min-width: 0;
+}
+
+.subcategories-page-header h2 {
+    color: var(--theme-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.subcategories-page-header p {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.subcategories-content {
+    width: 100%;
+    margin: 0;
+}
+
+.subcategories-form-column,
+.subcategories-list-column {
+    min-width: 0;
+}
+
+.subcategories-form-card,
+.subcategories-list-card {
+    width: 100%;
+    height: 100%;
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border) !important;
+    overflow: hidden;
+}
+
+.subcategories-form-card .card-body,
+.subcategories-list-card .card-body {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+.subcategories-form-card h5,
+.subcategories-list-card h5 {
+    color: var(--theme-text);
+    font-weight: 600;
+}
+
+.subcategories-page .form-label {
+    color: var(--theme-text);
+    font-weight: 500;
+    margin-bottom: 7px;
+}
+
+.subcategories-page .form-control,
+.subcategories-page .form-select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: var(--theme-input);
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border);
+}
+
+.subcategories-page .form-control::placeholder {
+    color: var(--theme-text);
+    opacity: 0.5;
+}
+
+.subcategories-page .form-control:focus,
+.subcategories-page .form-select:focus {
+    background: var(--theme-input);
+    color: var(--theme-text);
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.subcategories-page textarea.form-control {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.subcategories-form-buttons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.subcategories-form-buttons .btn {
+    min-height: 40px;
+}
+
+.subcategories-list-header {
+    width: 100%;
+    gap: 15px;
+}
+
+.subcategories-list-header .badge {
+    flex-shrink: 0;
+}
+
+.subcategories-filters {
+    width: 100%;
+}
+
+.subcategories-filter-column {
+    min-width: 0;
+}
+
+.subcategories-loading {
+    width: 100%;
+}
+
+.subcategories-empty {
+    width: 100%;
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.subcategories-page .text-muted {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.subcategories-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.subcategories-table {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 0;
+    color: var(--theme-text);
+    vertical-align: middle;
+}
+
+.subcategories-table th {
+    background: var(--theme-bg);
+    color: var(--theme-text);
+    border-color: var(--theme-border);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 13px 10px;
+}
+
+.subcategories-table td {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    border-color: var(--theme-border);
+    padding: 13px 10px;
+}
+
+.subcategories-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.subcategories-table tbody tr:hover td {
+    background: var(--theme-bg);
+}
+
+.subcategories-name {
+    color: var(--theme-text);
+    font-weight: 600;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.subcategories-slug {
+    display: block;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subcategories-category-name {
+    color: var(--theme-text);
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.subcategories-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 7px;
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.subcategories-actions .btn {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 5px 10px;
+}
+
+/* =========================
+   STATUS BADGE
+========================= */
+
+.subcategories-table td:nth-child(4) {
+    white-space: nowrap;
+}
+
+.subcategories-table td:nth-child(4) .badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: fit-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    justify-self: start;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* =========================
+   LARGE DESKTOP
+========================= */
+
+@media (max-width: 1199px) {
+
+    .subcategories-form-card .card-body,
+    .subcategories-list-card .card-body {
+        padding: 1.25rem !important;
+    }
+
+    .subcategories-table th,
+    .subcategories-table td {
+        padding: 11px 8px;
+    }
+
+    .subcategories-slug {
+        max-width: 120px;
+    }
+
+    .subcategories-actions {
+        gap: 5px;
+    }
+
+    .subcategories-actions .btn {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .subcategories-table td:nth-child(4) {
+        width: 85px;
+    }
+
+    .subcategories-table td:nth-child(5) {
+        width: 145px;
+    }
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 991px) {
+
+    .subcategories-content {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .subcategories-form-column,
+    .subcategories-list-column {
+        width: 100%;
+    }
+
+    .subcategories-form-card,
+    .subcategories-list-card {
+        height: auto;
+    }
+
+    .subcategories-table-wrapper {
+        width: 100%;
+        overflow: visible;
+    }
+
+    .subcategories-table {
+        width: 100%;
+        min-width: 0;
+        display: block;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .subcategories-table thead {
+        display: none;
+    }
+
+    .subcategories-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .subcategories-table tbody tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 16px;
+        padding: 8px 14px;
+        background: var(--theme-surface);
+        border: 1px solid var(--theme-border);
+        border-radius: 10px;
+        box-sizing: border-box;
+    }
+
+    .subcategories-table tbody tr:hover td {
+        background: transparent;
+    }
+
+    .subcategories-table td {
+        display: grid;
+        grid-template-columns: 115px minmax(0, 1fr);
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        padding: 10px 0;
+        border: 0;
+        background: transparent;
+        color: var(--theme-text);
+        white-space: normal;
+        word-break: break-word;
+        box-sizing: border-box;
+    }
+
+    .subcategories-table td::before {
+        color: var(--theme-text);
+        opacity: 0.65;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .subcategories-table td:nth-child(1)::before {
+        content: "#";
+    }
+
+    .subcategories-table td:nth-child(2)::before {
+        content: "Subcategory";
+    }
+
+    .subcategories-table td:nth-child(3)::before {
+        content: "Category";
+    }
+
+    .subcategories-table td:nth-child(4)::before {
+        content: "Status";
+    }
+
+    .subcategories-table td:nth-child(5)::before {
+        content: "Action";
+    }
+
+    .subcategories-name {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .subcategories-slug {
+        display: block;
+        max-width: 100%;
+        overflow: visible;
+        text-overflow: unset;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .subcategories-category-name {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .subcategories-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 7px;
+        width: max-content;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .subcategories-actions .btn {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: max-content;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .subcategories-table td:nth-child(4) {
+        white-space: normal;
+    }
+
+    .subcategories-table td:nth-child(4) .badge {
+        display: inline-flex !important;
+        width: fit-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        justify-self: start;
+        flex: 0 0 auto;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 767px) {
+
+    .subcategories-page-header {
+        margin-bottom: 20px !important;
+    }
+
+    .subcategories-page-header h2 {
+        font-size: 24px;
+    }
+
+    .subcategories-page-header p {
+        font-size: 14px;
+    }
+
+    .subcategories-form-card .card-body,
+    .subcategories-list-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .subcategories-list-header {
+        margin-bottom: 18px !important;
+    }
+
+    .subcategories-list-header h5 {
+        font-size: 18px;
+    }
+
+    .subcategories-table tbody tr {
+        padding: 7px 12px;
+        margin-bottom: 14px;
+    }
+
+    .subcategories-table td {
+        grid-template-columns: 105px minmax(0, 1fr);
+        padding: 9px 0;
+        font-size: 13px;
+    }
+
+    .subcategories-table td::before {
+        font-size: 12px;
+    }
+
+    .subcategories-actions {
+        width: max-content;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        gap: 6px;
+    }
+
+    .subcategories-actions .btn {
+        width: auto !important;
+        min-width: 0 !important;
+        padding: 5px 9px;
+        font-size: 12px;
+    }
+
+    .subcategories-table td:nth-child(4) .badge {
+        width: fit-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width: 575px) {
+
+    .subcategories-page-header h2 {
+        font-size: 22px;
+    }
+
+    .subcategories-page-header p {
+        font-size: 13px;
+    }
+
+    .subcategories-form-card .card-body,
+    .subcategories-list-card .card-body {
+        padding: 0.9rem !important;
+    }
+
+    .subcategories-form-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px !important;
+    }
+
+    .subcategories-form-buttons .btn {
+        width: 100%;
+    }
+
+    .subcategories-list-header h5 {
+        font-size: 17px;
+    }
+
+    .subcategories-table tbody tr {
+        padding: 6px 10px;
+    }
+
+    .subcategories-table td {
+        grid-template-columns: 95px minmax(0, 1fr);
+        padding: 8px 0;
+        font-size: 13px;
+    }
+
+    .subcategories-actions {
+        width: max-content;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        gap: 6px;
+    }
+
+    .subcategories-actions .btn {
+        width: auto !important;
+        min-width: 0 !important;
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media (max-width: 400px) {
+
+    .subcategories-page-header h2 {
+        font-size: 20px;
+    }
+
+    .subcategories-page-header p {
+        font-size: 12px;
+    }
+
+    .subcategories-form-card .card-body,
+    .subcategories-list-card .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .subcategories-page .form-control,
+    .subcategories-page .form-select {
+        font-size: 14px;
+    }
+
+    .subcategories-table tbody tr {
+        padding: 5px 9px;
+    }
+
+    .subcategories-table td {
+        grid-template-columns: 85px minmax(0, 1fr);
+        padding: 8px 0;
+        font-size: 12px;
+    }
+
+    .subcategories-table td::before {
+        font-size: 11px;
+    }
+
+    .subcategories-actions {
+        gap: 5px !important;
+    }
+
+    .subcategories-actions .btn {
+        width: auto !important;
+        min-width: 0 !important;
+        padding: 5px 7px;
+        font-size: 11px;
+    }
+
+    .subcategories-table td:nth-child(4) .badge {
+        width: fit-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+}

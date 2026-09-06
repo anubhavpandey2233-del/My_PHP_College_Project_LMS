@@ -1,4 +1,3 @@
-
 <?php
 
 // ===============================
@@ -53,7 +52,17 @@ try {
             c.is_featured,
             c.total_lessons,
             c.total_students,
-            c.average_rating,
+
+            COALESCE(
+                (
+                    SELECT AVG(r.rating)
+                    FROM reviews r
+                    WHERE r.course_id = c.id
+                      AND r.status = 'approved'
+                ),
+                0
+            ) AS average_rating,
+
             c.created_at,
             c.updated_at,
 
@@ -100,4 +109,3 @@ try {
         500
     );
 }
-

@@ -1,0 +1,234 @@
+.student-my-courses-page {
+    width: 100%;
+    min-width: 0;
+}
+
+.student-my-courses-header {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.student-my-courses-header h2 {
+    margin: 0 0 20px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.student-course-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.student-course-filter .btn {
+    white-space: nowrap;
+}
+
+.student-my-courses-grid {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.student-course-col {
+    display: flex;
+    min-width: 0;
+}
+
+.student-course-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.student-course-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f1f3f5;
+    position: relative;
+}
+
+.student-course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.student-course-thumbnail-fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #6c757d;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-course-body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.student-course-title {
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.student-course-teacher {
+    margin-bottom: 16px;
+}
+
+.student-course-progress {
+    height: 10px;
+    margin-bottom: 8px;
+}
+
+.student-course-progress-text {
+    display: block;
+}
+
+.student-course-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.student-course-actions .btn {
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+.student-no-courses {
+    width: 100%;
+}
+
+.student-no-courses-card {
+    width: 100%;
+    border-radius: 16px;
+}
+
+.student-no-courses-card .card-body {
+    padding: 50px 20px;
+}
+
+/* =========================
+   3 CARDS
+========================= */
+
+@media (min-width: 1301px) {
+    .student-course-col {
+        width: calc((100% - 48px) / 3);
+        flex: 0 0 calc((100% - 48px) / 3);
+    }
+
+    .student-course-image {
+        height: 200px;
+    }
+}
+
+/* =========================
+   2 CARDS
+========================= */
+
+@media (min-width: 850px) and (max-width: 1300px) {
+    .student-course-col {
+        width: calc((100% - 24px) / 2);
+        flex: 0 0 calc((100% - 24px) / 2);
+    }
+
+    .student-course-image {
+        height: 190px;
+    }
+
+    .student-course-body {
+        padding: 20px;
+    }
+}
+
+/* =========================
+   1 CARD
+========================= */
+
+@media (min-width: 320px) and (max-width: 849px) {
+    .student-course-col {
+        width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .student-course-image {
+        height: 190px;
+    }
+
+    .student-course-body {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .student-my-courses-header h2 {
+        font-size: 25px;
+    }
+
+    .student-course-filter {
+        width: 100%;
+    }
+
+    .student-course-filter .btn {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 500px) {
+    .student-course-image {
+        height: 180px;
+    }
+
+    .student-course-body {
+        padding: 18px;
+    }
+
+    .student-my-courses-header h2 {
+        font-size: 24px;
+    }
+
+    .student-course-actions {
+        gap: 8px;
+    }
+
+    .student-course-actions .btn {
+        flex: 1 1 calc(50% - 4px);
+    }
+}
+
+@media (max-width: 360px) {
+    .student-course-image {
+        height: 160px;
+    }
+
+    .student-course-body {
+        padding: 16px;
+    }
+
+    .student-course-actions {
+        gap: 6px;
+    }
+
+    .student-course-actions .btn {
+        font-size: 12px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}

@@ -42,7 +42,7 @@
     background: #5624d0;
     color: #fff;
     border-radius: 8px;
-    margin-bottom: 12px;
+    margin: 0 0 12px;
 }
 
 .footer-brand h4 {
@@ -73,6 +73,7 @@
 .footer-socials {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
     margin-top: 22px;
 }
@@ -223,7 +224,7 @@
 
 /* =========================
    992px
-   BRAND + 3 SECTIONS
+   BRAND EXACT CENTER
 ========================= */
 
 @media (max-width: 992px) {
@@ -238,46 +239,81 @@
         padding: 45px 0 35px;
     }
 
-    /* Brand */
+    /* =========================
+       BRAND CENTER
+    ========================= */
+
     .footer-brand {
-        grid-column: 1 / -1;
-        text-align: center;
-        margin-bottom: 5px;
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        min-width: 0;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        margin: 0 auto 10px !important;
+        justify-self: stretch !important;
     }
 
     .footer-logo {
-        margin-left: auto;
-        margin-right: auto;
+        margin: 0 auto 12px !important;
+    }
+
+    .footer-brand h4 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer-brand > span {
+        width: 100%;
+        text-align: center;
     }
 
     .footer-brand p {
-        margin-left: auto;
-        margin-right: auto;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto !important;
+        text-align: center;
     }
 
     .footer-socials {
-        justify-content: center;
+        width: 100%;
+        justify-content: center !important;
+        margin: 22px auto 0;
     }
 
-    /* Quick Links */
+    /* =========================
+       QUICK LINKS
+    ========================= */
+
     .footer-section:nth-child(2) {
         grid-column: 1;
         text-align: center;
         justify-self: center;
+        width: 100%;
     }
 
-    /* Support */
+    /* =========================
+       SUPPORT
+    ========================= */
+
     .footer-section:nth-child(3) {
         grid-column: 2;
         text-align: center;
         justify-self: center;
+        width: 100%;
     }
 
-    /* Contact */
+    /* =========================
+       CONTACT
+    ========================= */
+
     .footer-section:nth-child(4) {
         grid-column: 3;
         text-align: center;
         justify-self: center;
+        width: 100%;
     }
 
     .footer-section a {
@@ -293,8 +329,6 @@
 
 /* =========================
    768px
-   QUICK + SUPPORT
-   CONTACT CENTER
 ========================= */
 
 @media (max-width: 768px) {
@@ -309,13 +343,48 @@
         padding: 40px 0 30px;
     }
 
-    /* Brand */
+    /* =========================
+       BRAND CENTER
+    ========================= */
+
     .footer-brand {
-        grid-column: 1 / -1;
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        margin: 0 auto 5px !important;
+    }
+
+    .footer-logo {
+        margin: 0 auto 12px !important;
+    }
+
+    .footer-brand h4,
+    .footer-brand > span {
+        width: 100%;
         text-align: center;
     }
 
-    /* Quick Links */
+    .footer-brand p {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto !important;
+        text-align: center;
+    }
+
+    .footer-socials {
+        width: 100%;
+        justify-content: center !important;
+        margin: 22px auto 0;
+    }
+
+    /* =========================
+       QUICK LINKS
+    ========================= */
+
     .footer-section:nth-child(2) {
         grid-column: 1;
         text-align: center;
@@ -323,7 +392,10 @@
         width: 100%;
     }
 
-    /* Support */
+    /* =========================
+       SUPPORT
+    ========================= */
+
     .footer-section:nth-child(3) {
         grid-column: 2;
         text-align: center;
@@ -331,7 +403,10 @@
         width: 100%;
     }
 
-    /* Contact ALWAYS CENTER */
+    /* =========================
+       CONTACT CENTER
+    ========================= */
+
     .footer-section:nth-child(4) {
         grid-column: 1 / -1;
         text-align: center;
@@ -349,7 +424,10 @@
         margin-right: auto;
     }
 
-    /* Bottom */
+    /* =========================
+       BOTTOM
+    ========================= */
+
     .footer-bottom {
         flex-direction: column;
         justify-content: center;
@@ -374,9 +452,46 @@
         padding: 35px 0 25px;
     }
 
+    /* =========================
+       BRAND CENTER
+    ========================= */
+
     .footer-brand {
-        grid-column: 1 / -1;
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
     }
+
+    .footer-logo {
+        margin: 0 auto 12px !important;
+    }
+
+    .footer-brand h4,
+    .footer-brand > span {
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer-brand p {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto !important;
+        text-align: center;
+    }
+
+    .footer-socials {
+        width: 100%;
+        justify-content: center !important;
+        margin: 20px auto 0;
+    }
+
+    /* =========================
+       SECTIONS
+    ========================= */
 
     .footer-section:nth-child(2) {
         grid-column: 1;
@@ -410,7 +525,6 @@
 
 /* =========================
    480px
-   SINGLE COLUMN
 ========================= */
 
 @media (max-width: 480px) {
@@ -425,10 +539,43 @@
         padding: 30px 0 22px;
     }
 
+    /* =========================
+       BRAND
+    ========================= */
+
     .footer-brand {
-        grid-column: 1;
+        grid-column: 1 !important;
+        width: 100% !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+
+    .footer-logo {
+        margin: 0 auto 12px !important;
+    }
+
+    .footer-brand h4,
+    .footer-brand > span,
+    .footer-brand p {
         text-align: center;
     }
+
+    .footer-brand p {
+        max-width: 330px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .footer-socials {
+        justify-content: center !important;
+        gap: 8px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* =========================
+       ALL SECTIONS
+    ========================= */
 
     .footer-section:nth-child(2),
     .footer-section:nth-child(3),
@@ -443,11 +590,6 @@
     .footer-contact {
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .footer-socials {
-        justify-content: center;
-        gap: 8px;
     }
 
     .footer-socials a {

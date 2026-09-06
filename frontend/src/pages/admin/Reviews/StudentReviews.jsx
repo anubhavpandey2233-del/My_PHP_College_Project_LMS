@@ -1,18 +1,14 @@
-
 import { useEffect, useState } from 'react';
 import api from '../../../services/api';
 import DashboardLayout from '../../../layouts/DashboardLayout';
 import Loading from '../../../components/common/Loading';
+import './StudentReviews.scss';
 
 const StudentReviews = () => {
 
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-
-    // =====================================
-    // EDIT STATE
-    // =====================================
 
     const [editId, setEditId] = useState(null);
 
@@ -22,11 +18,6 @@ const StudentReviews = () => {
     });
 
     const [saving, setSaving] = useState(false);
-
-
-    // =====================================
-    // FETCH REVIEWS
-    // =====================================
 
     const fetchReviews = async () => {
 
@@ -85,21 +76,11 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // LOAD REVIEWS
-    // =====================================
-
     useEffect(() => {
 
         fetchReviews();
 
     }, []);
-
-
-    // =====================================
-    // RENDER STARS
-    // =====================================
 
     const renderStars = (rating) => {
 
@@ -112,76 +93,48 @@ const StudentReviews = () => {
         );
 
         return (
-
-            <span
-                style={{
-                    color: '#ffc107',
-                    fontSize: '18px',
-                    whiteSpace: 'nowrap'
-                }}
-            >
-
-                {'★'.repeat(value)}
-
-                {'☆'.repeat(5 - value)}
-
+            <span className="admin-review-stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star}>
+                        {star <= value ? '★' : '☆'}
+                    </span>
+                ))}
             </span>
-
         );
-
     };
-
-
-    // =====================================
-    // STATUS BADGE
-    // =====================================
 
     const getStatusBadge = (status) => {
 
         const value =
             String(status || '').toLowerCase();
 
-
         if (value === 'approved') {
 
             return (
-
                 <span className="badge bg-success">
                     Approved
                 </span>
-
             );
 
         }
-
 
         if (value === 'rejected') {
 
             return (
-
                 <span className="badge bg-danger">
                     Rejected
                 </span>
-
             );
 
         }
 
-
         return (
-
             <span className="badge bg-warning text-dark">
                 Pending
             </span>
-
         );
 
     };
-
-
-    // =====================================
-    // DATE
-    // =====================================
 
     const formatDate = (date) => {
 
@@ -206,11 +159,6 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // APPROVE REVIEW
-    // =====================================
-
     const handleApprove = async (review) => {
 
         const confirmApprove = window.confirm(
@@ -220,7 +168,6 @@ const StudentReviews = () => {
         if (!confirmApprove) {
             return;
         }
-
 
         try {
 
@@ -235,7 +182,6 @@ const StudentReviews = () => {
                 }
             );
 
-
             if (res.data.status) {
 
                 alert(
@@ -245,7 +191,7 @@ const StudentReviews = () => {
                 setReviews((prev) =>
                     prev.map((item) =>
                         Number(item.id) ===
-                        Number(review.id)
+                            Number(review.id)
                             ? {
                                 ...item,
                                 status: 'approved'
@@ -279,11 +225,6 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // START EDIT
-    // =====================================
-
     const handleEdit = (review) => {
 
         setEditId(review.id);
@@ -298,11 +239,6 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // EDIT FORM CHANGE
-    // =====================================
-
     const handleEditChange = (e) => {
 
         const {
@@ -316,11 +252,6 @@ const StudentReviews = () => {
         }));
 
     };
-
-
-    // =====================================
-    // UPDATE REVIEW
-    // =====================================
 
     const handleUpdate = async (review) => {
 
@@ -337,11 +268,9 @@ const StudentReviews = () => {
 
         }
 
-
         try {
 
             setSaving(true);
-
 
             const res = await api.post(
                 '/reviews/update.php',
@@ -355,18 +284,16 @@ const StudentReviews = () => {
                 }
             );
 
-
             if (res.data.status) {
 
                 alert(
                     'Review updated successfully'
                 );
 
-
                 setReviews((prev) =>
                     prev.map((item) =>
                         Number(item.id) ===
-                        Number(review.id)
+                            Number(review.id)
                             ? {
                                 ...item,
                                 rating:
@@ -377,7 +304,6 @@ const StudentReviews = () => {
                             : item
                     )
                 );
-
 
                 setEditId(null);
 
@@ -415,11 +341,6 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // CANCEL EDIT
-    // =====================================
-
     const handleCancelEdit = () => {
 
         setEditId(null);
@@ -431,11 +352,6 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // DELETE REVIEW
-    // =====================================
-
     const handleDelete = async (review) => {
 
         const confirmDelete = window.confirm(
@@ -446,7 +362,6 @@ const StudentReviews = () => {
             return;
         }
 
-
         try {
 
             const res = await api.post(
@@ -456,13 +371,11 @@ const StudentReviews = () => {
                 }
             );
 
-
             if (res.data.status) {
 
                 alert(
                     'Review deleted successfully'
                 );
-
 
                 setReviews((prev) =>
                     prev.filter(
@@ -497,499 +410,411 @@ const StudentReviews = () => {
 
     };
 
-
-    // =====================================
-    // PAGE
-    // =====================================
-
     return (
 
         <DashboardLayout>
 
-            {/* =================================
-                PAGE HEADER
-            ================================= */}
+            <div className="admin-reviews-page">
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="admin-reviews-header d-flex justify-content-between align-items-center mb-4">
 
-                <div>
+                    <div>
+                        <h2 className="mb-1">
+                            Reviews
+                        </h2>
 
-                    <h2 className="mb-1">
-                        Reviews
-                    </h2>
+                        <p className="text-muted mb-0">
+                            View and manage student course reviews
+                        </p>
+                    </div>
 
-                    <p className="text-muted mb-0">
-                        View and manage student course reviews
-                    </p>
+                    <button
+                        type="button"
+                        className="btn btn-outline-primary admin-reviews-refresh"
+                        onClick={fetchReviews}
+                        disabled={loading}
+                    >
+                        <i className="bi bi-arrow-clockwise me-2"></i>
 
-                </div>
-
-
-                <button
-                    type="button"
-                    className="btn btn-outline-primary"
-                    onClick={fetchReviews}
-                    disabled={loading}
-                >
-
-                    <i className="bi bi-arrow-clockwise me-2"></i>
-
-                    {loading
-                        ? 'Loading...'
-                        : 'Refresh'}
-
-                </button>
-
-            </div>
-
-
-            {/* =================================
-                ERROR
-            ================================= */}
-
-            {error && (
-
-                <div className="alert alert-danger">
-
-                    <i className="bi bi-exclamation-triangle me-2"></i>
-
-                    {error}
+                        {loading
+                            ? 'Loading...'
+                            : 'Refresh'}
+                    </button>
 
                 </div>
 
-            )}
+                {error && (
 
+                    <div className="alert alert-danger admin-reviews-alert">
 
-            {/* =================================
-                REVIEW CARD
-            ================================= */}
+                        <i className="bi bi-exclamation-triangle me-2"></i>
 
-            <div className="card shadow-sm border-0">
-
-                <div className="card-body p-4">
-
-
-                    {/* TOP */}
-
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-
-                        <h5 className="mb-0">
-                            Student Reviews
-                        </h5>
-
-
-                        <span className="badge bg-primary">
-                            {reviews.length}
-                        </span>
+                        {error}
 
                     </div>
 
+                )}
 
-                    {/* =================================
-                        LOADING
-                    ================================= */}
+                <div className="card shadow-sm border-0 admin-reviews-card">
 
-                    {loading ? (
+                    <div className="card-body p-4">
 
-                        <Loading />
+                        <div className="admin-reviews-card-header d-flex justify-content-between align-items-center mb-4">
 
-                    ) : reviews.length === 0 ? (
-
-                        <div className="text-center py-5 text-muted">
-
-                            <i
-                                className="bi bi-star fs-1 d-block mb-3"
-                            ></i>
-
-                            <h5>
-                                No reviews found
+                            <h5 className="mb-0">
+                                Student Reviews
                             </h5>
 
-                            <p className="mb-0">
-                                Student reviews will appear here.
-                            </p>
+                            <span className="badge bg-primary">
+                                {reviews.length}
+                            </span>
 
                         </div>
 
-                    ) : (
+                        {loading ? (
 
-                        <div className="table-responsive">
+                            <Loading />
 
-                            <table className="table table-hover align-middle">
+                        ) : reviews.length === 0 ? (
 
-                                <thead>
+                            <div className="text-center py-5 text-muted">
 
-                                    <tr>
+                                <i
+                                    className="bi bi-star fs-1 d-block mb-3"
+                                ></i>
 
-                                        <th>
-                                            #
-                                        </th>
+                                <h5>
+                                    No reviews found
+                                </h5>
 
-                                        <th>
-                                            Student
-                                        </th>
+                                <p className="mb-0">
+                                    Student reviews will appear here.
+                                </p>
 
-                                        <th>
-                                            Course
-                                        </th>
+                            </div>
 
-                                        <th>
-                                            Rating
-                                        </th>
+                        ) : (
 
-                                        <th>
-                                            Review
-                                        </th>
+                            <div className="admin-reviews-table-wrapper">
 
-                                        <th>
-                                            Status
-                                        </th>
+                                <table className="table table-hover align-middle admin-reviews-table">
 
-                                        <th>
-                                            Date
-                                        </th>
+                                    <thead>
 
-                                        <th>
-                                            Actions
-                                        </th>
+                                        <tr>
 
-                                    </tr>
+                                            <th>#</th>
+                                            <th>Student</th>
+                                            <th>Course</th>
+                                            <th>Rating</th>
+                                            <th>Review</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
 
-                                </thead>
+                                        </tr>
 
+                                    </thead>
 
-                                <tbody>
+                                    <tbody>
 
-                                    {reviews.map(
-                                        (review, index) => (
+                                        {reviews.map(
+                                            (review, index) => (
 
-                                            <tr
-                                                key={
-                                                    review.id ||
-                                                    index
-                                                }
-                                            >
+                                                <tr
+                                                    key={
+                                                        review.id ||
+                                                        index
+                                                    }
+                                                >
 
-                                                {/* # */}
+                                                    <td data-label="#">
+                                                        {index + 1}
+                                                    </td>
 
-                                                <td>
-                                                    {index + 1}
-                                                </td>
+                                                    <td data-label="Student">
 
+                                                        <div className="admin-review-student">
 
-                                                {/* STUDENT */}
+                                                            <div className="fw-semibold admin-review-student-name">
 
-                                                <td>
-
-                                                    <div className="fw-semibold">
-
-                                                        {
-                                                            review.student_name ||
-                                                            review.name ||
-                                                            '-'
-                                                        }
-
-                                                    </div>
-
-
-                                                    {(
-                                                        review.student_email ||
-                                                        review.email
-                                                    ) && (
-
-                                                        <small className="text-muted">
-
-                                                            {
-                                                                review.student_email ||
-                                                                review.email
-                                                            }
-
-                                                        </small>
-
-                                                    )}
-
-                                                </td>
-
-
-                                                {/* COURSE */}
-
-                                                <td>
-
-                                                    <span className="fw-semibold">
-
-                                                        {
-                                                            review.course_title ||
-                                                            review.title ||
-                                                            '-'
-                                                        }
-
-                                                    </span>
-
-                                                </td>
-
-
-                                                {/* RATING */}
-
-                                                <td>
-
-                                                    {editId === review.id ? (
-
-                                                        <select
-                                                            name="rating"
-                                                            className="form-select form-select-sm"
-                                                            value={
-                                                                editForm.rating
-                                                            }
-                                                            onChange={
-                                                                handleEditChange
-                                                            }
-                                                            style={{
-                                                                width: '75px'
-                                                            }}
-                                                        >
-
-                                                            <option value="1">
-                                                                1
-                                                            </option>
-
-                                                            <option value="2">
-                                                                2
-                                                            </option>
-
-                                                            <option value="3">
-                                                                3
-                                                            </option>
-
-                                                            <option value="4">
-                                                                4
-                                                            </option>
-
-                                                            <option value="5">
-                                                                5
-                                                            </option>
-
-                                                        </select>
-
-                                                    ) : (
-
-                                                        <>
-
-                                                            <div>
-
-                                                                {renderStars(
-                                                                    review.rating
-                                                                )}
+                                                                {
+                                                                    review.student_name ||
+                                                                    review.name ||
+                                                                    '-'
+                                                                }
 
                                                             </div>
 
-                                                            <small className="text-muted">
+                                                            {(
+                                                                review.student_email ||
+                                                                review.email
+                                                            ) && (
 
-                                                                {
-                                                                    review.rating || 0
-                                                                }
-                                                                /5
+                                                                    <small className="text-muted admin-review-student-email">
 
-                                                            </small>
+                                                                        {
+                                                                            review.student_email ||
+                                                                            review.email
+                                                                        }
 
-                                                        </>
+                                                                    </small>
 
-                                                    )}
+                                                                )}
 
-                                                </td>
+                                                        </div>
 
+                                                    </td>
 
-                                                {/* REVIEW */}
+                                                    <td data-label="Course">
 
-                                                <td
-                                                    style={{
-                                                        minWidth: '280px',
-                                                        maxWidth: '450px'
-                                                    }}
-                                                >
-
-                                                    {editId === review.id ? (
-
-                                                        <textarea
-                                                            name="review_text"
-                                                            className="form-control"
-                                                            rows="3"
-                                                            value={
-                                                                editForm.review_text
-                                                            }
-                                                            onChange={
-                                                                handleEditChange
-                                                            }
-                                                        />
-
-                                                    ) : (
-
-                                                        <div>
+                                                        <div className="admin-review-course">
 
                                                             {
+                                                                review.course_title ||
+                                                                review.title ||
+                                                                '-'
+                                                            }
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td data-label="Rating">
+
+                                                        <div className="admin-review-rating">
+
+                                                            {editId === review.id ? (
+
+                                                                <select
+                                                                    name="rating"
+                                                                    className="form-select form-select-sm admin-review-rating-select"
+                                                                    value={
+                                                                        editForm.rating
+                                                                    }
+                                                                    onChange={
+                                                                        handleEditChange
+                                                                    }
+                                                                >
+
+                                                                    <option value="1">
+                                                                        1
+                                                                    </option>
+
+                                                                    <option value="2">
+                                                                        2
+                                                                    </option>
+
+                                                                    <option value="3">
+                                                                        3
+                                                                    </option>
+
+                                                                    <option value="4">
+                                                                        4
+                                                                    </option>
+
+                                                                    <option value="5">
+                                                                        5
+                                                                    </option>
+
+                                                                </select>
+
+                                                            ) : (
+
+                                                                <>
+                                                                    <div>
+                                                                        {renderStars(
+                                                                            review.rating
+                                                                        )}
+                                                                    </div>
+
+                                                                    <small className="text-muted">
+                                                                        {
+                                                                            review.rating || 0
+                                                                        }
+                                                                        /5
+                                                                    </small>
+                                                                </>
+
+                                                            )}
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td data-label="Review">
+
+                                                        <div className="admin-review-text">
+
+                                                            {editId === review.id ? (
+
+                                                                <textarea
+                                                                    name="review_text"
+                                                                    className="form-control admin-review-textarea"
+                                                                    rows="3"
+                                                                    value={
+                                                                        editForm.review_text
+                                                                    }
+                                                                    onChange={
+                                                                        handleEditChange
+                                                                    }
+                                                                />
+
+                                                            ) : (
+
                                                                 review.review_text ||
                                                                 review.message ||
                                                                 'No review message'
+
+                                                            )}
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td data-label="Status">
+
+                                                        <div className="admin-review-status">
+
+                                                            {getStatusBadge(
+                                                                review.status
+                                                            )}
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td data-label="Date">
+
+                                                        <div className="admin-review-date">
+
+                                                            {
+                                                                formatDate(
+                                                                    review.created_at
+                                                                )
                                                             }
 
                                                         </div>
 
-                                                    )}
+                                                    </td>
 
-                                                </td>
+                                                    <td data-label="Actions">
 
+                                                        {editId === review.id ? (
 
-                                                {/* STATUS */}
-
-                                                <td>
-
-                                                    {getStatusBadge(
-                                                        review.status
-                                                    )}
-
-                                                </td>
-
-
-                                                {/* DATE */}
-
-                                                <td>
-
-                                                    {
-                                                        formatDate(
-                                                            review.created_at
-                                                        )
-                                                    }
-
-                                                </td>
-
-
-                                                {/* ACTIONS */}
-
-                                                <td>
-
-                                                    {editId === review.id ? (
-
-                                                        <div className="d-flex gap-2">
-
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-success"
-                                                                onClick={() =>
-                                                                    handleUpdate(
-                                                                        review
-                                                                    )
-                                                                }
-                                                                disabled={saving}
-                                                            >
-
-                                                                <i className="bi bi-check-lg me-1"></i>
-
-                                                                {saving
-                                                                    ? 'Saving...'
-                                                                    : 'Save'}
-
-                                                            </button>
-
-
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-secondary"
-                                                                onClick={
-                                                                    handleCancelEdit
-                                                                }
-                                                                disabled={saving}
-                                                            >
-
-                                                                Cancel
-
-                                                            </button>
-
-                                                        </div>
-
-                                                    ) : (
-
-                                                        <div className="d-flex gap-2 flex-wrap">
-
-                                                            {/* APPROVE */}
-
-                                                            {String(
-                                                                review.status || ''
-                                                            ).toLowerCase() !==
-                                                                'approved' && (
+                                                            <div className="admin-review-actions">
 
                                                                 <button
                                                                     type="button"
-                                                                    className="btn btn-sm btn-outline-success"
+                                                                    className="btn btn-sm btn-success"
                                                                     onClick={() =>
-                                                                        handleApprove(
+                                                                        handleUpdate(
+                                                                            review
+                                                                        )
+                                                                    }
+                                                                    disabled={saving}
+                                                                >
+
+                                                                    <i className="bi bi-check-lg me-1"></i>
+
+                                                                    {saving
+                                                                        ? 'Saving...'
+                                                                        : 'Save'}
+
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-secondary"
+                                                                    onClick={
+                                                                        handleCancelEdit
+                                                                    }
+                                                                    disabled={saving}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+
+                                                            </div>
+
+                                                        ) : (
+
+                                                            <div className="admin-review-actions">
+
+                                                                {String(
+                                                                    review.status || ''
+                                                                ).toLowerCase() !==
+                                                                    'approved' && (
+
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm btn-outline-success"
+                                                                            onClick={() =>
+                                                                                handleApprove(
+                                                                                    review
+                                                                                )
+                                                                            }
+                                                                        >
+
+                                                                            <i className="bi bi-check-circle me-1"></i>
+
+                                                                            Approve
+
+                                                                        </button>
+
+                                                                    )}
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-primary"
+                                                                    onClick={() =>
+                                                                        handleEdit(
                                                                             review
                                                                         )
                                                                     }
                                                                 >
 
-                                                                    <i className="bi bi-check-circle me-1"></i>
+                                                                    <i className="bi bi-pencil me-1"></i>
 
-                                                                    Approve
+                                                                    Edit
 
                                                                 </button>
 
-                                                            )}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-danger"
+                                                                    onClick={() =>
+                                                                        handleDelete(
+                                                                            review
+                                                                        )
+                                                                    }
+                                                                >
 
+                                                                    <i className="bi bi-trash me-1"></i>
 
-                                                            {/* EDIT */}
+                                                                    Delete
 
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-outline-primary"
-                                                                onClick={() =>
-                                                                    handleEdit(
-                                                                        review
-                                                                    )
-                                                                }
-                                                            >
+                                                                </button>
 
-                                                                <i className="bi bi-pencil me-1"></i>
+                                                            </div>
 
-                                                                Edit
+                                                        )}
 
-                                                            </button>
+                                                    </td>
 
+                                                </tr>
 
-                                                            {/* DELETE */}
+                                            )
+                                        )}
 
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-outline-danger"
-                                                                onClick={() =>
-                                                                    handleDelete(
-                                                                        review
-                                                                    )
-                                                                }
-                                                            >
+                                    </tbody>
 
-                                                                <i className="bi bi-trash me-1"></i>
+                                </table>
 
-                                                                Delete
+                            </div>
 
-                                                            </button>
+                        )}
 
-                                                        </div>
-
-                                                    )}
-
-                                                </td>
-
-                                            </tr>
-
-                                        )
-                                    )}
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    )}
+                    </div>
 
                 </div>
 
@@ -1002,4 +827,3 @@ const StudentReviews = () => {
 };
 
 export default StudentReviews;
-

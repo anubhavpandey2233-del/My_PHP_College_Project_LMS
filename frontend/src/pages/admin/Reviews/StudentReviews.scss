@@ -1,0 +1,988 @@
+.admin-reviews-page {
+    width: 100%;
+    min-width: 0;
+    color: var(--theme-text);
+}
+
+.admin-reviews-header {
+    width: 100%;
+    min-width: 0;
+}
+
+.admin-reviews-header h2 {
+    color: var(--theme-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.admin-reviews-header p {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+.admin-reviews-refresh {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.admin-reviews-alert {
+    width: 100%;
+}
+
+.admin-reviews-card {
+    width: 100%;
+    min-width: 0;
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border) !important;
+    overflow: hidden;
+}
+
+.admin-reviews-card .card-body {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text);
+}
+
+.admin-reviews-card-header {
+    width: 100%;
+    gap: 15px;
+}
+
+.admin-reviews-card-header h5 {
+    color: var(--theme-text);
+    font-weight: 600;
+}
+
+.admin-reviews-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.admin-reviews-table {
+    width: 100%;
+    min-width: 1100px;
+    margin-bottom: 0;
+    color: var(--theme-text);
+    vertical-align: middle;
+}
+
+.admin-reviews-table th {
+    background: var(--theme-bg) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    padding: 12px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-reviews-table td {
+    background: var(--theme-surface) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+    padding: 12px 10px;
+    vertical-align: middle;
+}
+
+.admin-reviews-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.admin-reviews-table tbody tr:hover td {
+    background: var(--theme-bg) !important;
+}
+
+/* STUDENT */
+
+.admin-review-student {
+    min-width: 170px;
+    max-width: 220px;
+}
+
+.admin-review-student-name {
+    color: var(--theme-text) !important;
+    word-break: break-word;
+}
+
+.admin-review-student-email {
+    display: block;
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+    word-break: break-word;
+}
+
+/* COURSE */
+
+.admin-review-course {
+    min-width: 170px;
+    max-width: 230px;
+    color: var(--theme-text) !important;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* RATING */
+
+.admin-review-rating {
+    min-width: 100px;
+    width: max-content;
+}
+
+.admin-review-stars {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.admin-review-rating-select {
+    width: 75px !important;
+    min-width: 75px !important;
+}
+
+/* REVIEW */
+
+.admin-review-text {
+    width: 280px;
+    min-width: 280px;
+    max-width: 450px;
+    color: var(--theme-text) !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    line-height: 1.5;
+}
+
+.admin-review-textarea {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    resize: vertical;
+}
+
+/* STATUS */
+
+.admin-review-status {
+    display: inline-flex !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.admin-review-status .badge {
+    display: inline-flex !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    padding: 5px 8px !important;
+    white-space: nowrap !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* DATE */
+
+.admin-review-date {
+    display: inline-block;
+    width: max-content;
+    min-width: 90px;
+    color: var(--theme-text) !important;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+/* ACTIONS */
+
+.admin-review-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: max-content;
+}
+
+.admin-review-actions .btn {
+    white-space: nowrap;
+}
+
+/* FORM */
+
+.admin-reviews-page .form-control,
+.admin-reviews-page .form-select {
+    background: var(--theme-input) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
+}
+
+.admin-reviews-page .form-control:focus,
+.admin-reviews-page .form-select:focus {
+    background: var(--theme-input) !important;
+    color: var(--theme-text) !important;
+    border-color: #86b7fe !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.admin-reviews-page .text-muted {
+    color: var(--theme-text) !important;
+    opacity: 0.65;
+}
+
+
+/* =========================
+   1200 - 1399
+========================= */
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+
+    .admin-reviews-table {
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .admin-reviews-table th,
+    .admin-reviews-table td {
+        padding: 9px 7px;
+        font-size: 12px;
+    }
+
+    .admin-reviews-table th:nth-child(1),
+    .admin-reviews-table td:nth-child(1) {
+        width: 4%;
+    }
+
+    .admin-reviews-table th:nth-child(2),
+    .admin-reviews-table td:nth-child(2) {
+        width: 16%;
+    }
+
+    .admin-reviews-table th:nth-child(3),
+    .admin-reviews-table td:nth-child(3) {
+        width: 15%;
+    }
+
+    .admin-reviews-table th:nth-child(4),
+    .admin-reviews-table td:nth-child(4) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(5),
+    .admin-reviews-table td:nth-child(5) {
+        width: 19%;
+    }
+
+    .admin-reviews-table th:nth-child(6),
+    .admin-reviews-table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(7),
+    .admin-reviews-table td:nth-child(7) {
+        width: 9%;
+    }
+
+    .admin-reviews-table th:nth-child(8),
+    .admin-reviews-table td:nth-child(8) {
+        width: 17%;
+    }
+
+    .admin-review-student,
+    .admin-review-course {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-review-text {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-review-status {
+        width: max-content !important;
+    }
+
+    .admin-review-status .badge {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+
+    .admin-review-date {
+        min-width: 0;
+        font-size: 11px;
+    }
+
+    .admin-review-actions {
+        min-width: 0;
+        gap: 3px;
+    }
+
+    .admin-review-actions .btn {
+        padding: 3px 5px;
+        font-size: 9px;
+    }
+}
+
+
+/* =========================
+   992 - 1199
+========================= */
+
+@media (min-width: 992px) and (max-width: 1199px) {
+
+    .admin-reviews-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .admin-reviews-table {
+        width: 100%;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .admin-reviews-table th,
+    .admin-reviews-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+
+    .admin-reviews-table th:nth-child(1),
+    .admin-reviews-table td:nth-child(1) {
+        width: 4%;
+    }
+
+    .admin-reviews-table th:nth-child(2),
+    .admin-reviews-table td:nth-child(2) {
+        width: 14%;
+    }
+
+    .admin-reviews-table th:nth-child(3),
+    .admin-reviews-table td:nth-child(3) {
+        width: 14%;
+    }
+
+    .admin-reviews-table th:nth-child(4),
+    .admin-reviews-table td:nth-child(4) {
+        width: 9%;
+    }
+
+    .admin-reviews-table th:nth-child(5),
+    .admin-reviews-table td:nth-child(5) {
+        width: 20%;
+    }
+
+    .admin-reviews-table th:nth-child(6),
+    .admin-reviews-table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(7),
+    .admin-reviews-table td:nth-child(7) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(8),
+    .admin-reviews-table td:nth-child(8) {
+        width: 19%;
+    }
+
+    .admin-review-student,
+    .admin-review-course,
+    .admin-review-text {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .admin-review-student-name,
+    .admin-review-student-email,
+    .admin-review-course,
+    .admin-review-text {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .admin-review-status {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+    }
+
+    .admin-review-status .badge {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+        white-space: nowrap !important;
+    }
+
+    .admin-review-date {
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        font-size: 10px;
+        white-space: nowrap !important;
+    }
+
+    .admin-review-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 3px !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .admin-review-actions .btn {
+        padding: 3px 5px !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        flex: 0 0 auto;
+    }
+}
+
+/* =========================
+   MOBILE / CARD VIEW
+========================= */
+
+@media (max-width: 991px) {
+
+    .admin-reviews-table-wrapper {
+        overflow: visible;
+    }
+
+    .admin-reviews-table {
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .admin-reviews-table thead {
+        display: none;
+    }
+
+    .admin-reviews-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-reviews-table tbody tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 10px 14px;
+        background: var(--theme-surface) !important;
+        border: 1px solid var(--theme-border);
+        border-radius: 8px;
+    }
+
+    .admin-reviews-table tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .admin-reviews-table tbody tr:hover {
+        background: var(--theme-surface) !important;
+    }
+
+    .admin-reviews-table tbody tr:hover td {
+        background: transparent !important;
+    }
+
+    .admin-reviews-table td {
+        display: grid !important;
+        grid-template-columns: 125px minmax(0, 1fr);
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        padding: 10px 0;
+        border: 0 !important;
+        border-bottom: 1px solid var(--theme-border) !important;
+        background: transparent !important;
+    }
+
+    .admin-reviews-table td:last-child {
+        border-bottom: 0 !important;
+    }
+
+    .admin-reviews-table td::before {
+        content: attr(data-label);
+        grid-column: 1;
+        color: var(--theme-text);
+        opacity: 0.65;
+        font-size: 13px;
+        font-weight: 600;
+        padding-right: 10px;
+    }
+
+    /* STUDENT */
+
+    .admin-reviews-table td[data-label="Student"] {
+        align-items: start;
+    }
+
+    .admin-review-student {
+        grid-column: 2;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .admin-review-student-name,
+    .admin-review-student-email {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    /* COURSE */
+
+    .admin-review-table td[data-label="Course"] {
+        align-items: start;
+    }
+
+    .admin-review-course {
+        grid-column: 2;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    /* RATING */
+
+    .admin-reviews-table td[data-label="Rating"] {
+        align-items: start;
+    }
+
+    .admin-review-rating {
+        grid-column: 2;
+        min-width: 0;
+        width: max-content;
+    }
+
+    /* REVIEW */
+
+    .admin-reviews-table td[data-label="Review"] {
+        align-items: start;
+    }
+
+    .admin-review-text {
+        grid-column: 2;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        line-height: 1.5;
+    }
+
+    .admin-review-textarea {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* STATUS */
+
+    .admin-reviews-table td[data-label="Status"] {
+        grid-template-columns: 125px max-content !important;
+        justify-content: start;
+        column-gap: 10px;
+    }
+
+    .admin-reviews-table td[data-label="Status"]::before {
+        grid-column: 1;
+    }
+
+    .admin-review-status {
+        grid-column: 2;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        justify-self: start;
+    }
+
+    .admin-review-status .badge {
+        display: inline-flex !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: max-content !important;
+        white-space: nowrap !important;
+    }
+
+    /* DATE */
+
+    .admin-reviews-table td[data-label="Date"] {
+        grid-template-columns: 125px max-content !important;
+        justify-content: start;
+        column-gap: 10px;
+    }
+
+    .admin-reviews-table td[data-label="Date"]::before {
+        grid-column: 1;
+    }
+
+    .admin-review-date {
+        grid-column: 2;
+        width: max-content;
+        min-width: 0;
+        max-width: max-content;
+        white-space: nowrap;
+        justify-self: start;
+    }
+
+    /* ACTIONS */
+
+    .admin-reviews-table td[data-label="Actions"] {
+        grid-template-columns: 125px minmax(0, 1fr) !important;
+        align-items: start;
+    }
+
+    .admin-reviews-table td[data-label="Actions"]::before {
+        grid-column: 1;
+    }
+
+    .admin-review-actions {
+        grid-column: 2;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        flex-wrap: nowrap !important;
+        gap: 7px !important;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-review-actions .btn {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
+}
+
+
+/* =========================
+   767
+========================= */
+
+@media (max-width: 767px) {
+
+    .admin-reviews-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+    .admin-reviews-header h2 {
+        font-size: 24px;
+    }
+
+    .admin-reviews-header p {
+        font-size: 14px;
+    }
+
+    .admin-reviews-refresh {
+        width: 100%;
+    }
+
+    .admin-reviews-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .admin-reviews-card-header {
+        margin-bottom: 18px !important;
+    }
+
+    .admin-reviews-table td {
+        grid-template-columns: 105px minmax(0, 1fr);
+        font-size: 13px;
+    }
+
+    .admin-reviews-table td[data-label="Status"] {
+        grid-template-columns: 105px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Date"] {
+        grid-template-columns: 105px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Actions"] {
+        grid-template-columns: 105px minmax(0, 1fr) !important;
+    }
+}
+
+
+/* =========================
+   575
+========================= */
+
+@media (max-width: 575px) {
+
+    .admin-reviews-header h2 {
+        font-size: 22px;
+    }
+
+    .admin-reviews-header p {
+        font-size: 13px;
+    }
+
+    .admin-reviews-card .card-body {
+        padding: 0.9rem !important;
+    }
+
+    .admin-reviews-table tbody tr {
+        padding: 9px 11px;
+    }
+
+    .admin-reviews-table td {
+        grid-template-columns: 90px minmax(0, 1fr);
+        padding: 9px 0;
+        font-size: 12px;
+    }
+
+    .admin-reviews-table td::before {
+        font-size: 11px;
+    }
+
+    .admin-reviews-table td[data-label="Status"] {
+        grid-template-columns: 90px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Date"] {
+        grid-template-columns: 90px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Actions"] {
+        grid-template-columns: 90px minmax(0, 1fr) !important;
+    }
+
+    .admin-review-status .badge {
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+    }
+
+    .admin-review-actions {
+        gap: 6px !important;
+    }
+
+    .admin-review-actions .btn {
+        font-size: 11px;
+        padding: 5px 7px;
+    }
+}
+
+
+/* =========================
+   400
+========================= */
+
+@media (max-width: 400px) {
+
+    .admin-reviews-card .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .admin-reviews-header h2 {
+        font-size: 20px;
+    }
+
+    .admin-reviews-header p {
+        font-size: 12px;
+    }
+
+    .admin-reviews-table tbody tr {
+        padding: 8px 10px;
+    }
+
+    .admin-reviews-table td {
+        grid-template-columns: 82px minmax(0, 1fr);
+        padding: 8px 0;
+        font-size: 11px;
+    }
+
+    .admin-reviews-table td::before {
+        font-size: 10px;
+    }
+
+    .admin-reviews-table td[data-label="Status"] {
+        grid-template-columns: 82px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Date"] {
+        grid-template-columns: 82px max-content !important;
+    }
+
+    .admin-reviews-table td[data-label="Actions"] {
+        grid-template-columns: 82px minmax(0, 1fr) !important;
+    }
+
+    .admin-review-status .badge {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+
+    .admin-review-actions {
+        gap: 5px !important;
+    }
+
+    .admin-review-actions .btn {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+}
+.admin-review-stars {
+    display: inline-flex !important;
+    flex-wrap: wrap;
+    width: 72px;
+    max-width: 72px;
+    line-height: 1.2;
+    white-space: normal !important;
+    word-break: normal !important;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+
+    .admin-reviews-table th:nth-child(4),
+    .admin-reviews-table td:nth-child(4) {
+        width: 10%;
+        min-width: 75px;
+    }
+
+    .admin-review-rating {
+        width: 75px;
+        min-width: 75px;
+    }
+
+    .admin-review-stars {
+        width: 54px !important;
+        max-width: 54px !important;
+        display: inline-flex !important;
+        flex-wrap: wrap !important;
+        white-space: normal !important;
+        line-height: 1.15;
+        letter-spacing: 0;
+    }
+}
+.admin-review-rating{
+    color: #FFC83D;
+}
+/* =========================
+   REVIEWS ACTIONS FIX
+========================= */
+
+.admin-review-actions {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    min-width: max-content !important;
+    width: max-content !important;
+}
+
+.admin-review-actions .btn {
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+}
+
+.admin-reviews-table th:nth-child(8),
+.admin-reviews-table td:nth-child(8) {
+    min-width: 190px !important;
+    width: 190px !important;
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .admin-reviews-table th:nth-child(8),
+    .admin-reviews-table td:nth-child(8) {
+        width: 19% !important;
+        min-width: 0 !important;
+    }
+
+    .admin-review-actions {
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 3px !important;
+    }
+
+    .admin-review-actions .btn {
+        padding: 3px 5px !important;
+        font-size: 9px !important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .admin-reviews-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .admin-reviews-table th:nth-child(1),
+    .admin-reviews-table td:nth-child(1) {
+        width: 4%;
+    }
+
+    .admin-reviews-table th:nth-child(2),
+    .admin-reviews-table td:nth-child(2) {
+        width: 14%;
+    }
+
+    .admin-reviews-table th:nth-child(3),
+    .admin-reviews-table td:nth-child(3) {
+        width: 14%;
+    }
+
+    .admin-reviews-table th:nth-child(4),
+    .admin-reviews-table td:nth-child(4) {
+        width: 9%;
+    }
+
+    .admin-reviews-table th:nth-child(5),
+    .admin-reviews-table td:nth-child(5) {
+        width: 20%;
+    }
+
+    .admin-reviews-table th:nth-child(6),
+    .admin-reviews-table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(7),
+    .admin-reviews-table td:nth-child(7) {
+        width: 10%;
+    }
+
+    .admin-reviews-table th:nth-child(8),
+    .admin-reviews-table td:nth-child(8) {
+        width: 19% !important;
+        min-width: 0 !important;
+    }
+
+    .admin-review-actions {
+        width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+    }
+
+    .admin-review-actions .btn {
+        padding: 4px 7px !important;
+        font-size: 10px !important;
+        white-space: nowrap !important;
+        flex: 0 0 auto !important;
+    }
+}

@@ -1,8 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+
+import Header from '../../components/common/Header';
+import Footer from '../../components/common/Footer';
+import Sidebar from '../../components/common/Sidebar';
 
 const Profile = () => {
 
@@ -25,7 +28,6 @@ const Profile = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-
     const getAvatarUrl = (avatarName) => {
 
         if (!avatarName) {
@@ -34,7 +36,6 @@ const Profile = () => {
 
         return `http://localhost/php-lms-project/backend/uploads/avatars/${avatarName}`;
     };
-
 
     useEffect(() => {
 
@@ -56,7 +57,6 @@ const Profile = () => {
         }
 
     }, [user]);
-
 
     const fetchProfile = async () => {
 
@@ -107,7 +107,6 @@ const Profile = () => {
 
     };
 
-
     useEffect(() => {
 
         if (user) {
@@ -115,7 +114,6 @@ const Profile = () => {
         }
 
     }, []);
-
 
     const handleChange = (e) => {
 
@@ -130,7 +128,6 @@ const Profile = () => {
         }));
 
     };
-
 
     const handleAvatarChange = (e) => {
 
@@ -175,7 +172,6 @@ const Profile = () => {
         setAvatarPreview(previewUrl);
 
     };
-
 
     const handleSubmit = async (e) => {
 
@@ -293,228 +289,230 @@ const Profile = () => {
 
     };
 
-
     return (
 
-        <div className="container-fluid">
+        <div className="d-flex flex-column min-vh-100">
 
-            <div className="row justify-content-center">
+            <Header />
 
-                <div className="col-lg-8">
+            <div className="d-flex flex-grow-1">
 
-                    <div className="card shadow-sm border-0">
+                <Sidebar />
 
-                        <div className="card-body p-4">
+                <main className="flex-grow-1">
 
-                            <div className="mb-4">
+                    <div className="container-fluid py-4">
 
-                                <h4 className="mb-1">
-                                    My Profile
-                                </h4>
+                        <div className="row justify-content-center">
 
-                                <p className="text-muted mb-0">
-                                    Manage your personal information
-                                </p>
+                            <div className="col-lg-8">
 
-                            </div>
+                                <div className="card shadow-sm border-0">
 
+                                    <div className="card-body p-4">
 
-                            {message && (
+                                        <div className="mb-4">
 
-                                <div className="alert alert-success">
-                                    {message}
-                                </div>
+                                            <h4 className="mb-1">
+                                                My Profile
+                                            </h4>
 
-                            )}
+                                            <p className="text-muted mb-0">
+                                                Manage your personal information
+                                            </p>
 
-
-                            {error && (
-
-                                <div className="alert alert-danger">
-                                    {error}
-                                </div>
-
-                            )}
-
-
-                            <form onSubmit={handleSubmit}>
-
-
-                                <div className="text-center mb-4">
-
-                                    {avatarPreview ? (
-
-                                        <img
-                                            src={avatarPreview}
-                                            alt="Profile"
-                                            className="rounded-circle"
-                                            style={{
-                                                width: '120px',
-                                                height: '120px',
-                                                objectFit: 'cover',
-                                                border: '3px solid #eee'
-                                            }}
-                                        />
-
-                                    ) : (
-
-                                        <div
-                                            className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto"
-                                            style={{
-                                                width: '120px',
-                                                height: '120px',
-                                                fontSize: '40px'
-                                            }}
-                                        >
-                                            👤
                                         </div>
 
-                                    )}
+                                        {message && (
 
+                                            <div className="alert alert-success">
+                                                {message}
+                                            </div>
 
-                                    <div className="mt-3">
+                                        )}
 
-                                        <label
-                                            htmlFor="avatar"
-                                            className="btn btn-outline-primary"
-                                        >
-                                            Change Photo
-                                        </label>
+                                        {error && (
 
-                                        <input
-                                            id="avatar"
-                                            type="file"
-                                            accept="image/jpeg,image/png,image/webp"
-                                            className="d-none"
-                                            onChange={
-                                                handleAvatarChange
-                                            }
-                                        />
+                                            <div className="alert alert-danger">
+                                                {error}
+                                            </div>
+
+                                        )}
+
+                                        <form onSubmit={handleSubmit}>
+
+                                            <div className="text-center mb-4">
+
+                                                {avatarPreview ? (
+
+                                                    <img
+                                                        src={avatarPreview}
+                                                        alt="Profile"
+                                                        className="rounded-circle"
+                                                        style={{
+                                                            width: '120px',
+                                                            height: '120px',
+                                                            objectFit: 'cover',
+                                                            border: '3px solid #eee'
+                                                        }}
+                                                    />
+
+                                                ) : (
+
+                                                    <div
+                                                        className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto"
+                                                        style={{
+                                                            width: '120px',
+                                                            height: '120px',
+                                                            fontSize: '40px'
+                                                        }}
+                                                    >
+                                                        👤
+                                                    </div>
+
+                                                )}
+
+                                                <div className="mt-3">
+
+                                                    <label
+                                                        htmlFor="avatar"
+                                                        className="btn btn-outline-primary"
+                                                    >
+                                                        Change Photo
+                                                    </label>
+
+                                                    <input
+                                                        id="avatar"
+                                                        type="file"
+                                                        accept="image/jpeg,image/png,image/webp"
+                                                        className="d-none"
+                                                        onChange={
+                                                            handleAvatarChange
+                                                        }
+                                                    />
+
+                                                </div>
+
+                                                <small className="text-muted d-block mt-2">
+                                                    JPG, PNG or WEBP — Maximum 2MB
+                                                </small>
+
+                                            </div>
+
+                                            <div className="mb-3">
+
+                                                <label className="form-label">
+                                                    Name
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    className="form-control"
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+
+                                            </div>
+
+                                            <div className="mb-3">
+
+                                                <label className="form-label">
+                                                    Email
+                                                </label>
+
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    className="form-control"
+                                                    value={formData.email}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+
+                                            </div>
+
+                                            <div className="mb-3">
+
+                                                <label className="form-label">
+                                                    Phone
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    name="phone"
+                                                    className="form-control"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                />
+
+                                            </div>
+
+                                            <div className="mb-4">
+
+                                                <label className="form-label">
+                                                    Bio
+                                                </label>
+
+                                                <textarea
+                                                    name="bio"
+                                                    className="form-control"
+                                                    rows="4"
+                                                    value={formData.bio}
+                                                    onChange={handleChange}
+                                                />
+
+                                            </div>
+
+                                            <div className="d-flex gap-2">
+
+                                                <button
+                                                    type="submit"
+                                                    className="btn btn-primary"
+                                                    disabled={saving}
+                                                >
+                                                    {saving
+                                                        ? 'Saving...'
+                                                        : 'Save Changes'
+                                                    }
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-secondary"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            '/admin/dashboard'
+                                                        )
+                                                    }
+                                                >
+                                                    Back
+                                                </button>
+
+                                            </div>
+
+                                        </form>
 
                                     </div>
 
-
-                                    <small className="text-muted d-block mt-2">
-                                        JPG, PNG or WEBP — Maximum 2MB
-                                    </small>
-
                                 </div>
 
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-                                        Name
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        className="form-control"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                    />
-
-                                </div>
-
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-                                        Email
-                                    </label>
-
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        className="form-control"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
-
-                                </div>
-
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-                                        Phone
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        className="form-control"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                    />
-
-                                </div>
-
-
-                                <div className="mb-4">
-
-                                    <label className="form-label">
-                                        Bio
-                                    </label>
-
-                                    <textarea
-                                        name="bio"
-                                        className="form-control"
-                                        rows="4"
-                                        value={formData.bio}
-                                        onChange={handleChange}
-                                    />
-
-                                </div>
-
-
-                                <div className="d-flex gap-2">
-
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary"
-                                        disabled={saving}
-                                    >
-                                        {saving
-                                            ? 'Saving...'
-                                            : 'Save Changes'
-                                        }
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={() =>
-                                            navigate(
-                                                '/admin/dashboard'
-                                            )
-                                        }
-                                    >
-                                        Back
-                                    </button>
-
-                                </div>
-
-
-                            </form>
+                            </div>
 
                         </div>
 
                     </div>
 
-                </div>
+                </main>
 
             </div>
+
+            <Footer />
 
         </div>
 
     );
-
 };
 
 export default Profile;
-

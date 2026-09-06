@@ -11,7 +11,7 @@
 }
 
 .lms-header-inner {
-    max-width: 1400px;
+    width: min(1400px, 100%);
     min-height: 72px;
     margin: 0 auto;
     padding: 0 25px;
@@ -21,8 +21,9 @@
     gap: 25px;
 }
 
-
-/* LOGO */
+/* =========================
+   LOGO
+========================= */
 
 .lms-logo {
     display: flex;
@@ -36,6 +37,7 @@
     font-weight: 700;
 
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .lms-logo:hover {
@@ -46,13 +48,14 @@
     font-size: 25px;
 }
 
-
-/* SEARCH */
+/* =========================
+   SEARCH
+========================= */
 
 .lms-search-box {
     flex: 1;
     max-width: 500px;
-
+    min-width: 0;
     height: 43px;
 
     display: flex;
@@ -60,13 +63,13 @@
 
     background: #ffffff;
     border-radius: 8px;
-
     overflow: hidden;
 }
 
 .lms-search-icon {
     padding-left: 15px;
     font-size: 17px;
+    flex-shrink: 0;
 }
 
 .lms-search-box input {
@@ -79,26 +82,27 @@
     padding: 0 14px;
 
     font-size: 14px;
-    color: #222;
+    color: #222222;
 }
 
 .lms-search-box input::placeholder {
-    color: #777;
+    color: #777777;
 }
 
-
-/* HEADER ACTIONS */
+/* =========================
+   HEADER ACTIONS
+========================= */
 
 .lms-header-actions {
     display: flex;
     align-items: center;
     gap: 9px;
-
     margin-left: auto;
 }
 
-
-/* ICON BUTTON */
+/* =========================
+   ICON BUTTON
+========================= */
 
 .lms-header-icon {
     width: 40px;
@@ -117,7 +121,6 @@
     text-decoration: none;
 
     cursor: pointer;
-
     position: relative;
 
     transition: 0.2s ease;
@@ -129,8 +132,9 @@
     transform: translateY(-1px);
 }
 
-
-/* USER */
+/* =========================
+   USER
+========================= */
 
 .lms-user-button {
     min-height: 40px;
@@ -139,7 +143,7 @@
 
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
 
     color: #ffffff;
     text-decoration: none;
@@ -160,8 +164,28 @@
     background: rgba(255, 255, 255, 0.12);
 }
 
+.lms-user-avatar {
+    width: 34px;
+    height: 34px;
 
-/* LOGIN */
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 2px solid #ffffff;
+
+    display: block;
+}
+
+.lms-user-avatar-fallback {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+}
+
+/* =========================
+   LOGIN
+========================= */
 
 .lms-login-button {
     color: #ffffff;
@@ -175,6 +199,8 @@
 
     font-size: 14px;
     font-weight: 600;
+
+    white-space: nowrap;
 }
 
 .lms-login-button:hover {
@@ -182,8 +208,9 @@
     background: rgba(255, 255, 255, 0.12);
 }
 
-
-/* CONTACT */
+/* =========================
+   CONTACT
+========================= */
 
 .lms-contact-button {
     height: 40px;
@@ -192,6 +219,7 @@
 
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
 
     color: #ffffff;
@@ -211,8 +239,9 @@
     background: rgba(255, 255, 255, 0.12);
 }
 
-
-/* LOGOUT */
+/* =========================
+   LOGOUT
+========================= */
 
 .lms-logout-button {
     height: 40px;
@@ -220,7 +249,6 @@
     padding: 0 14px;
 
     color: #ffffff;
-
     background: transparent;
 
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -230,7 +258,6 @@
     font-weight: 500;
 
     cursor: pointer;
-
     white-space: nowrap;
 }
 
@@ -239,8 +266,75 @@
     border-color: #dc2626;
 }
 
+/* =========================
+   CART
+========================= */
 
-/* NOTIFICATION */
+.lms-cart-button {
+    position: relative;
+}
+
+.lms-cart-badge {
+    position: absolute;
+
+    top: -6px;
+    right: -6px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #5624d0;
+    color: #ffffff;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* =========================
+   WISHLIST
+========================= */
+
+.lms-wishlist-button {
+    position: relative;
+}
+
+.lms-wishlist-badge {
+    position: absolute;
+
+    top: -5px;
+    right: -7px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 5px;
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e53935;
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* =========================
+   NOTIFICATION
+========================= */
 
 .lms-notification-wrapper {
     position: relative;
@@ -272,8 +366,9 @@
     border: 2px solid #172554;
 }
 
-
-/* NOTIFICATION DROPDOWN */
+/* =========================
+   NOTIFICATION DROPDOWN
+========================= */
 
 .lms-notification-dropdown {
     position: absolute;
@@ -287,14 +382,13 @@
     background: #ffffff;
 
     border-radius: 12px;
-
     border: 1px solid #e5e7eb;
 
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
 
     overflow: hidden;
 
-    color: #222;
+    color: #222222;
 
     z-index: 2000;
 }
@@ -328,12 +422,10 @@
     font-size: 11px;
 }
 
-
 .lms-notification-list {
     max-height: 400px;
     overflow-y: auto;
 }
-
 
 .lms-notification-item {
     padding: 14px;
@@ -345,7 +437,6 @@
     border-bottom: 1px solid #eeeeee;
 
     cursor: pointer;
-
     position: relative;
 
     transition: 0.2s ease;
@@ -371,22 +462,22 @@
 
 .lms-notification-item strong {
     display: block;
-
     font-size: 14px;
+    color: #222222;
 }
 
 .lms-notification-item p {
     margin: 4px 0;
 
     font-size: 12px;
-    color: #666;
+    color: #666666;
 
     line-height: 1.5;
 }
 
 .lms-notification-item small {
     font-size: 10px;
-    color: #999;
+    color: #999999;
 }
 
 .notification-dot {
@@ -398,19 +489,15 @@
     border-radius: 50%;
 
     margin-top: 6px;
-
     flex-shrink: 0;
 }
-
-
-/* EMPTY */
 
 .lms-notification-empty {
     padding: 45px 15px;
 
     text-align: center;
 
-    color: #888;
+    color: #888888;
 
     font-size: 13px;
 }
@@ -419,8 +506,9 @@
     margin-bottom: 8px;
 }
 
-
-/* SECOND NAV */
+/* =========================
+   SECOND NAV
+========================= */
 
 .lms-navigation {
     width: 100%;
@@ -462,8 +550,9 @@
     color: #2563eb;
 }
 
-
-/* CATEGORY */
+/* =========================
+   CATEGORY
+========================= */
 
 .lms-category-button {
     border: none;
@@ -473,6 +562,7 @@
 
     display: flex;
     align-items: center;
+
     gap: 8px;
 
     font-size: 14px;
@@ -487,13 +577,349 @@
     color: #2563eb;
 }
 
+/* =========================
+   MOBILE MENU BUTTON
+========================= */
 
-/* RESPONSIVE */
+.lms-mobile-menu-button {
+    display: none;
+
+    width: 42px;
+    height: 42px;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.lms-mobile-menu-button:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.lms-mobile-menu-button svg {
+    color: #ffffff;
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+.lms-mobile-menu {
+    width: 100%;
+
+    background: #172554;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+
+    position: relative;
+    z-index: 1500;
+}
+
+.lms-mobile-menu-inner {
+    width: min(600px, 100%);
+
+    margin: 0 auto;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+}
+
+.lms-mobile-menu-title {
+    width: 100%;
+
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+
+    color: #ffffff;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.lms-mobile-menu-title > button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+.lms-mobile-menu-title > button:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.lms-mobile-menu-list {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+/* =========================
+   MOBILE MENU ITEM
+========================= */
+
+.lms-mobile-menu-item {
+    width: 100%;
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 8px 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    color: #ffffff;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    font-family: inherit;
+
+    transition: 0.2s ease;
+}
+
+.lms-mobile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.17);
+    color: #ffffff;
+}
+
+.lms-mobile-menu-item:focus {
+    outline: none;
+    color: #ffffff;
+}
+
+/* =========================
+   MOBILE MENU ICON
+========================= */
+
+.lms-mobile-menu-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+
+    font-size: 18px;
+}
+
+.lms-mobile-menu-icon svg {
+    color: #ffffff;
+}
+
+/* =========================
+   MOBILE MENU TEXT
+========================= */
+
+.lms-mobile-menu-text {
+    flex: 1;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    text-align: left;
+}
+
+/* =========================
+   MOBILE BADGES
+========================= */
+
+.lms-mobile-badge {
+    min-width: 22px;
+    height: 22px;
+
+    padding: 0 6px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50px;
+
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    flex-shrink: 0;
+}
+
+.lms-mobile-badge.wishlist {
+    background: #e53935;
+}
+
+.lms-mobile-badge.cart {
+    background: #5624d0;
+}
+
+.lms-mobile-badge.notification {
+    background: #ef4444;
+}
+
+/* =========================
+   MOBILE AVATAR
+========================= */
+
+.lms-mobile-avatar {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid rgba(255, 255, 255, 0.8);
+
+    display: block;
+}
+
+/* =========================
+   MOBILE NOTIFICATION
+========================= */
+
+.lms-mobile-notification-section {
+    width: 100%;
+}
+
+.lms-mobile-notification-arrow {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+
+    font-size: 25px;
+    line-height: 1;
+
+    transition: transform 0.2s ease;
+
+    flex-shrink: 0;
+}
+
+.lms-mobile-notification-arrow.open {
+    transform: rotate(90deg);
+}
+
+.lms-mobile-notification-dropdown {
+    width: 100%;
+
+    margin-top: 5px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    color: #222222;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.lms-mobile-notification-dropdown .lms-notification-list {
+    max-height: 300px;
+}
+
+.lms-mobile-notification-dropdown .lms-notification-item {
+    color: #222222;
+}
+
+.lms-mobile-notification-dropdown .lms-notification-item strong {
+    color: #222222;
+}
+
+.lms-mobile-notification-dropdown .lms-notification-item p {
+    color: #666666;
+}
+
+/* =========================
+   MOBILE LOGOUT
+========================= */
+
+.lms-mobile-logout {
+    background: rgba(220, 38, 38, 0.14);
+}
+
+.lms-mobile-logout:hover {
+    background: rgba(220, 38, 38, 0.3);
+}
+
+.logout-icon {
+    font-size: 22px;
+}
+
+/* =========================
+   1100px
+========================= */
 
 @media (max-width: 1100px) {
 
     .lms-header-inner {
         gap: 15px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .lms-search-box {
@@ -507,154 +933,13 @@
 
     .lms-contact-button {
         width: 40px;
-        justify-content: center;
         padding: 0;
     }
-
 }
 
-
-@media (max-width: 768px) {
-
-    .lms-header-inner {
-        min-height: 65px;
-        padding: 10px 15px;
-
-        flex-wrap: wrap;
-    }
-
-    .lms-logo {
-        font-size: 19px;
-    }
-
-    .lms-search-box {
-        order: 3;
-
-        width: 100%;
-        max-width: none;
-
-        flex-basis: 100%;
-    }
-
-    .lms-header-actions {
-        gap: 6px;
-    }
-
-    .lms-user-button span {
-        display: none;
-    }
-
-    .lms-user-button {
-        width: 40px;
-        padding: 0;
-
-        justify-content: center;
-    }
-
-    .lms-navigation-inner {
-        padding: 8px 15px;
-
-        gap: 18px;
-
-        overflow-x: auto;
-    }
-
-    .lms-navigation-inner a,
-    .lms-category-button {
-        font-size: 13px;
-    }
-
-}
-
-
-@media (max-width: 480px) {
-
-    .lms-header-inner {
-        padding: 10px;
-    }
-
-    .lms-logo-icon {
-        font-size: 21px;
-    }
-
-    .lms-logo {
-        font-size: 17px;
-    }
-
-    .lms-header-icon {
-        width: 36px;
-        height: 36px;
-    }
-
-    .lms-notification-dropdown {
-        right: -80px;
-    }
-
-}
-.lms-user-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.lms-user-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ffffff;
-    display: block;
-}
-
-.lms-user-avatar-fallback {
-    flex-shrink: 0;
-}
-.lms-cart-button {
-    position: relative;
-}
-
-.lms-cart-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #5624d0;
-    color: #fff;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-}
 /* =========================
-   RESPONSIVE HEADER
+   900px
 ========================= */
-
-@media (max-width: 1100px) {
-
-    .lms-header-inner {
-        padding-left: 20px;
-        padding-right: 20px;
-        gap: 12px;
-    }
-
-    .lms-search-box {
-        max-width: 280px;
-    }
-
-    .lms-header-actions {
-        gap: 8px;
-    }
-
-    .lms-contact-button {
-        padding: 8px 10px;
-    }
-
-}
 
 @media (max-width: 900px) {
 
@@ -663,97 +948,53 @@
     }
 
     .lms-search-box {
-        max-width: 220px;
+        max-width: 250px;
     }
 
     .lms-user-button span {
         display: none;
     }
 
-    .lms-contact-button span {
-        display: none;
+    .lms-user-button {
+        width: 40px;
+        padding: 0;
+
+        justify-content: center;
     }
 
     .lms-contact-button {
         width: 40px;
         height: 40px;
+
         padding: 0;
+
         display: flex;
         align-items: center;
         justify-content: center;
     }
-
-    .lms-logout-button {
-        padding: 8px 12px;
-    }
-
 }
+
+/* =========================
+   MOBILE 768px
+========================= */
 
 @media (max-width: 768px) {
 
-    .lms-header-main {
-        width: 100%;
-    }
-
     .lms-header-inner {
-        min-height: auto;
-        padding: 12px 16px;
-        flex-wrap: wrap;
-    }
-
-    .lms-logo {
-        flex-shrink: 0;
-    }
-
-    .lms-search-box {
-        order: 3;
         width: 100%;
-        max-width: none;
-        margin-top: 4px;
-    }
 
-    .lms-header-actions {
-        margin-left: auto;
-        gap: 6px;
-    }
+        min-height: 64px;
 
-    .lms-header-icon {
-        width: 38px;
-        height: 38px;
-    }
+        padding: 10px 15px;
 
-    .lms-user-button {
-        width: 38px;
-        height: 38px;
-        padding: 0;
-        justify-content: center;
-    }
+        display: flex;
+        align-items: center;
 
-    .lms-user-avatar,
-    .lms-user-avatar-fallback {
-        width: 29px;
-        height: 29px;
-    }
+        flex-wrap: nowrap;
 
-    .lms-login-button {
-        padding: 8px 12px;
-    }
+        gap: 10px;
 
-    .lms-logout-button {
-        padding: 8px 10px;
-    }
-
-    .lms-notification-dropdown {
-        right: 0;
-        width: min(360px, calc(100vw - 32px));
-    }
-
-}
-
-@media (max-width: 576px) {
-
-    .lms-header-inner {
-        padding: 10px 12px;
+        box-sizing: border-box;
     }
 
     .lms-logo {
@@ -764,156 +1005,310 @@
         font-size: 22px;
     }
 
-    .lms-header-actions {
-        gap: 4px;
-    }
+    .lms-search-box {
+        flex: 1;
 
-    .lms-header-icon {
-        width: 35px;
-        height: 35px;
-    }
-
-    .lms-header-icon svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .lms-user-button {
-        width: 35px;
-        height: 35px;
-    }
-
-    .lms-user-avatar,
-    .lms-user-avatar-fallback {
-        width: 27px;
-        height: 27px;
-    }
-
-    .lms-login-button {
-        padding: 7px 10px;
-        font-size: 13px;
-    }
-
-    .lms-logout-button {
-        padding: 7px 9px;
-        font-size: 13px;
-    }
-
-    .lms-cart-badge,
-    .lms-notification-badge {
-        min-width: 16px;
-        height: 16px;
-        font-size: 9px;
-    }
-
-    .lms-notification-dropdown {
-        position: fixed;
-        top: 65px;
-        right: 12px;
-        left: 12px;
         width: auto;
-        max-height: 70vh;
+        max-width: none;
+
+        height: 40px;
+
+        margin: 0;
     }
 
+    .lms-header-actions {
+        display: none !important;
+    }
+
+    .lms-mobile-menu-button {
+        display: flex;
+    }
+
+    .lms-navigation {
+        display: none;
+    }
 }
+
+/* =========================
+   MOBILE 576px
+========================= */
+
+@media (max-width: 576px) {
+
+    .lms-header-inner {
+        padding: 9px 12px;
+        gap: 8px;
+    }
+
+    .lms-logo {
+        font-size: 18px;
+    }
+
+    .lms-logo-icon {
+        font-size: 21px;
+    }
+
+    .lms-search-box {
+        height: 38px;
+    }
+
+    .lms-search-icon {
+        padding-left: 11px;
+        font-size: 15px;
+    }
+
+    .lms-search-box input {
+        padding: 0 10px;
+        font-size: 13px;
+    }
+
+    .lms-mobile-menu-button {
+        width: 39px;
+        height: 39px;
+    }
+
+    .lms-mobile-menu-inner {
+        padding: 13px;
+    }
+}
+
+/* =========================
+   MOBILE 430px
+========================= */
 
 @media (max-width: 430px) {
 
     .lms-header-inner {
-        padding: 9px 10px;
+        padding: 8px 10px;
+        gap: 7px;
     }
 
-    .lms-logo span:last-child {
-        display: none;
+    .lms-logo {
+        font-size: 17px;
     }
 
-    .lms-header-actions {
-        gap: 3px;
-    }
-
-    .lms-header-icon {
-        width: 33px;
-        height: 33px;
-    }
-
-    .lms-user-button {
-        width: 33px;
-        height: 33px;
-    }
-
-    .lms-user-avatar,
-    .lms-user-avatar-fallback {
-        width: 25px;
-        height: 25px;
-    }
-
-    .lms-login-button {
-        padding: 6px 8px;
-        font-size: 12px;
-    }
-
-    .lms-logout-button {
-        padding: 6px 8px;
-        font-size: 12px;
+    .lms-logo-icon {
+        font-size: 20px;
     }
 
     .lms-search-box {
-        margin-top: 2px;
+        height: 37px;
     }
 
+    .lms-search-box input {
+        font-size: 12px;
+    }
+
+    .lms-mobile-menu-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .lms-mobile-menu-inner {
+        padding: 12px 10px;
+    }
+
+    .lms-mobile-menu-item {
+        min-height: 50px;
+        padding: 8px 10px;
+    }
+
+    .lms-mobile-menu-icon {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+    }
+
+    .lms-mobile-avatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .lms-mobile-menu-text {
+        font-size: 13px;
+    }
 }
+
+/* =========================
+   MOBILE 360px
+========================= */
 
 @media (max-width: 360px) {
 
     .lms-header-inner {
         padding: 8px;
+        gap: 6px;
     }
 
-    .lms-header-actions {
-        gap: 2px;
+    .lms-logo {
+        font-size: 16px;
     }
 
-    .lms-header-icon {
-        width: 31px;
-        height: 31px;
+    .lms-logo-icon {
+        font-size: 19px;
     }
 
-    .lms-user-button {
-        width: 31px;
-        height: 31px;
+    .lms-search-box {
+        height: 36px;
     }
 
-    .lms-user-avatar,
-    .lms-user-avatar-fallback {
-        width: 23px;
-        height: 23px;
+    .lms-search-icon {
+        padding-left: 9px;
+        font-size: 14px;
     }
 
-    .lms-login-button,
-    .lms-logout-button {
-        padding: 5px 7px;
+    .lms-search-box input {
+        padding: 0 8px;
         font-size: 11px;
     }
 
-}
-.lms-wishlist-button {
-    position: relative;
-}
+    .lms-mobile-menu-button {
+        width: 36px;
+        height: 36px;
+    }
 
-.lms-wishlist-badge {
-    position: absolute;
-    top: -5px;
-    right: -7px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    border-radius: 20px;
+    .lms-mobile-menu-inner {
+        padding: 10px 8px;
+    }
+
+    .lms-mobile-menu-title {
+        font-size: 16px;
+    }
+
+    .lms-mobile-menu-item {
+        min-height: 48px;
+        gap: 9px;
+        padding: 7px 9px;
+    }
+
+    .lms-mobile-menu-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+
+        font-size: 15px;
+    }
+
+    .lms-mobile-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .lms-mobile-menu-text {
+        font-size: 12px;
+    }
+
+    .lms-mobile-badge {
+        min-width: 20px;
+        height: 20px;
+        font-size: 9px;
+    }
+}
+/* =========================
+   SEARCH
+========================= */
+
+.lms-search-box {
+    width: 420px;
+    height: 44px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: #e53935;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
+    background: #ffffff;
+    border: 1px solid #d7dce5;
+    border-radius: 10px;
+    padding: 0 14px;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.lms-search-icon {
+    width: 35px;
+    height: 28px;
+    min-width: 28px;
+    flex-shrink: 0;
+    color: #475569;
+    display: block;
+}
+
+.lms-search-box input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #1e293b;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+}
+
+.lms-search-box input::placeholder {
+    color: #94a3b8;
+}
+
+.lms-search-box:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+[data-theme="dark"] .lms-search-box {
+    background: #252525;
+    border-color: #3f3f46;
+}
+
+[data-theme="dark"] .lms-search-icon {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .lms-search-box input {
+    color: #f5f5f5;
+}
+
+[data-theme="dark"] .lms-search-box input::placeholder {
+    color: #a1a1aa;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1100px) {
+    .lms-search-box {
+        width: 320px;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+    .lms-search-box {
+        width: 100%;
+        height: 44px;
+    }
+}
+
+@media (max-width: 500px) {
+    .lms-search-box {
+        height: 42px;
+        padding: 0 12px;
+        gap: 9px;
+    }
+
+    .lms-search-icon {
+        width: 27px;
+        height: 27px;
+        min-width: 27px;
+    }
+
+    .lms-search-box input {
+        font-size: 13px;
+    }
 }

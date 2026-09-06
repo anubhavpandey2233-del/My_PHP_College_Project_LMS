@@ -1,11 +1,11 @@
-
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Loading from '../../components/common/Loading';
+import './AdminCourses.scss';
 
-
-const IMAGE_URL = 'http://localhost/php-lms-project/backend/uploads/courses/';
+const IMAGE_URL =
+    'http://localhost/php-lms-project/backend/uploads/courses/';
 
 const AdminCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -26,12 +26,15 @@ const AdminCourses = () => {
     const [editCourse, setEditCourse] = useState(null);
 
     const [editTitle, setEditTitle] = useState('');
-    const [editShortDescription, setEditShortDescription] = useState('');
+    const [editShortDescription, setEditShortDescription] =
+        useState('');
     const [editDescription, setEditDescription] = useState('');
 
     const [editTeacher, setEditTeacher] = useState('');
     const [editCategory, setEditCategory] = useState('');
     const [editSubcategory, setEditSubcategory] = useState('');
+
+    const [subcategories, setSubcategories] = useState([]);
 
     const [editPrice, setEditPrice] = useState('');
     const [editDiscountPrice, setEditDiscountPrice] = useState('');
@@ -48,6 +51,7 @@ const AdminCourses = () => {
     // ===============================
     useEffect(() => {
         fetchCourses();
+        fetchSubcategories();
     }, []);
 
     const fetchCourses = async () => {
@@ -62,10 +66,10 @@ const AdminCourses = () => {
             } else {
                 setCourses([]);
                 setError(
-                    res.data.message || 'Unable to load courses'
+                    res.data.message ||
+                    'Unable to load courses'
                 );
             }
-
         } catch (err) {
             console.error('Courses error:', err);
 
@@ -77,6 +81,30 @@ const AdminCourses = () => {
             );
         } finally {
             setLoading(false);
+        }
+    };
+
+    // ===============================
+    // Fetch Subcategories
+    // ===============================
+    const fetchSubcategories = async () => {
+        try {
+            const res = await api.get(
+                '/subcategories/admin-list.php'
+            );
+
+            if (res.data.status) {
+                setSubcategories(res.data.data || []);
+            } else {
+                setSubcategories([]);
+            }
+        } catch (err) {
+            console.error(
+                'Subcategories error:',
+                err
+            );
+
+            setSubcategories([]);
         }
     };
 
@@ -128,11 +156,13 @@ const AdminCourses = () => {
 
         const matchesTeacher =
             !teacher ||
-            String(course.teacher_id) === String(teacher);
+            String(course.teacher_id) ===
+                String(teacher);
 
         const matchesCategory =
             !category ||
-            String(course.category_id) === String(category);
+            String(course.category_id) ===
+                String(category);
 
         const matchesStatus =
             !status ||
@@ -156,7 +186,9 @@ const AdminCourses = () => {
         setStatus('');
     };
 
-
+    // ===============================
+    // View Course
+    // ===============================
     const handleViewCourse = async (course) => {
         try {
             setViewLoading(true);
@@ -170,12 +202,15 @@ const AdminCourses = () => {
                 setShowViewModal(true);
             } else {
                 alert(
-                    res.data.message || 'Unable to load course details'
+                    res.data.message ||
+                    'Unable to load course details'
                 );
             }
-
         } catch (err) {
-            console.error('View course error:', err);
+            console.error(
+                'View course error:',
+                err
+            );
 
             alert(
                 err.response?.data?.message ||
@@ -186,10 +221,9 @@ const AdminCourses = () => {
         }
     };
 
-
-    // # Save Course Changes
-
-
+    // ===============================
+    // Save Course Changes
+    // ===============================
     const handleSaveEdit = async () => {
         try {
             if (!editCourse?.id) {
@@ -251,11 +285,9 @@ const AdminCourses = () => {
                     'Course updated successfully'
                 );
 
-                // Close edit modal
                 setShowEditModal(false);
                 setEditCourse(null);
 
-                // Refresh courses
                 await fetchCourses();
 
             } else {
@@ -280,9 +312,9 @@ const AdminCourses = () => {
         }
     };
 
-
-    // # Delete Course Function
-
+    // ===============================
+    // Delete Course
+    // ===============================
     const handleDeleteCourse = async (course) => {
         try {
 
@@ -332,9 +364,9 @@ const AdminCourses = () => {
         }
     };
 
-
-
-
+    // ===============================
+    // Open Edit Modal
+    // ===============================
     const openEditModal = async (course) => {
         try {
             setViewLoading(true);
@@ -344,20 +376,33 @@ const AdminCourses = () => {
             );
 
             if (res.data.status) {
+
                 const data = res.data.data;
 
                 setEditCourse(data);
 
-                setEditTitle(data.title || '');
-                setEditShortDescription(data.short_description || '');
-                setEditDescription(data.description || '');
+                setEditTitle(
+                    data.title || ''
+                );
+
+                setEditShortDescription(
+                    data.short_description || ''
+                );
+
+                setEditDescription(
+                    data.description || ''
+                );
 
                 setEditTeacher(
-                    data.teacher_id ? String(data.teacher_id) : ''
+                    data.teacher_id
+                        ? String(data.teacher_id)
+                        : ''
                 );
 
                 setEditCategory(
-                    data.category_id ? String(data.category_id) : ''
+                    data.category_id
+                        ? String(data.category_id)
+                        : ''
                 );
 
                 setEditSubcategory(
@@ -368,19 +413,23 @@ const AdminCourses = () => {
 
                 setEditPrice(
                     data.price !== null &&
-                        data.price !== undefined
+                    data.price !== undefined
                         ? String(data.price)
                         : ''
                 );
 
                 setEditDiscountPrice(
                     data.discount_price !== null &&
-                        data.discount_price !== undefined
-                        ? String(data.discount_price)
+                    data.discount_price !== undefined
+                        ? String(
+                            data.discount_price
+                        )
                         : ''
                 );
 
-                setEditLevel(data.level || 'beginner');
+                setEditLevel(
+                    data.level || 'beginner'
+                );
 
                 setEditLanguage(
                     data.language || 'English'
@@ -388,8 +437,10 @@ const AdminCourses = () => {
 
                 setEditDuration(
                     data.duration_hours !== null &&
-                        data.duration_hours !== undefined
-                        ? String(data.duration_hours)
+                    data.duration_hours !== undefined
+                        ? String(
+                            data.duration_hours
+                        )
                         : ''
                 );
 
@@ -398,12 +449,15 @@ const AdminCourses = () => {
                 );
 
                 setEditFeatured(
-                    Number(data.is_featured || 0)
+                    Number(
+                        data.is_featured || 0
+                    )
                 );
 
                 setShowEditModal(true);
 
             } else {
+
                 alert(
                     res.data.message ||
                     'Unable to load course details'
@@ -426,9 +480,6 @@ const AdminCourses = () => {
             setViewLoading(false);
         }
     };
-
-
-
 
     // ===============================
     // Status Badge
@@ -472,9 +523,7 @@ const AdminCourses = () => {
     return (
         <DashboardLayout>
 
-            {/* ===============================
-          Header
-      =============================== */}
+            {/* Header */}
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
@@ -494,10 +543,7 @@ const AdminCourses = () => {
 
             </div>
 
-
-            {/* ===============================
-          Error
-      =============================== */}
+            {/* Error */}
 
             {error && (
                 <div className="alert alert-danger">
@@ -505,10 +551,7 @@ const AdminCourses = () => {
                 </div>
             )}
 
-
-            {/* ===============================
-          Filters
-      =============================== */}
+            {/* Filters */}
 
             <div className="card shadow-sm border-0 mb-4">
 
@@ -530,12 +573,13 @@ const AdminCourses = () => {
                                 placeholder="Search course or teacher..."
                                 value={search}
                                 onChange={(e) =>
-                                    setSearch(e.target.value)
+                                    setSearch(
+                                        e.target.value
+                                    )
                                 }
                             />
 
                         </div>
-
 
                         {/* Teacher */}
 
@@ -549,7 +593,9 @@ const AdminCourses = () => {
                                 className="form-select"
                                 value={teacher}
                                 onChange={(e) =>
-                                    setTeacher(e.target.value)
+                                    setTeacher(
+                                        e.target.value
+                                    )
                                 }
                             >
 
@@ -572,7 +618,6 @@ const AdminCourses = () => {
 
                         </div>
 
-
                         {/* Category */}
 
                         <div className="col-md-2">
@@ -585,7 +630,9 @@ const AdminCourses = () => {
                                 className="form-select"
                                 value={category}
                                 onChange={(e) =>
-                                    setCategory(e.target.value)
+                                    setCategory(
+                                        e.target.value
+                                    )
                                 }
                             >
 
@@ -608,7 +655,6 @@ const AdminCourses = () => {
 
                         </div>
 
-
                         {/* Status */}
 
                         <div className="col-md-2">
@@ -621,7 +667,9 @@ const AdminCourses = () => {
                                 className="form-select"
                                 value={status}
                                 onChange={(e) =>
-                                    setStatus(e.target.value)
+                                    setStatus(
+                                        e.target.value
+                                    )
                                 }
                             >
 
@@ -645,7 +693,6 @@ const AdminCourses = () => {
 
                         </div>
 
-
                         {/* Clear */}
 
                         <div className="col-md-2 d-flex align-items-end">
@@ -666,10 +713,7 @@ const AdminCourses = () => {
 
             </div>
 
-
-            {/* ===============================
-          Courses Table
-      =============================== */}
+            {/* Courses Table */}
 
             <div className="card shadow-sm border-0">
 
@@ -683,36 +727,27 @@ const AdminCourses = () => {
 
                     ) : (
 
-                        <div className="table-responsive">
+                        <div className="table-responsive admin-courses-table-wrapper">
 
-                            <table className="table table-hover align-middle mb-0">
+                            <table className="table table-hover align-middle mb-0 admin-courses-table">
 
                                 <thead className="table-light">
 
                                     <tr>
 
                                         <th>#</th>
-
                                         <th>Course</th>
-
                                         <th>Teacher</th>
-
                                         <th>Category</th>
-
                                         <th>Price</th>
-
                                         <th>Students</th>
-
                                         <th>Rating</th>
-
                                         <th>Status</th>
-
                                         <th>Actions</th>
 
                                     </tr>
 
                                 </thead>
-
 
                                 <tbody>
 
@@ -724,7 +759,6 @@ const AdminCourses = () => {
                                                 <td>
                                                     {index + 1}
                                                 </td>
-
 
                                                 {/* Course */}
 
@@ -768,13 +802,11 @@ const AdminCourses = () => {
 
                                                 </td>
 
-
                                                 {/* Teacher */}
 
                                                 <td>
                                                     {course.teacher_name || '-'}
                                                 </td>
-
 
                                                 {/* Category */}
 
@@ -782,32 +814,51 @@ const AdminCourses = () => {
                                                     {course.category_name || '-'}
                                                 </td>
 
-
                                                 {/* Price */}
 
                                                 <td>
-                                                    {Number(course.discount_price) > 0 ? (
+
+                                                    {Number(
+                                                        course.discount_price
+                                                    ) > 0 ? (
+
                                                         <>
+
                                                             <del className="text-muted">
-                                                                ₹{Number(course.price).toFixed(2)}
+                                                                ₹
+                                                                {Number(
+                                                                    course.price
+                                                                ).toFixed(2)}
                                                             </del>
 
                                                             <br />
 
                                                             <strong>
-                                                                ₹{(
-                                                                    Number(course.price) -
-                                                                    Number(course.discount_price)
+                                                                ₹
+                                                                {(
+                                                                    Number(
+                                                                        course.price
+                                                                    ) -
+                                                                    Number(
+                                                                        course.discount_price
+                                                                    )
                                                                 ).toFixed(2)}
                                                             </strong>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            ₹{Number(course.price || 0).toFixed(2)}
-                                                        </>
-                                                    )}
-                                                </td>
 
+                                                        </>
+
+                                                    ) : (
+
+                                                        <>
+                                                            ₹
+                                                            {Number(
+                                                                course.price || 0
+                                                            ).toFixed(2)}
+                                                        </>
+
+                                                    )}
+
+                                                </td>
 
                                                 {/* Students */}
 
@@ -815,22 +866,19 @@ const AdminCourses = () => {
                                                     {course.total_students ?? 0}
                                                 </td>
 
-
                                                 {/* Rating */}
 
                                                 <td>
                                                     ⭐ {course.average_rating ?? '0.00'}
                                                 </td>
 
-
                                                 {/* Status */}
 
-                                                <td>
+                                                <td className="admin-course-status">
                                                     {getStatusBadge(
                                                         course.status
                                                     )}
                                                 </td>
-
 
                                                 {/* Actions */}
 
@@ -841,8 +889,14 @@ const AdminCourses = () => {
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm btn-outline-primary"
-                                                            onClick={() => handleViewCourse(course)}
-                                                            disabled={viewLoading}
+                                                            onClick={() =>
+                                                                handleViewCourse(
+                                                                    course
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                viewLoading
+                                                            }
                                                         >
                                                             View
                                                         </button>
@@ -850,7 +904,11 @@ const AdminCourses = () => {
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm btn-outline-secondary"
-                                                            onClick={() => openEditModal(course)}
+                                                            onClick={() =>
+                                                                openEditModal(
+                                                                    course
+                                                                )
+                                                            }
                                                         >
                                                             Edit
                                                         </button>
@@ -858,7 +916,11 @@ const AdminCourses = () => {
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm btn-outline-danger"
-                                                            onClick={() => handleDeleteCourse(course)}
+                                                            onClick={() =>
+                                                                handleDeleteCourse(
+                                                                    course
+                                                                )
+                                                            }
                                                         >
                                                             Delete
                                                         </button>
@@ -883,19 +945,23 @@ const AdminCourses = () => {
                 </div>
 
             </div>
+
+            {/* View Modal */}
+
             {showViewModal && selectedCourse && (
+
                 <div
                     className="modal d-block"
                     tabIndex="-1"
                     style={{
-                        backgroundColor: 'rgba(0,0,0,0.5)'
+                        backgroundColor:
+                            'rgba(0,0,0,0.5)'
                     }}
                 >
+
                     <div className="modal-dialog modal-lg modal-dialog-scrollable">
 
                         <div className="modal-content">
-
-                            {/* Header */}
 
                             <div className="modal-header">
 
@@ -914,14 +980,10 @@ const AdminCourses = () => {
 
                             </div>
 
-
-                            {/* Body */}
-
                             <div className="modal-body">
 
-                                {/* Thumbnail */}
-
                                 {selectedCourse.thumbnail && (
+
                                     <div className="text-center mb-4">
 
                                         <img
@@ -936,21 +998,20 @@ const AdminCourses = () => {
                                         />
 
                                     </div>
-                                )}
 
+                                )}
 
                                 <h4 className="mb-3">
                                     {selectedCourse.title}
                                 </h4>
 
-
-                                {/* Basic Information */}
-
                                 <div className="row g-3">
 
                                     <div className="col-md-6">
 
-                                        <strong>Teacher</strong>
+                                        <strong>
+                                            Teacher
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.teacher_name || '-'}
@@ -958,10 +1019,11 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Category</strong>
+                                        <strong>
+                                            Category
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.category_name || '-'}
@@ -969,10 +1031,11 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Subcategory</strong>
+                                        <strong>
+                                            Subcategory
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.subcategory_name || '-'}
@@ -980,10 +1043,11 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Status</strong>
+                                        <strong>
+                                            Status
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.status || '-'}
@@ -991,10 +1055,11 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Level</strong>
+                                        <strong>
+                                            Level
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.level || '-'}
@@ -1002,10 +1067,11 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Language</strong>
+                                        <strong>
+                                            Language
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.language || '-'}
@@ -1013,40 +1079,48 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Original Price</strong>
+                                        <strong>
+                                            Original Price
+                                        </strong>
 
                                         <p className="mb-0">
-                                            ₹{Number(
+                                            ₹
+                                            {Number(
                                                 selectedCourse.price || 0
                                             ).toFixed(2)}
                                         </p>
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Discount</strong>
+                                        <strong>
+                                            Discount
+                                        </strong>
 
                                         <p className="mb-0">
-                                            ₹{Number(
+                                            ₹
+                                            {Number(
                                                 selectedCourse.discount_price || 0
                                             ).toFixed(2)}
                                         </p>
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Final Price</strong>
+                                        <strong>
+                                            Final Price
+                                        </strong>
 
                                         <p className="mb-0 fw-bold">
-                                            ₹{(
-                                                Number(selectedCourse.price || 0) -
+                                            ₹
+                                            {(
+                                                Number(
+                                                    selectedCourse.price || 0
+                                                ) -
                                                 Number(
                                                     selectedCourse.discount_price || 0
                                                 )
@@ -1055,46 +1129,48 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Duration</strong>
+                                        <strong>
+                                            Duration
+                                        </strong>
 
                                         <p className="mb-0">
-                                            {selectedCourse.duration_hours || 0} hours
+                                            {selectedCourse.duration_hours || 0}{' '}
+                                            hours
                                         </p>
 
                                     </div>
+
                                     <div className="col-md-6">
-                                        <strong>Total Chapters</strong>
+
+                                        <strong>
+                                            Total Chapters
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.total_chapters ?? 0}
                                         </p>
+
                                     </div>
 
                                     <div className="col-md-6">
-                                        <strong>Total Lessons</strong>
+
+                                        <strong>
+                                            Total Lessons
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.total_lessons ?? 0}
                                         </p>
+
                                     </div>
 
                                     <div className="col-md-6">
 
-                                        <strong>Total Lessons</strong>
-
-                                        <p className="mb-0">
-                                            {selectedCourse.total_lessons || 0}
-                                        </p>
-
-                                    </div>
-
-
-                                    <div className="col-md-6">
-
-                                        <strong>Total Students</strong>
+                                        <strong>
+                                            Total Students
+                                        </strong>
 
                                         <p className="mb-0">
                                             {selectedCourse.total_students || 0}
@@ -1102,21 +1178,21 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     <div className="col-md-6">
 
-                                        <strong>Average Rating</strong>
+                                        <strong>
+                                            Average Rating
+                                        </strong>
 
                                         <p className="mb-0">
-                                            ⭐ {selectedCourse.average_rating || '0.00'}
+                                            ⭐{' '}
+                                            {selectedCourse.average_rating ||
+                                                '0.00'}
                                         </p>
 
                                     </div>
 
                                 </div>
-
-
-                                {/* Short Description */}
 
                                 <hr />
 
@@ -1125,24 +1201,20 @@ const AdminCourses = () => {
                                 </h6>
 
                                 <p className="text-muted">
-                                    {selectedCourse.short_description || 'No short description available.'}
+                                    {selectedCourse.short_description ||
+                                        'No short description available.'}
                                 </p>
-
-
-                                {/* Description */}
 
                                 <h6>
                                     Description
                                 </h6>
 
                                 <p className="text-muted">
-                                    {selectedCourse.description || 'No description available.'}
+                                    {selectedCourse.description ||
+                                        'No description available.'}
                                 </p>
 
                             </div>
-
-
-                            {/* Footer */}
 
                             <div className="modal-footer">
 
@@ -1162,23 +1234,27 @@ const AdminCourses = () => {
                         </div>
 
                     </div>
+
                 </div>
+
             )}
 
+            {/* Edit Modal */}
 
             {showEditModal && editCourse && (
+
                 <div
                     className="modal d-block"
                     tabIndex="-1"
                     style={{
-                        backgroundColor: 'rgba(0,0,0,0.5)'
+                        backgroundColor:
+                            'rgba(0,0,0,0.5)'
                     }}
                 >
+
                     <div className="modal-dialog modal-lg modal-dialog-scrollable">
 
                         <div className="modal-content">
-
-                            {/* Header */}
 
                             <div className="modal-header">
 
@@ -1197,9 +1273,6 @@ const AdminCourses = () => {
 
                             </div>
 
-
-                            {/* Body */}
-
                             <div className="modal-body">
 
                                 <div className="row g-3">
@@ -1217,12 +1290,13 @@ const AdminCourses = () => {
                                             className="form-control"
                                             value={editTitle}
                                             onChange={(e) =>
-                                                setEditTitle(e.target.value)
+                                                setEditTitle(
+                                                    e.target.value
+                                                )
                                             }
                                         />
 
                                     </div>
-
 
                                     {/* Short Description */}
 
@@ -1235,7 +1309,9 @@ const AdminCourses = () => {
                                         <textarea
                                             className="form-control"
                                             rows="3"
-                                            value={editShortDescription}
+                                            value={
+                                                editShortDescription
+                                            }
                                             onChange={(e) =>
                                                 setEditShortDescription(
                                                     e.target.value
@@ -1244,7 +1320,6 @@ const AdminCourses = () => {
                                         ></textarea>
 
                                     </div>
-
 
                                     {/* Description */}
 
@@ -1257,7 +1332,9 @@ const AdminCourses = () => {
                                         <textarea
                                             className="form-control"
                                             rows="5"
-                                            value={editDescription}
+                                            value={
+                                                editDescription
+                                            }
                                             onChange={(e) =>
                                                 setEditDescription(
                                                     e.target.value
@@ -1266,7 +1343,6 @@ const AdminCourses = () => {
                                         ></textarea>
 
                                     </div>
-
 
                                     {/* Teacher */}
 
@@ -1280,7 +1356,9 @@ const AdminCourses = () => {
                                             className="form-select"
                                             value={editTeacher}
                                             onChange={(e) =>
-                                                setEditTeacher(e.target.value)
+                                                setEditTeacher(
+                                                    e.target.value
+                                                )
                                             }
                                         >
 
@@ -1303,7 +1381,6 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     {/* Category */}
 
                                     <div className="col-md-6">
@@ -1316,7 +1393,9 @@ const AdminCourses = () => {
                                             className="form-select"
                                             value={editCategory}
                                             onChange={(e) => {
-                                                setEditCategory(e.target.value);
+                                                setEditCategory(
+                                                    e.target.value
+                                                );
                                                 setEditSubcategory('');
                                             }}
                                         >
@@ -1340,7 +1419,6 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     {/* Subcategory */}
 
                                     <div className="col-md-6">
@@ -1349,20 +1427,53 @@ const AdminCourses = () => {
                                             Subcategory
                                         </label>
 
-                                        <input
-                                            type="text"
-                                            className="form-control"
+                                        <select
+                                            className="form-select"
                                             value={editSubcategory}
                                             onChange={(e) =>
                                                 setEditSubcategory(
                                                     e.target.value
                                                 )
                                             }
-                                            placeholder="Subcategory ID"
-                                        />
+                                            disabled={!editCategory}
+                                        >
+
+                                            <option value="">
+                                                {editCategory
+                                                    ? 'Select Subcategory'
+                                                    : 'Select Category First'}
+                                            </option>
+
+                                            {subcategories
+                                                .filter(
+                                                    (subcategory) =>
+                                                        String(
+                                                            subcategory.category_id
+                                                        ) ===
+                                                        String(
+                                                            editCategory
+                                                        )
+                                                )
+                                                .map(
+                                                    (subcategory) => (
+                                                        <option
+                                                            key={
+                                                                subcategory.id
+                                                            }
+                                                            value={
+                                                                subcategory.id
+                                                            }
+                                                        >
+                                                            {
+                                                                subcategory.name
+                                                            }
+                                                        </option>
+                                                    )
+                                                )}
+
+                                        </select>
 
                                     </div>
-
 
                                     {/* Price */}
 
@@ -1377,12 +1488,13 @@ const AdminCourses = () => {
                                             className="form-control"
                                             value={editPrice}
                                             onChange={(e) =>
-                                                setEditPrice(e.target.value)
+                                                setEditPrice(
+                                                    e.target.value
+                                                )
                                             }
                                         />
 
                                     </div>
-
 
                                     {/* Discount */}
 
@@ -1395,7 +1507,9 @@ const AdminCourses = () => {
                                         <input
                                             type="number"
                                             className="form-control"
-                                            value={editDiscountPrice}
+                                            value={
+                                                editDiscountPrice
+                                            }
                                             onChange={(e) =>
                                                 setEditDiscountPrice(
                                                     e.target.value
@@ -1404,7 +1518,6 @@ const AdminCourses = () => {
                                         />
 
                                     </div>
-
 
                                     {/* Final Price */}
 
@@ -1418,14 +1531,17 @@ const AdminCourses = () => {
                                             type="text"
                                             className="form-control"
                                             value={(
-                                                Number(editPrice || 0) -
-                                                Number(editDiscountPrice || 0)
+                                                Number(
+                                                    editPrice || 0
+                                                ) -
+                                                Number(
+                                                    editDiscountPrice || 0
+                                                )
                                             ).toFixed(2)}
                                             readOnly
                                         />
 
                                     </div>
-
 
                                     {/* Level */}
 
@@ -1439,7 +1555,9 @@ const AdminCourses = () => {
                                             className="form-select"
                                             value={editLevel}
                                             onChange={(e) =>
-                                                setEditLevel(e.target.value)
+                                                setEditLevel(
+                                                    e.target.value
+                                                )
                                             }
                                         >
 
@@ -1459,7 +1577,6 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     {/* Language */}
 
                                     <div className="col-md-6">
@@ -1473,12 +1590,13 @@ const AdminCourses = () => {
                                             className="form-control"
                                             value={editLanguage}
                                             onChange={(e) =>
-                                                setEditLanguage(e.target.value)
+                                                setEditLanguage(
+                                                    e.target.value
+                                                )
                                             }
                                         />
 
                                     </div>
-
 
                                     {/* Duration */}
 
@@ -1494,12 +1612,13 @@ const AdminCourses = () => {
                                             className="form-control"
                                             value={editDuration}
                                             onChange={(e) =>
-                                                setEditDuration(e.target.value)
+                                                setEditDuration(
+                                                    e.target.value
+                                                )
                                             }
                                         />
 
                                     </div>
-
 
                                     {/* Status */}
 
@@ -1513,7 +1632,9 @@ const AdminCourses = () => {
                                             className="form-select"
                                             value={editStatus}
                                             onChange={(e) =>
-                                                setEditStatus(e.target.value)
+                                                setEditStatus(
+                                                    e.target.value
+                                                )
                                             }
                                         >
 
@@ -1533,7 +1654,6 @@ const AdminCourses = () => {
 
                                     </div>
 
-
                                     {/* Featured */}
 
                                     <div className="col-md-6">
@@ -1547,7 +1667,9 @@ const AdminCourses = () => {
                                             value={editFeatured}
                                             onChange={(e) =>
                                                 setEditFeatured(
-                                                    Number(e.target.value)
+                                                    Number(
+                                                        e.target.value
+                                                    )
                                                 )
                                             }
                                         >
@@ -1567,7 +1689,6 @@ const AdminCourses = () => {
                                 </div>
 
                             </div>
-
 
                             {/* Footer */}
 
@@ -1597,16 +1718,13 @@ const AdminCourses = () => {
                         </div>
 
                     </div>
+
                 </div>
+
             )}
-
-
-
-
 
         </DashboardLayout>
     );
 };
 
 export default AdminCourses;
-

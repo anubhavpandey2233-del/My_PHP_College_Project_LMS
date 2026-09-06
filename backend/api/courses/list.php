@@ -1,22 +1,16 @@
-
 <?php
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers/response.php';
 
 $search = trim($_GET['search'] ?? '');
-$category = $_GET['category_id'] ?? '';
-$level = $_GET['level'] ?? '';
-$teacherId = $_GET['teacher_id'] ?? '';
+$category = trim($_GET['category_id'] ?? '');
+$level = trim($_GET['level'] ?? '');
+$teacherId = trim($_GET['teacher_id'] ?? '');
 
 $page = max(1, (int)($_GET['page'] ?? 1));
 $limit = 12;
 $offset = ($page - 1) * $limit;
-
-
-// =====================================
-// WHERE
-// =====================================
 
 $where = [
     "c.status = 'published'"
@@ -24,67 +18,44 @@ $where = [
 
 $params = [];
 
-
-// =====================================
-// SEARCH
-// =====================================
-
 if ($search !== '') {
 
     $where[] = "
         (
-            c.title LIKE ?
-            OR c.short_description LIKE ?
+            COALESCE(c.title, '') LIKE ?
+            OR COALESCE(c.short_description, '') LIKE ?
+            OR COALESCE(c.description, '') LIKE ?
+            OR COALESCE(c.slug, '') LIKE ?
         )
     ";
 
-    $params[] = "%{$search}%";
-    $params[] = "%{$search}%";
+    $searchValue = '%' . $search . '%';
+
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+    $params[] = $searchValue;
 }
-
-
-// =====================================
-// CATEGORY
-// =====================================
 
 if ($category !== '') {
 
     $where[] = "c.category_id = ?";
-
     $params[] = (int)$category;
 }
-
-
-// =====================================
-// LEVEL
-// =====================================
 
 if ($level !== '') {
 
     $where[] = "c.level = ?";
-
     $params[] = $level;
 }
-
-
-// =====================================
-// TEACHER
-// =====================================
 
 if ($teacherId !== '') {
 
     $where[] = "c.teacher_id = ?";
-
     $params[] = (int)$teacherId;
 }
 
-
 $whereSql = implode(' AND ', $where);
-
-
-// =====================================
-// TOTAL
-// =====================================
 
 $countSql = "
     SELECT COUNT(*)
@@ -93,15 +64,9 @@ $countSql = "
 ";
 
 $countStmt = $pdo->prepare($countSql);
-
 $countStmt->execute($params);
 
 $total = (int)$countStmt->fetchColumn();
-
-
-// =====================================
-// COURSES
-// =====================================
 
 $sql = "
     SELECT
@@ -133,14 +98,10 @@ $sql = "
             course_id,
             ROUND(AVG(rating), 2) AS average_rating,
             COUNT(*) AS review_count
-
         FROM reviews
-
         WHERE status = 'approved'
-
         GROUP BY course_id
     ) r
-
         ON c.id = r.course_id
 
     WHERE $whereSql
@@ -150,197 +111,92 @@ $sql = "
     LIMIT $limit OFFSET $offset
 ";
 
-
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute($params);
 
-$courses =
-    $stmt->fetchAll(PDO::FETCH_ASSOC);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$scriptDirectory = str_replace(
+    '\\',
+    '/',
+    dirname($_SERVER['SCRIPT_NAME'])
+);
 
-// =====================================
-// PROJECT BASE URL
-// =====================================
-
-$scriptDirectory =
-    str_replace(
-        '\\',
-        '/',
-        dirname($_SERVER['SCRIPT_NAME'])
-    );
-
-/*
- * Example:
- *
- * /php-lms-project/api/courses
- *
- * dirname once:
- * /php-lms-project/api
- *
- * dirname twice:
- * /php-lms-project
- */
-
-$projectBaseUrl =
+$projectBaseUrl = dirname(
     dirname(
-        dirname(
-            $scriptDirectory
-        )
-    );
+        $scriptDirectory
+    )
+);
 
-$projectBaseUrl =
-    rtrim(
-        $projectBaseUrl,
-        '/'
-    );
-
-
-// =====================================
-// IMAGE URL HELPER
-// =====================================
+$projectBaseUrl = rtrim(
+    $projectBaseUrl,
+    '/'
+);
 
 function makeFileUrl(
     $file,
     $folder,
     $projectBaseUrl
 ) {
-
-    if (
-        empty($file)
-    ) {
+    if (empty($file)) {
         return null;
     }
 
-
-    $file = trim(
-        (string)$file
-    );
-
-
-    /*
-     * Already complete URL
-     */
+    $file = trim((string)$file);
 
     if (
-        str_starts_with(
-            $file,
-            'http://'
-        ) ||
-        str_starts_with(
-            $file,
-            'https://'
-        )
+        str_starts_with($file, 'http://') ||
+        str_starts_with($file, 'https://')
     ) {
-
         return $file;
     }
 
+    $file = ltrim($file, '/');
 
-    /*
-     * Remove starting slash
-     */
-
-    $file =
-        ltrim(
-            $file,
-            '/'
-        );
-
-
-    /*
-     * If database already contains
-     * uploads/courses/file.jpg
-     */
-
-    if (
-        str_starts_with(
-            $file,
-            'uploads/'
-        )
-    ) {
-
-        return
-            $projectBaseUrl .
-            '/' .
-            $file;
+    if (str_starts_with($file, 'uploads/')) {
+        return $projectBaseUrl . '/' . $file;
     }
 
-
-    /*
-     * Normal filename
-     */
-
-    return
-        $projectBaseUrl .
+    return $projectBaseUrl .
         '/uploads/' .
         $folder .
         '/' .
         $file;
 }
 
+foreach ($courses as &$course) {
 
-// =====================================
-// PREPARE RESPONSE
-// =====================================
+    $course['average_rating'] = (float)(
+        $course['average_rating'] ?? 0
+    );
 
-foreach (
-    $courses as &$course
-) {
-
-    $course['average_rating'] =
-        (float)$course[
-            'average_rating'
-        ];
-
-
-    $course['review_count'] =
-        (int)$course[
-            'review_count'
-        ];
-
-
-    // =================================
-    // COURSE IMAGE
-    // =================================
+    $course['review_count'] = (int)(
+        $course['review_count'] ?? 0
+    );
 
     $courseImage =
         $course['thumbnail']
         ?? $course['image']
         ?? null;
 
-
-    $course['thumbnail_url'] =
-        makeFileUrl(
-            $courseImage,
-            'courses',
-            $projectBaseUrl
-        );
-
-
-    // =================================
-    // TEACHER IMAGE
-    // =================================
+    $course['thumbnail_url'] = makeFileUrl(
+        $courseImage,
+        'courses',
+        $projectBaseUrl
+    );
 
     $teacherImage =
         $course['teacher_image']
         ?? null;
 
-
-    $course['teacher_image_url'] =
-        makeFileUrl(
-            $teacherImage,
-            'avatars',
-            $projectBaseUrl
-        );
+    $course['teacher_image_url'] = makeFileUrl(
+        $teacherImage,
+        'avatars',
+        $projectBaseUrl
+    );
 }
 
 unset($course);
-
-
-// =====================================
-// RESPONSE
-// =====================================
 
 sendResponse(
     true,
@@ -350,18 +206,11 @@ sendResponse(
 
         "pagination" => [
             "page" => $page,
-
             "limit" => $limit,
-
             "total" => $total,
-
-            "pages" =>
-                $total > 0
-                    ? (int)ceil(
-                        $total / $limit
-                    )
-                    : 0
+            "pages" => $total > 0
+                ? (int)ceil($total / $limit)
+                : 0
         ]
     ]
 );
-

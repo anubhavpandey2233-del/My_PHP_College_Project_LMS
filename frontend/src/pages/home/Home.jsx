@@ -365,46 +365,47 @@ const Home = () => {
             setLoadingReviews(false);
         }
     };
-const fetchTotalStudents = async () => {
-    try {
+    const fetchTotalStudents = async () => {
+        try {
 
-        const response = await api.get(
-            '/enrollments/count.php'
-        );
-
-        if (response.data?.status) {
-
-            setTotalStudents(
-                Number(
-                    response.data?.data?.total_enrollments ?? 0
-                )
+            const response = await api.get(
+                '/enrollments/count.php'
             );
 
-        } else {
+            if (response.data?.status) {
+
+                setTotalStudents(
+                    Number(
+                        response.data?.data?.total_enrollments ?? 0
+                    )
+                );
+
+            } else {
+
+                setTotalStudents(0);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Enrollment Count Error:',
+                error
+            );
 
             setTotalStudents(0);
 
         }
-
-    } catch (error) {
-
-        console.error(
-            'Enrollment Count Error:',
-            error
-        );
-
-        setTotalStudents(0);
-
-    }
-};    /*
+    };    /*
      * Initial API calls.
      */
-  useEffect(() => {
-    fetchSubcategories();
-    fetchCourses();
-    fetchReviews();
-    fetchTotalStudents();
-}, []);
+    useEffect(() => {
+        fetchCategories();
+        fetchSubcategories();
+        fetchCourses();
+        fetchReviews();
+        fetchTotalStudents();
+    }, []);
 
     /*
      * Normalize course data.
@@ -2095,7 +2096,7 @@ const fetchTotalStudents = async () => {
                                     clearCategoryFilter
                                 }
                             >
-                               All
+                                All
                             </button>
 
                             {categories

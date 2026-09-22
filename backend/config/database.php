@@ -18,13 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Database credentials
 $host     = getenv('DB_HOST') ?: "localhost";
+$port     = getenv('DB_PORT') ?: "3307";
 $dbname   = getenv('DB_NAME') ?: "php_lms_project";
 $username = getenv('DB_USER') ?: "root";
 $password = getenv('DB_PASS') ?: "";
 
 try {
     $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
         $username,
         $password,
         [

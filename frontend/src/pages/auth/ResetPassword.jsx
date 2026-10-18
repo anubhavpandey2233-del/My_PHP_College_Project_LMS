@@ -40,8 +40,7 @@ const ResetPassword = () => {
                 confirmPassword
             });
 
-            setMessage(response.data.message || 'Password updated successfully.');
-
+            setMessage(response.data.message || 'Password reset successfully.');
             setTimeout(() => navigate('/login'), 1500);
         } catch (err) {
             setError(err.response?.data?.message || 'Unable to reset password.');
@@ -99,14 +98,16 @@ const ResetPassword = () => {
                                     </div>
 
                                     <button className="btn btn-primary w-100" type="submit" disabled={loading}>
-                                        {loading ? 'Updating...' : 'Update Password'}
+                                        {loading ? 'Resetting...' : 'Reset Password'}
                                     </button>
                                 </form>
                             )}
 
-                            <p className="text-center small mt-3 mb-0">
-                                <Link to="/login">Back to Login</Link>
-                            </p>
+
+                            <Link to="/login" className="btn btn-outline-primary w-100 mt-3">
+                                <i className="bi bi-arrow-left"></i> Back to Login
+                            </Link>
+
                         </div>
                     </div>
                 </div>
